@@ -1,0 +1,6 @@
+{
+  "name": "Anime Stream",
+  "description": "Modern, lightweight anime browsing and streaming application powered by Jikan API and MegaPlay.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
