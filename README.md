@@ -2,32 +2,62 @@
 
 > A modern anime streaming and discovery platform built with Next.js, TypeScript, and multiple anime data sources.
 
+<div align="center">
+
+  <!-- Views Count -->
+  <img src="https://komarev.com/ghpvc/?username=Eliasdex&label=PROJECT+VIEWS&color=0e75e8&style=flat" alt="Project Views" />
+
+  <br />
+
+  <!-- Repo Stats -->
+  <a href="https://github.com/Eliasilyz/EliasDex-2/stargazers">
+    <img src="https://img.shields.io/github/stars/Eliasilyz/EliasDex-2?style=flat-square&logo=github&color=yellow" alt="GitHub Stars" />
+  </a>
+  <a href="https://github.com/Eliasilyz/EliasDex-2/network/members">
+    <img src="https://img.shields.io/github/forks/Eliasilyz/EliasDex-2?style=flat-square&logo=github&color=blue" alt="GitHub Forks" />
+  </a>
+  <a href="https://github.com/Eliasilyz/EliasDex-2/issues">
+    <img src="https://img.shields.io/github/issues/Eliasilyz/EliasDex-2?style=flat-square&color=red" alt="Open Issues" />
+  </a>
+  <a href="https://github.com/Eliasilyz/EliasDex-2/issues?q=is%3Aissue+is%3Aclosed">
+    <img src="https://img.shields.io/github/issues-closed/Eliasilyz/EliasDex-2?style=flat-square&color=green" alt="Closed Issues" />
+  </a>
+
+  <br />
+
+  <!-- Extra Details (Lisensi, Commit Terakhir, & Repo Size) -->
+  <img src="https://img.shields.io/github/last-commit/Eliasilyz/EliasDex-2?style=flat-square&color=orange" alt="Last Commit" />
+  <img src="https://img.shields.io/github/repo-size/Eliasilyz/EliasDex-2?style=flat-square&color=purple" alt="Repo Size" />
+  <img src="https://img.shields.io/github/license/Eliasilyz/EliasDex-2?style=flat-square&color=grey" alt="License" />
+
+</div>
+
 EliasDex 2 is a web-based anime platform focused on browsing, discovering, tracking, and watching anime from a clean, responsive interface.
 
 It combines multiple APIs to provide anime metadata, schedules, episodes, characters, staff, themes, trailers, and streaming sources without relying on a single provider. Because apparently one API failing wasn't enough for humanity.
 
 ## ✨ Features
 
-* 🎬 Anime discovery and browsing
-* 🔎 Anime search
-* 📺 Episode streaming
-* 🌐 Multiple streaming servers
-* 🇯🇵 Japanese / English title switching
-* 📅 Seasonal anime schedule
-* 🔥 Top anime
-* 📚 Watchlist
-* 🕒 Watch history
-* 🎵 Global music player
-* 🎶 Anime opening and ending themes
-* 🎭 Character information
-* 👥 Staff information
-* 🔗 Anime relations
-* 🎞️ Trailer support
-* 🌙 Dark / light theme
-* 📱 Responsive mobile-first UI
-* ⚡ Client-side caching and API rate limiting
-* 🔄 Multiple anime data sources with fallback support
-* ❤️ Local watch progress tracking
+- 🎬 Anime discovery and browsing
+- 🔎 Anime search
+- 📺 Episode streaming
+- 🌐 Multiple streaming servers
+- 🇯🇵 Japanese / English title switching
+- 📅 Seasonal anime schedule
+- 🔥 Top anime
+- 📚 Watchlist
+- 🕒 Watch history
+- 🎵 Global music player
+- 🎶 Anime opening and ending themes
+- 🎭 Character information
+- 👥 Staff information
+- 🔗 Anime relations
+- 🎞️ Trailer support
+- 🌙 Dark / light theme
+- 📱 Responsive mobile-first UI
+- ⚡ Client-side caching and API rate limiting
+- 🔄 Multiple anime data sources with fallback support
+- ❤️ Local watch progress tracking
 
 ## 📊 Project Stats
 
@@ -57,14 +87,14 @@ Used primarily for rich anime metadata and structured anime information.
 
 Typical usage:
 
-* Anime metadata
-* Titles
-* Descriptions
-* Genres
-* Studios
-* Relations
-* Rankings
-* Seasonal information
+- Anime metadata
+- Titles
+- Descriptions
+- Genres
+- Studios
+- Relations
+- Rankings
+- Seasonal information
 
 ### Jikan
 
@@ -72,14 +102,14 @@ Jikan provides access to MyAnimeList data through its API.
 
 Typical usage:
 
-* MAL IDs
-* Anime metadata
-* Characters
-* Staff
-* Episodes
-* Rankings
-* Schedules
-* Additional MAL information
+- MAL IDs
+- Anime metadata
+- Characters
+- Staff
+- Episodes
+- Rankings
+- Schedules
+- Additional MAL information
 
 ### AniKoto
 
@@ -87,10 +117,10 @@ AniKoto is used primarily for streaming-related data.
 
 Typical usage:
 
-* Episode sources
-* Streaming servers
-* Episode information
-* Video sources
+- Episode sources
+- Streaming servers
+- Episode information
+- Video sources
 
 The application routes external API requests through its own Next.js API endpoints where appropriate.
 
@@ -202,27 +232,27 @@ EliasDex 2/
 
 ### Core
 
-* Next.js
-* React
-* TypeScript
-* CSS
-* Next.js App Router
+- Next.js
+- React
+- TypeScript
+- CSS
+- Next.js App Router
 
 ### Data
 
-* AniList API
-* Jikan API
-* AniKoto API
+- AniList API
+- Jikan API
+- AniKoto API
 
 ### Application Architecture
 
-* React Context API
-* Custom API abstraction
-* Server-side API routes
-* Client-side state management
-* Custom caching
-* API rate limiting
-* Fallback data handling
+- React Context API
+- Custom API abstraction
+- Server-side API routes
+- Client-side state management
+- Custom caching
+- API rate limiting
+- Fallback data handling
 
 ## 🔌 Internal API Routes
 
@@ -304,11 +334,11 @@ WatchContext
 
 This allows features such as:
 
-* Persistent theme preferences
-* Anime data source selection
-* Global music playback
-* Title language switching
-* Watch progress management
+- Persistent theme preferences
+- Anime data source selection
+- Global music playback
+- Title language switching
+- Watch progress management
 
 ## ▶️ Getting Started
 
@@ -316,9 +346,9 @@ This allows features such as:
 
 Make sure you have:
 
-* Node.js 20+
-* npm or Bun
-* Git
+- Node.js 20+
+- npm or Bun
+- Git
 
 ### Clone
 
@@ -416,11 +446,11 @@ UI
 
 This approach helps reduce the impact of:
 
-* API downtime
-* Rate limits
-* Missing metadata
-* Provider-specific response formats
-* Temporary network failures
+- API downtime
+- Rate limits
+- Missing metadata
+- Provider-specific response formats
+- Temporary network failures
 
 ## 📺 Watch Flow
 
@@ -509,13 +539,13 @@ bun run start
 
 EliasDex 2 includes several mechanisms intended to reduce unnecessary API traffic:
 
-* API caching
-* Rate limiting
-* Server-side request handling
-* Reusable components
-* Loading skeletons
-* Fallback responses
-* Centralized API clients
+- API caching
+- Rate limiting
+- Server-side request handling
+- Reusable components
+- Loading skeletons
+- Fallback responses
+- Centralized API clients
 
 The goal is simple: fewer requests, less waiting, fewer things catching fire.
 
@@ -525,13 +555,13 @@ External API requests are routed through server-side endpoints where appropriate
 
 Recommended production practices:
 
-* Keep private credentials server-side
-* Validate API parameters
-* Apply request rate limits
-* Avoid exposing unnecessary upstream API details
-* Sanitize user-controlled query parameters
-* Configure appropriate CORS behavior
-* Monitor upstream API failures
+- Keep private credentials server-side
+- Validate API parameters
+- Apply request rate limits
+- Avoid exposing unnecessary upstream API details
+- Sanitize user-controlled query parameters
+- Configure appropriate CORS behavior
+- Monitor upstream API failures
 
 ## ⚠️ Disclaimer
 
@@ -567,17 +597,17 @@ Keep changes focused and avoid turning one small feature into a 47-file architec
 
 ## 🗺️ Roadmap
 
-* [ ] Improved recommendation engine
-* [ ] More streaming providers
-* [ ] Better episode progress synchronization
-* [ ] Advanced anime filtering
-* [ ] User accounts
-* [ ] Cloud watchlist synchronization
-* [ ] Personalized recommendations
-* [ ] Improved mobile player
-* [ ] PWA improvements
-* [ ] Better API failure recovery
-* [ ] Automated API health monitoring
+- [ ] Improved recommendation engine
+- [ ] More streaming providers
+- [ ] Better episode progress synchronization
+- [ ] Advanced anime filtering
+- [ ] User accounts
+- [ ] Cloud watchlist synchronization
+- [ ] Personalized recommendations
+- [ ] Improved mobile player
+- [ ] PWA improvements
+- [ ] Better API failure recovery
+- [ ] Automated API health monitoring
 
 ## ⭐ Project Goals
 
