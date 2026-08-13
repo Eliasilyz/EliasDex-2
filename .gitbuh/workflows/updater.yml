@@ -1,0 +1,26 @@
+name: Auto Update Repo
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Update Timestamp
+        run: |
+          echo "Last sync: $(date)" > update_log.txt
+          
+      - name: Commit and Push
+        run: |
+          git config --global user.name "Silvi AI"
+          git config --global user.email "farellh12@gmail.com"
+          
+          git add update_log.txt
+          git commit -m "Auto Update" || exit 0
+          git push
