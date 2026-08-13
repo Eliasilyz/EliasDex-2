@@ -1,0 +1,50 @@
+name: Auto Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Bump Release Tag
+        uses: mathieudutour/github-tag-action@v6.2
+        id: tag_version
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Timestamp
+        id: time
+        run: |
+          echo "DATE=$(TZ='Asia/Jakarta' date +'%B %d, %Y')" >> $GITHUB_OUTPUT
+          echo "TIME=$(TZ='Asia/Jakarta' date +'%H:%M:%S UTC+7')" >> $GITHUB_OUTPUT
+          echo "DAY=$(TZ='Asia/Jakarta' date +'%A')" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: |
+            ## 🚀 Release Details
+            * **Date:** ${{ steps.time.outputs.DAY }}, ${{ steps.time.outputs.DATE }}
+            * **Time:** ${{ steps.time.outputs.TIME }}
+            * **Commit:** ${{ github.sha }}
+            * **Triggered By:** @${{ github.actor }}
+
+            ---
+            ### 📝 Changelog
+            ${{ steps.tag_version.outputs.changelog }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
