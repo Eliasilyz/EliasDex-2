@@ -1,4 +1,4 @@
-# EliasDex 2
+# EliasDex 2 
 
 > A modern anime streaming and discovery platform built with Next.js, TypeScript, and multiple anime data sources.
 
