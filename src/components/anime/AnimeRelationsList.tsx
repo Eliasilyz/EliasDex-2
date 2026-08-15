@@ -8,6 +8,7 @@ interface AnimeRelationsListProps {
   isLoading?: boolean;
 }
 
+
 export const AnimeRelationsList: React.FC<AnimeRelationsListProps> = ({
   relations,
   onNavigateAnime,

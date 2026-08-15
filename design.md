@@ -152,7 +152,7 @@ Arsitektur aplikasi menerapkan pola decoupled multi-layer antara Client Componen
 - `ServerSelector.tsx` — Selector server streaming multi-provider (`Zoko`, `MegaPlay MAL`, `MegaPlay AniList`, `MegaPlay Catalog`, `VidStream Backup`).
 - `ServerNotice.tsx` — Banner tips interaktif yang dapat di-dismiss.
 - `usePlayerEvents.ts` — React hook untuk mendengarkan pesan `postMessage` (progress & playback completion) dari player embed.
-- `GlobalMusicPlayer.tsx` — Floating music player bar di bagian bawah layar dengan animasi vinyl spinning, equalizer wave, playlist queue drawer, kontrol loop/shuffle/next/prev, serta modal video 16:9.
+- `GlobalMusicPlayer.tsx` — Floating music player bar di bagian bawah layar dengan animasi vinyl spinning, equalizer wave, playlist queue drawer, kontrol loop/shuffle/next/prev, serta modal video 16:9
 
 ---
 
