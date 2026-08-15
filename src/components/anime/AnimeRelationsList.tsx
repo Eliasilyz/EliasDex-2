@@ -2,7 +2,6 @@ import React from 'react';
 import { AnimeRelation } from '../../types';
 import { Badge } from '../ui/Badge';
 import { GitFork, BookOpen, Tv, ArrowRight, ExternalLink, Film } from 'lucide-react';
-
 interface AnimeRelationsListProps {
   relations: AnimeRelation[];
   onNavigateAnime: (malId: number) => void;
