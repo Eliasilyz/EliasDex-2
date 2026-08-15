@@ -62,7 +62,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
 
   return (
     <div
-      className="relative w-full rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800/80 shadow-2xl group/hero min-h-[420px] sm:min-h-[480px] md:min-h-[520px] flex items-center"
+      className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800/80 shadow-2xl group/hero min-h-[380px] sm:min-h-[460px] md:min-h-[520px] flex items-center"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -81,7 +81,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
       </div>
 
       {/* Content Layout */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 py-10 flex flex-col md:flex-row items-center md:items-end justify-between gap-8">
+      <div className="relative z-10 w-full px-4 sm:px-8 md:px-10 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-8">
         {/* Text Details */}
         <div className="max-w-2xl space-y-4 text-left">
           {/* Metadata Badges */}
@@ -114,7 +114,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
           <div>
             <h1
               id="hero-anime-title"
-              className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight line-clamp-2"
+              className="text-xl sm:text-3xl md:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight line-clamp-2"
             >
               {title}
             </h1>

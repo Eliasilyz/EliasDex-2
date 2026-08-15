@@ -113,11 +113,11 @@ export const ScheduleRow: React.FC<{
 
       {/* Schedule Items Carousel Container */}
       <div className="relative group/carousel">
-        {/* Left / Right Nav Arrows */}
+        {/* Left / Right Nav Arrows (visible on sm+ screens to prevent mobile overflow) */}
         <button
           type="button"
           onClick={() => handleScroll('left')}
-          className="absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
+          className="hidden sm:flex absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
           aria-label="Scroll left"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -126,7 +126,7 @@ export const ScheduleRow: React.FC<{
         <button
           type="button"
           onClick={() => handleScroll('right')}
-          className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
+          className="hidden sm:flex absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
           aria-label="Scroll right"
         >
           <ChevronRight className="w-5 h-5" />
@@ -168,7 +168,7 @@ export const ScheduleRow: React.FC<{
                 <div
                   key={anime.mal_id}
                   id={`schedule-card-${anime.mal_id}`}
-                  className="w-72 shrink-0 rounded-2xl bg-zinc-900/60 hover:bg-zinc-850/80 border border-zinc-800/80 hover:border-zinc-700 p-3 transition-all flex flex-col justify-between group hover:shadow-lg hover:shadow-orange-950/20"
+                  className="w-[260px] sm:w-72 shrink-0 rounded-2xl bg-zinc-900/60 hover:bg-zinc-850/80 border border-zinc-800/80 hover:border-zinc-700 p-3 transition-all flex flex-col justify-between group hover:shadow-lg hover:shadow-orange-950/20"
                 >
                   <div className="flex gap-3">
                     <div

@@ -366,17 +366,42 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
               )}
             </div>
 
-            {/* Mobile Watch Buttons (visible on small screens) */}
-            <div className="flex md:hidden items-center gap-2 pt-1">
+            {/* Mobile Watch & Action Buttons (visible on small screens) */}
+            <div className="flex md:hidden flex-wrap items-center gap-2 pt-1">
               <Button
                 variant="primary"
                 size="sm"
                 onClick={() => onNavigate(`/watch/${malId}/${targetEp}`)}
                 icon={<Play className="w-3.5 h-3.5 fill-white" />}
-                className="flex-1 justify-center"
+                className="flex-1 min-w-[130px] justify-center"
               >
                 {watchProgress ? `Resume Ep ${watchProgress.episodeNumber}` : 'Watch Now'}
               </Button>
+
+              {/* Mobile Quick Watchlist Selector */}
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon={<Bookmark className={`w-3.5 h-3.5 ${watchlistStatus ? 'text-orange-400 fill-orange-400' : 'text-zinc-400'}`} />}
+                >
+                  <span className="text-[11px] truncate max-w-[80px]">
+                    {watchlistStatus ? watchlistStatus.replace('_', ' ') : 'List'}
+                  </span>
+                </Button>
+                <select
+                  value={watchlistStatus || ''}
+                  onChange={(e) => handleStatusChange((e.target.value as any) || 'remove')}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                >
+                  <option value="">+ Add to Watchlist</option>
+                  <option value="watching">Watching</option>
+                  <option value="plan_to_watch">Plan to Watch</option>
+                  <option value="completed">Completed</option>
+                  <option value="dropped">Dropped</option>
+                  {watchlistStatus && <option value="remove">Remove from List</option>}
+                </select>
+              </div>
 
               <button
                 type="button"
