@@ -19,7 +19,8 @@ Arsitektur aplikasi menerapkan pola decoupled multi-layer antara Client Componen
 ```text
 [ Browser / Client View ]
   │
-  ├── [ React Context Providers ]
+  ├── [ React Context & Smooth Scroll Providers ]
+  │     ├── SmoothScrollProvider (Lenis v1.3 Smooth Scrolling & Inertial Scroll Engine)
   │     ├── ThemeProvider (Dark / Light / System Mode)
   │     ├── TitleLanguageProvider ('en' English vs 'jp' Romaji/Kanji)
   │     ├── DataSourceProvider ('auto' Hybrid vs 'anilist' vs 'jikan')
@@ -55,7 +56,7 @@ Arsitektur aplikasi menerapkan pola decoupled multi-layer antara Client Componen
 
 | File | Tanggung Jawab Utama | Komponen / Fungsi Kunci | Dependensi Utama |
 | :--- | :--- | :--- | :--- |
-| `package.json` | Konfigurasi dependensi project, script dev/build/start/lint | Script `dev`, `build`, `start`, `lint` | `next@^16.3.0`, `react@^19.0.1`, `@tailwindcss/postcss@^4.1.14`, `lucide-react`, `zod`, `swr` |
+| `package.json` | Konfigurasi dependensi project, script dev/build/start/lint | Script `dev`, `build`, `start`, `lint` | `next@^16.3.0`, `react@^19.0.1`, `lenis@^1.3.26`, `@tailwindcss/postcss@^4.1.14`, `lucide-react`, `zod`, `swr` |
 | `next.config.ts` | Konfigurasi Next.js runtime | `nextConfig` (`reactStrictMode: true`) | `next` |
 | `tsconfig.json` | Konfigurasi TypeScript compiler dan path alias | Path alias `@/* -> ./src/*` | `typescript` |
 | `postcss.config.mjs` | Integrasi styling PostCSS | Plugin `@tailwindcss/postcss` | `@tailwindcss/postcss` |
@@ -63,15 +64,17 @@ Arsitektur aplikasi menerapkan pola decoupled multi-layer antara Client Componen
 
 ---
 
-### B. Context & State Management (`src/context/`)
+### B. Context & State Management (`src/context/` & `src/components/providers/`)
 
 | File | Tanggung Jawab | Hook & Fungsi Kunci | State yang Dikelola |
 | :--- | :--- | :--- | :--- |
+| `SmoothScrollProvider.tsx` | Provider smooth scrolling global berbasis Lenis dengan scroll restoration instan saat pergantian rute | `SmoothScrollProvider`, `useLenis()` | Engine instance Lenis (`lerp: 0.1` physics damping, `smoothWheel: true`, `prevent` filter) |
 | `ThemeContext.tsx` | Manajemen tema aplikasi (light, dark, system preference listener) | `ThemeProvider`, `useTheme()`, `toggleTheme()`, `setTheme()` | `theme` (`light` \| `dark` \| `system`), `resolvedTheme` (`light` \| `dark`) |
 | `TitleLanguageContext.tsx` | Manajemen preferensi bahasa judul anime secara instan di semua tampilan | `TitleLanguageProvider`, `useTitleLanguage()`, `getTitle()`, `getSecondaryTitle()`, `getNativeJapaneseTitle()` | `titleLanguage` (`'en'` \| `'jp'`) |
 | `DataSourceContext.tsx` | Pemilihan API upstream penyedia metadata anime | `DataSourceProvider`, `useDataSource()`, `setDataSource()` | `dataSource` (`'auto'` \| `'jikan'` \| `'anilist'`), `dataSourceName`, `dataSourceDescription` |
 | `WatchContext.tsx` | Pelacakan progres tontonan (episode & timestamp) dan watchlist pengguna | `WatchProvider`, `useWatch()`, `recordWatchProgress()`, `setWatchlistStatus()`, `removeFromWatchlist()`, `clearHistory()` | `history` (`WatchProgress[]`), `watchlist` (`WatchlistItem[]`) |
 | `MusicPlayerContext.tsx` | Pengendali pemutar musik tema (OP/ED) global dengan persistent iframe playback | `MusicPlayerProvider`, `useMusicPlayer()`, `playTrack()`, `togglePlay()`, `nextTrack()`, `prevTrack()`, `setPlaybackMode()`, `setShowVideoModal()` | `currentTrack`, `playlist`, `isPlaying`, `isLoading`, `isMinimized`, `showVideoModal`, `playbackMode` |
+
 
 ---
 
@@ -323,6 +326,12 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
 
 ### E. Visual Effects & Motion
 
+- **Smooth Scrolling Engine (`lenis` & `SmoothScrollProvider`)**:
+  - Global Inertial Smooth Scroll: Terintegrasi di level root App Router menggunakan `ReactLenis`
+  - Konfigurasi Engine: `lerp: 0.1` (physics exponential damping bebas latensi), `smoothWheel: true`, `wheelMultiplier: 1`, `touchMultiplier: 1`, `syncTouch: false` (native touch behavior)
+  - CSS Integration: `@import "lenis/dist/lenis.css";` dan `html { scroll-behavior: auto !important; }` di `globals.css`
+  - Isolasi Nested Scroll: Menggunakan atribut `data-lenis-prevent` pada container dengan scrolling terisolasi (`GlobalMusicPlayer` queue drawer, `SearchBar` live dropdown, `EpisodeList` grid/list) agar scroll roda mouse/touch tetap responsif tanpa mengganggu scroll posisi body utama
+  - Automatic Route Scroll Restoration: Reset posisi scroll ke atas secara instan saat navigasi antar-halaman via `usePathname()` listener
 - **Border Radius**:
   - `rounded-lg` (`8px`) — Badge kecil, item navigasi dalam
   - `rounded-xl` (`12px`) — Tombol ukuran sedang, thumbnail kartu, input search

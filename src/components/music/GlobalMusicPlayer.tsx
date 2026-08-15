@@ -236,7 +236,7 @@ export const GlobalMusicPlayer: React.FC = () => {
 
         {/* Playlist Quick Drawer */}
         {showPlaylistDrawer && playlist.length > 1 && (
-          <div className="mt-2 bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 rounded-2xl p-3 shadow-2xl space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
+          <div data-lenis-prevent className="mt-2 bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 rounded-2xl p-3 shadow-2xl space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between pb-1.5 border-b border-zinc-800 text-xs text-zinc-400">
               <span className="font-semibold text-zinc-200">Theme Songs Queue</span>
               <span>{playlist.length} Tracks</span>

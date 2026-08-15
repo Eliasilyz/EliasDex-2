@@ -157,7 +157,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
               <Loader2 className="w-4 h-4 animate-spin text-orange-400" /> Searching anime...
             </div>
           ) : results.length > 0 ? (
-            <div className="py-2 divide-y divide-zinc-800/60 max-h-[380px] overflow-y-auto">
+            <div data-lenis-prevent className="py-2 divide-y divide-zinc-800/60 max-h-[380px] overflow-y-auto">
               {results.map((anime) => {
                 const img =
                   anime.images?.webp?.small_image_url ||

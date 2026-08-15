@@ -23,8 +23,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${plusJakartaSans.variable} ${outfit.variable}`}>
-      <body className="bg-[#09090b] text-zinc-100 antialiased selection:bg-orange-600 selection:text-white min-h-screen">
+    <html
+      lang="en"
+      className={`${plusJakartaSans.variable} ${outfit.variable}`}
+      suppressHydrationWarning
+    >
+      <body
+        className="bg-[#09090b] text-zinc-100 antialiased selection:bg-orange-600 selection:text-white min-h-screen"
+        suppressHydrationWarning
+      >
         <AppProviders>
           <AppShell>{children}</AppShell>
         </AppProviders>

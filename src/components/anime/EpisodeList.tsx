@@ -174,7 +174,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
 
       {/* Episodes Rendering: Grid View */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-10 gap-2 max-h-[380px] overflow-y-auto pr-1">
+        <div data-lenis-prevent className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-10 gap-2 max-h-[380px] overflow-y-auto pr-1">
           {filteredEpisodes.map((ep) => {
             const isCurrent = currentEp === ep.epNum;
             const isWatched = watchedEpisodes.includes(ep.epNum) || ep.epNum < currentEp;
@@ -209,7 +209,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
 
       {/* Episodes Rendering: Detailed List View */}
       {viewMode === 'list' && (
-        <div className="space-y-1.5 max-h-[380px] overflow-y-auto pr-1 divide-y divide-zinc-800/40">
+        <div data-lenis-prevent className="space-y-1.5 max-h-[380px] overflow-y-auto pr-1 divide-y divide-zinc-800/40">
           {filteredEpisodes.map((ep) => {
             const isCurrent = currentEp === ep.epNum;
             const isWatched = watchedEpisodes.includes(ep.epNum) || ep.epNum < currentEp;
