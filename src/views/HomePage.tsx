@@ -5,26 +5,26 @@ import { useAppNavigate } from '@/lib/useNavigate';
 import { Anime } from '../types';
 import { getUnifiedSeasonNow, getUnifiedTopAnime } from '../lib/animeApi';
 import { FALLBACK_ANIME_LIST } from '../lib/fallbackData';
-import { HeroCarousel } from '../components/anime/HeroCarousel';
+import { SwiperHeroCarousel } from '../components/anime/SwiperHeroCarousel';
+import { SwiperAnimeSlider } from '../components/anime/SwiperAnimeSlider';
 import { ScheduleRow } from '../components/anime/ScheduleRow';
 import { AnimeGrid } from '../components/anime/AnimeGrid';
-import { HeroSkeleton } from '../components/ui/Skeleton';
+import { HeroSkeleton, CardSkeleton } from '../components/ui/Skeleton';
 import { useWatch } from '../context/WatchContext';
 import { useDataSource } from '../context/DataSourceContext';
-import { Sparkles, Flame, Tv, Compass, Play, ChevronRight, History, Database, Server } from 'lucide-react';
+import { Sparkles, Flame, Tv, Play, ChevronRight, History } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 
 export const HomePage: React.FC = () => {
   const onNavigate = useAppNavigate();
   const { history } = useWatch();
-  const { dataSource, dataSourceName } = useDataSource();
+  const { dataSource } = useDataSource();
   const [featuredAnime, setFeaturedAnime] = useState<Anime[]>([]);
   const [popularAnime, setPopularAnime] = useState<Anime[]>([]);
   const [airingAnime, setAiringAnime] = useState<Anime[]>([]);
   const [upcomingAnime, setUpcomingAnime] = useState<Anime[]>([]);
   const [loadingHero, setLoadingHero] = useState(true);
   const [loadingSections, setLoadingSections] = useState(true);
-  const [activeProvider, setActiveProvider] = useState<string>('auto');
 
   useEffect(() => {
     let isMounted = true;
@@ -37,7 +37,6 @@ export const HomePage: React.FC = () => {
         if (isMounted) {
           const items = res.data && res.data.length > 0 ? res.data : FALLBACK_ANIME_LIST.slice(0, 8);
           setFeaturedAnime(items);
-          setActiveProvider(res.source || dataSource);
           setLoadingHero(false);
         }
       })
@@ -76,15 +75,14 @@ export const HomePage: React.FC = () => {
     };
   }, [dataSource]);
 
-
   return (
     <div className="space-y-12 pb-12">
-      {/* 1. Hero / Trending Carousel */}
+      {/* 1. Swiper Hero Carousel */}
       <section>
         {loadingHero ? (
           <HeroSkeleton />
         ) : (
-          <HeroCarousel
+          <SwiperHeroCarousel
             items={featuredAnime}
             onSelectAnime={(malId) => onNavigate(`/anime/${malId}`)}
             onWatchAnime={(malId, ep) => onNavigate(`/watch/${malId}/${ep || 1}`)}
@@ -92,7 +90,7 @@ export const HomePage: React.FC = () => {
         )}
       </section>
 
-      {/* Continue Watching Strip (if user has watch history) */}
+      {/* Continue Watching Strip */}
       {history && history.length > 0 && (
         <section className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 space-y-3">
           <div className="flex items-center justify-between">
@@ -105,7 +103,7 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={() => onNavigate('/history')}
-              className="text-xs text-orange-400 hover:text-orange-300 font-semibold cursor-pointer"
+              className="text-xs text-orange-400 hover:text-orange-300 font-semibold cursor-pointer jq-ripple"
             >
               View History ({history.length}) →
             </button>
@@ -116,7 +114,7 @@ export const HomePage: React.FC = () => {
               <div
                 key={item.malId}
                 onClick={() => onNavigate(`/watch/${item.malId}/${item.episodeNumber}`)}
-                className="w-48 sm:w-56 shrink-0 p-2.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-800 border border-zinc-700/60 cursor-pointer transition-all flex items-center gap-3 group"
+                className="w-48 sm:w-56 shrink-0 p-2.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-800 border border-zinc-700/60 cursor-pointer transition-all flex items-center gap-3 group jq-ripple"
               >
                 <div className="w-12 h-16 rounded-lg overflow-hidden bg-zinc-900 shrink-0 relative">
                   {item.image ? (
@@ -151,7 +149,7 @@ export const HomePage: React.FC = () => {
         />
       </section>
 
-      {/* 3. Top Popular Anime Grid */}
+      {/* 3. Top Popular Swiper Slider */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -170,21 +168,29 @@ export const HomePage: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={() => onNavigate('/top?filter=bypopularity')}
-            className="text-xs text-orange-400 hover:text-orange-300"
+            className="text-xs text-orange-400 hover:text-orange-300 jq-ripple"
           >
             Explore All <ChevronRight className="w-3.5 h-3.5" />
           </Button>
         </div>
 
-        <AnimeGrid
-          items={popularAnime}
-          loading={loadingSections}
-          onSelectAnime={(malId) => onNavigate(`/anime/${malId}`)}
-          onWatchAnime={(malId, ep) => onNavigate(`/watch/${malId}/${ep || 1}`)}
-        />
+        {loadingSections ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <SwiperAnimeSlider
+            items={popularAnime}
+            sliderId="popular"
+            onSelectAnime={(malId) => onNavigate(`/anime/${malId}`)}
+            onWatchAnime={(malId, ep) => onNavigate(`/watch/${malId}/${ep || 1}`)}
+          />
+        )}
       </section>
 
-      {/* 4. Top Airing This Season */}
+      {/* 4. Top Airing Now Swiper Slider */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -203,21 +209,29 @@ export const HomePage: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={() => onNavigate('/top?filter=airing')}
-            className="text-xs text-orange-400 hover:text-orange-300"
+            className="text-xs text-orange-400 hover:text-orange-300 jq-ripple"
           >
             Explore Airing <ChevronRight className="w-3.5 h-3.5" />
           </Button>
         </div>
 
-        <AnimeGrid
-          items={airingAnime}
-          loading={loadingSections}
-          onSelectAnime={(malId) => onNavigate(`/anime/${malId}`)}
-          onWatchAnime={(malId, ep) => onNavigate(`/watch/${malId}/${ep || 1}`)}
-        />
+        {loadingSections ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <SwiperAnimeSlider
+            items={airingAnime}
+            sliderId="airing"
+            onSelectAnime={(malId) => onNavigate(`/anime/${malId}`)}
+            onWatchAnime={(malId, ep) => onNavigate(`/watch/${malId}/${ep || 1}`)}
+          />
+        )}
       </section>
 
-      {/* 5. Top Anticipated & Upcoming */}
+      {/* 5. Top Anticipated & Upcoming Swiper Slider */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -236,19 +250,28 @@ export const HomePage: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={() => onNavigate('/top?filter=upcoming')}
-            className="text-xs text-orange-400 hover:text-orange-300"
+            className="text-xs text-orange-400 hover:text-orange-300 jq-ripple"
           >
             View Upcoming <ChevronRight className="w-3.5 h-3.5" />
           </Button>
         </div>
 
-        <AnimeGrid
-          items={upcomingAnime}
-          loading={loadingSections}
-          onSelectAnime={(malId) => onNavigate(`/anime/${malId}`)}
-          onWatchAnime={(malId, ep) => onNavigate(`/watch/${malId}/${ep || 1}`)}
-        />
+        {loadingSections ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <SwiperAnimeSlider
+            items={upcomingAnime}
+            sliderId="upcoming"
+            onSelectAnime={(malId) => onNavigate(`/anime/${malId}`)}
+            onWatchAnime={(malId, ep) => onNavigate(`/watch/${malId}/${ep || 1}`)}
+          />
+        )}
       </section>
     </div>
   );
 };
+

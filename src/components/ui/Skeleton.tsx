@@ -23,6 +23,9 @@ export const AnimeCardSkeleton: React.FC = () => {
   );
 };
 
+export const CardSkeleton = AnimeCardSkeleton;
+
+
 export const HeroSkeleton: React.FC = () => {
   return (
     <div className="relative w-full aspect-[21/9] min-h-[360px] md:min-h-[460px] rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">

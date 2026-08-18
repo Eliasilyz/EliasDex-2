@@ -1,11 +1,16 @@
 'use client';
 
+import '@/lib/polyfills';
 import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { WatchProvider } from '@/context/WatchContext';
 import { MusicPlayerProvider } from '@/context/MusicPlayerContext';
 import { TitleLanguageProvider } from '@/context/TitleLanguageContext';
 import { DataSourceProvider } from '@/context/DataSourceContext';
+import { PWAInstaller } from '@/components/pwa/PWAInstaller';
+import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
+import { JQueryEffectsProvider } from '@/components/common/JQueryEffectsProvider';
+import { Toaster } from '@/components/ui/shadcn/toaster';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -14,7 +19,13 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         <TitleLanguageProvider>
           <DataSourceProvider>
             <WatchProvider>
-              <MusicPlayerProvider>{children}</MusicPlayerProvider>
+              <MusicPlayerProvider>
+                <PWAInstaller />
+                <JQueryEffectsProvider />
+                {children}
+                <PWAInstallBanner />
+                <Toaster />
+              </MusicPlayerProvider>
             </WatchProvider>
           </DataSourceProvider>
         </TitleLanguageProvider>
@@ -22,4 +33,5 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     </SmoothScrollProvider>
   );
 }
+
 

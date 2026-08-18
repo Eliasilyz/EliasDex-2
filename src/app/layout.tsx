@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import { AppProviders } from '@/components/providers/AppProviders';
 import { AppShell } from '@/components/layout/AppShell';
+import { constructMetadata } from '@/lib/metadata';
 import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -16,10 +17,8 @@ const outfit = Outfit({
   weight: ['500', '600', '700', '800'],
 });
 
-export const metadata: Metadata = {
-  title: 'AnimeStream - Browse & Watch Anime',
-  description: 'Minimalist, modern, and fast anime browsing and streaming web application.',
-};
+export const metadata: Metadata = constructMetadata();
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
