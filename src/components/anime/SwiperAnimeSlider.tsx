@@ -5,6 +5,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { Play, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Anime } from '@/types';
+import { LazyImage } from '../ui/LazyImage';
+
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -62,12 +64,12 @@ export const SwiperAnimeSlider: React.FC<SwiperAnimeSliderProps> = ({
                   onClick={() => onSelectAnime(anime.mal_id)}
                   className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-950 cursor-pointer"
                 >
-                  <img
+                  <LazyImage
                     src={imageUrl}
                     alt={displayTitle}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
                   />
+
 
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />

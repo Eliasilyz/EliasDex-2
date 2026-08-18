@@ -1,7 +1,9 @@
 'use client';
 
 import '@/lib/polyfills';
+import '@/lib/lazysizes';
 import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider';
+
 import { ThemeProvider } from '@/context/ThemeContext';
 import { WatchProvider } from '@/context/WatchContext';
 import { MusicPlayerProvider } from '@/context/MusicPlayerContext';

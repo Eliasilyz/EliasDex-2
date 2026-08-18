@@ -7,6 +7,8 @@ import { Play, Info, Star, Calendar, Flame } from 'lucide-react';
 import { Anime } from '@/types';
 import { ShadcnButton } from '../ui/shadcn/button';
 import { ShadcnBadge } from '../ui/shadcn/badge';
+import { LazyImage } from '../ui/LazyImage';
+
 
 import 'swiper/css';
 import 'swiper/css/effect-fade';
@@ -64,7 +66,7 @@ export const SwiperHeroCarousel: React.FC<SwiperHeroCarouselProps> = ({
               {/* Background Image with Gradient Overlays */}
               <div className="absolute inset-0">
                 {bgImage ? (
-                  <img
+                  <LazyImage
                     src={bgImage}
                     alt={displayTitle}
                     className="w-full h-full object-cover object-center scale-105 filter brightness-90 transition-transform duration-1000"
@@ -72,6 +74,7 @@ export const SwiperHeroCarousel: React.FC<SwiperHeroCarouselProps> = ({
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-zinc-900 via-zinc-950 to-orange-950/40" />
                 )}
+
                 {/* Overlay Gradients */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/60 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/80 to-transparent" />

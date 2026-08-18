@@ -10,7 +10,9 @@ import { SwiperAnimeSlider } from '../components/anime/SwiperAnimeSlider';
 import { ScheduleRow } from '../components/anime/ScheduleRow';
 import { AnimeGrid } from '../components/anime/AnimeGrid';
 import { HeroSkeleton, CardSkeleton } from '../components/ui/Skeleton';
+import { LazyImage } from '../components/ui/LazyImage';
 import { useWatch } from '../context/WatchContext';
+
 import { useDataSource } from '../context/DataSourceContext';
 import { Sparkles, Flame, Tv, Play, ChevronRight, History } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -118,8 +120,9 @@ export const HomePage: React.FC = () => {
               >
                 <div className="w-12 h-16 rounded-lg overflow-hidden bg-zinc-900 shrink-0 relative">
                   {item.image ? (
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <LazyImage src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                   ) : null}
+
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                     <Play className="w-4 h-4 text-white fill-white" />
                   </div>

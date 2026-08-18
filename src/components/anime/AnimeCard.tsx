@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Play, Star, Bookmark, Check, Film, Tv } from 'lucide-react';
 import { Anime, WatchlistStatus } from '../../types';
 import { Badge } from '../ui/Badge';
+import { LazyImage } from '../ui/LazyImage';
 import { useWatch } from '../../context/WatchContext';
+
 import { useTitleLanguage } from '../../context/TitleLanguageContext';
 
 interface AnimeCardProps {
@@ -75,20 +77,12 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
         onClick={handleClick}
         className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-850 cursor-pointer"
       >
-        {imageUrl && !imageError ? (
-          <img
-            src={imageUrl}
-            alt={title}
-            onError={() => setImageError(true)}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-800 text-zinc-500">
-            <Film className="w-8 h-8 mb-1" />
-            <span className="text-[10px]">No Poster</span>
-          </div>
-        )}
+        <LazyImage
+          src={imageUrl}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+
 
         {/* Gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
