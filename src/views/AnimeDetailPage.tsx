@@ -32,7 +32,7 @@ import { AnimeRelationsList } from '../components/anime/AnimeRelationsList';
 import { TrailerSection } from '../components/anime/TrailerSection';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
-import { Skeleton } from '../components/ui/Skeleton';
+import { Skeleton, DetailPageSkeleton } from '../components/ui/Skeleton';
 import { TitleLanguageToggle } from '../components/ui/TitleLanguageToggle';
 import { useWatch } from '../context/WatchContext';
 import { useTitleLanguage } from '../context/TitleLanguageContext';
@@ -175,18 +175,12 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse pb-16">
-        <Skeleton className="w-full h-80 rounded-2xl" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <Skeleton className="h-64 rounded-xl" />
-            <Skeleton className="h-48 rounded-xl" />
-          </div>
-          <Skeleton className="h-96 rounded-xl" />
-        </div>
+      <div className="pb-16 pt-2">
+        <DetailPageSkeleton />
       </div>
     );
   }
+
 
   if (error || !anime) {
     return (

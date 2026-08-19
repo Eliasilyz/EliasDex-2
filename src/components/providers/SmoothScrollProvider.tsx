@@ -2,7 +2,7 @@
 
 import { ReactLenis, useLenis } from 'lenis/react';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import type { LenisRef } from 'lenis/react';
 
 interface SmoothScrollProviderProps {
@@ -22,24 +22,25 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
     }
   }, [pathname]);
 
+  const lenisOptions = useMemo(
+    () => ({
+      lerp: 0.15, // Snappy & lightweight damping (eliminates sluggish drag/heavy inertia)
+      smoothWheel: true,
+      syncTouch: false, // 100% native responsive 120fps touch scroll on mobile/trackpads
+      wheelMultiplier: 1.15, // Responsive distance per scroll tick
+      touchMultiplier: 1,
+      autoResize: true,
+      allowNestedScroll: true,
+    }),
+    []
+  );
+
+
   return (
     <ReactLenis
       ref={lenisRef}
       root
-      options={{
-        lerp: 0.1, // Pure lerp damping (omits duration to prevent animation lock on rapid direction change)
-        wheelMultiplier: 1,
-        touchMultiplier: 1,
-        smoothWheel: true,
-        syncTouch: false,
-        autoRaf: true,
-        prevent: (node: HTMLElement) => {
-          return (
-            node.hasAttribute('data-lenis-prevent') ||
-            Boolean(node.closest?.('[data-lenis-prevent]'))
-          );
-        },
-      }}
+      options={lenisOptions}
     >
       {children}
     </ReactLenis>
@@ -47,3 +48,4 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
 }
 
 export { useLenis };
+

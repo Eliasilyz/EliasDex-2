@@ -84,8 +84,12 @@ export function constructMetadata({
         'max-snippet': -1,
       },
     },
+    other: {
+      'darkreader-lock': '',
+    },
   };
 }
+
 
 export function generateAnimeJsonLd(anime: Anime) {
   const imageUrl =

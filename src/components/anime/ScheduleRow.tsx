@@ -5,6 +5,7 @@ import { getUnifiedSchedule } from '../../lib/animeApi';
 import { useDataSource } from '../../context/DataSourceContext';
 import { getFallbackSchedule } from '../../lib/fallbackData';
 import { Skeleton } from '../ui/Skeleton';
+import { PhantomLoader } from '../ui/PhantomLoader';
 
 const DAYS = [
   { id: 'monday', label: 'Monday', short: 'Mon' },
@@ -139,21 +140,21 @@ export const ScheduleRow: React.FC<{
         >
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="w-64 shrink-0 rounded-2xl bg-zinc-900/60 border border-zinc-800 p-3 space-y-3"
-              >
-                <div className="flex gap-3">
-                  <Skeleton className="w-16 h-22 rounded-xl shrink-0" />
-                  <div className="flex-1 space-y-2 py-1">
-                    <Skeleton className="h-4 w-4/5" />
-                    <Skeleton className="h-3 w-1/2" />
-                    <Skeleton className="h-3 w-2/3" />
+              <PhantomLoader key={i} loading className="shrink-0">
+                <div className="w-64 rounded-2xl bg-zinc-900/80 border border-zinc-800 p-3 space-y-3">
+                  <div className="flex gap-3">
+                    <div className="w-16 h-22 rounded-xl bg-zinc-800 shrink-0" />
+                    <div className="flex-1 space-y-2 py-1">
+                      <div className="h-4 w-4/5 rounded bg-zinc-800" />
+                      <div className="h-3 w-1/2 rounded bg-zinc-800/70" />
+                      <div className="h-3 w-2/3 rounded bg-zinc-800/70" />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </PhantomLoader>
             ))
           ) : scheduleItems.length > 0 ? (
+
             scheduleItems.map((anime) => {
               const img =
                 anime.images?.webp?.image_url ||

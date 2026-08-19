@@ -96,9 +96,12 @@ export async function fetchAniListGraphQL<T = any>(
 
     return data;
   } catch (err: any) {
-    console.warn('[AniList GraphQL fetch error]', err.message || err);
+    if (err?.name !== 'AbortError' && !err?.message?.includes('aborted')) {
+      console.warn('[AniList GraphQL fetch error]', err.message || err);
+    }
     throw err;
   }
+
 }
 
 /**

@@ -27,7 +27,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${plusJakartaSans.variable} ${outfit.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <meta name="darkreader-lock" />
+      </head>
       <body
+
         className="bg-[#09090b] text-zinc-100 antialiased selection:bg-orange-600 selection:text-white min-h-screen"
         suppressHydrationWarning
       >
