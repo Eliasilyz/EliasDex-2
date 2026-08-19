@@ -178,8 +178,8 @@ export async function fetchJikan<T>(
       return { data: getFallbackExternalLinks(malId) } as unknown as T;
     }
     if (cleanPath.includes('/episodes')) {
-      const malId = parseInt(cleanPath.split('/')[1], 10) || 1;
-      return { data: generateFallbackEpisodes(malId, 24), pagination: { last_visible_page: 1, has_next_page: false, current_page: 1 } } as unknown as T;
+      // Return empty — EpisodeList will use anime.episodes + anime.status to show correct count
+      return { data: [], pagination: { last_visible_page: 1, has_next_page: false, current_page: 1 } } as unknown as T;
     }
     if (cleanPath.startsWith('anime/')) {
       const malId = parseInt(cleanPath.split('/')[1], 10) || 1;
@@ -378,13 +378,20 @@ export async function getAnimeEpisodes(
     const json = await fetchJikan<any>(`anime/${malId}/episodes`, { page }, 21600);
     const parsed = JikanEpisodesResponseSchema.safeParse(json);
     if (!parsed.success) {
-      return { data: json?.data || generateFallbackEpisodes(malId, 24), pagination: json?.pagination };
+      const data = json?.data && Array.isArray(json.data) && json.data.length > 0
+        ? json.data
+        : generateFallbackEpisodes(malId, 12);
+      return { data, pagination: json?.pagination };
+    }
+    if (!parsed.data.data || parsed.data.data.length === 0) {
+      return { data: generateFallbackEpisodes(malId, 12) };
     }
     return parsed.data;
   } catch {
-    return { data: generateFallbackEpisodes(malId, 24) };
+    return { data: generateFallbackEpisodes(malId, 12) };
   }
 }
+
 
 /**
  * Get anime genres list (24h cache)

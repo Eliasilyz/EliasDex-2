@@ -16,20 +16,21 @@ export const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) =
 export const AnimeCardSkeleton: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <PhantomLoader loading className={`w-full ${className}`}>
-      <div className="flex flex-col gap-2.5 w-full p-2 rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
-        {/* Poster image box */}
-        <div className="relative aspect-[3/4] w-full rounded-xl bg-zinc-800/80 overflow-hidden">
-          <div className="w-full h-full" />
-        </div>
-        {/* Title line */}
-        <div className="space-y-1.5 px-0.5">
-          <div className="h-4 w-4/5 rounded-md bg-zinc-700/70 font-semibold text-xs truncate">
-            Anime Title Placeholder
+      <div className="flex flex-col h-full rounded-2xl bg-zinc-900/50 border border-zinc-800/80 overflow-hidden">
+        {/* Full bleed poster image box matching AnimeCard */}
+        <div className="relative aspect-[3/4] w-full bg-zinc-800/80 overflow-hidden" />
+
+        {/* Content Footer matching AnimeCard */}
+        <div className="p-3 flex flex-col flex-1 justify-between gap-2">
+          <div className="space-y-1.5">
+            <div className="h-4 w-4/5 rounded bg-zinc-750 font-semibold text-xs" />
+            <div className="h-4 w-3/5 rounded bg-zinc-750/70 text-xs" />
+            <div className="h-3 w-1/2 rounded bg-zinc-800 text-[11px]" />
           </div>
-          {/* Meta info line */}
-          <div className="flex items-center justify-between gap-2 pt-0.5">
-            <div className="h-3 w-16 rounded-md bg-zinc-700/50 text-[10px]">TV Series</div>
-            <div className="h-3 w-10 rounded-md bg-zinc-700/50 text-[10px]">★ 8.5</div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60">
+            <div className="h-3 w-16 rounded bg-zinc-800" />
+            <div className="h-3 w-12 rounded bg-zinc-800" />
           </div>
         </div>
       </div>
@@ -96,39 +97,126 @@ export const ScheduleRowSkeleton: React.FC = () => {
 
 export const DetailPageSkeleton: React.FC = () => {
   return (
-    <PhantomLoader loading className="w-full space-y-8">
-      {/* Hero / Banner */}
-      <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden bg-zinc-900/80 border border-zinc-800 p-6 flex flex-col justify-end">
-        <div className="h-8 w-1/3 rounded-lg bg-zinc-800 font-bold text-xl">Anime Title</div>
+    <PhantomLoader loading className="w-full space-y-6 pb-20">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2">
+        <div className="h-3 w-10 rounded bg-zinc-800" />
+        <div className="h-3 w-3 rounded bg-zinc-800/60" />
+        <div className="h-3 w-8 rounded bg-zinc-800" />
+        <div className="h-3 w-3 rounded bg-zinc-800/60" />
+        <div className="h-3 w-28 rounded bg-zinc-800" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Left column / poster info */}
-        <div className="space-y-4">
-          <div className="w-full aspect-[3/4] rounded-2xl bg-zinc-900 border border-zinc-800" />
-          <div className="h-11 w-full rounded-xl bg-zinc-800 text-center font-medium">Watch Online</div>
-          <div className="h-11 w-full rounded-xl bg-zinc-800/80 text-center font-medium">Add to Watchlist</div>
+      {/* Hero Showcase Banner */}
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800">
+        {/* Blurred bg tint */}
+        <div className="absolute inset-0 bg-zinc-900/70" />
+
+        <div className="relative z-10 p-4 sm:p-7 flex flex-col md:flex-row gap-5 sm:gap-7 items-start">
+          {/* Left: Poster + Buttons */}
+          <div className="w-36 sm:w-48 md:w-56 shrink-0 mx-auto md:mx-0 flex flex-col gap-3">
+            <div className="aspect-[3/4] w-full rounded-2xl bg-zinc-800/90 border-2 border-zinc-700/60" />
+            <div className="hidden md:flex flex-col gap-2 w-full">
+              <div className="h-10 w-full rounded-xl bg-zinc-700/80" />
+              <div className="h-9 w-full rounded-xl bg-zinc-800/70 border border-zinc-700/50" />
+            </div>
+          </div>
+
+          {/* Right: Metadata */}
+          <div className="flex-1 space-y-3.5 min-w-0">
+            {/* Title */}
+            <div className="space-y-2">
+              <div className="h-7 w-2/3 rounded-lg bg-zinc-700/80" />
+              <div className="h-4 w-1/3 rounded bg-zinc-800/70" />
+            </div>
+
+            {/* Streaming badges */}
+            <div className="flex flex-wrap gap-1.5">
+              {[48, 36, 64, 64, 40, 56].map((w, i) => (
+                <div key={i} className="h-5 rounded bg-zinc-800 border border-zinc-700/50" style={{ width: w }} />
+              ))}
+            </div>
+
+            {/* Mobile watch buttons */}
+            <div className="flex md:hidden gap-2 pt-1">
+              <div className="h-8 flex-1 rounded-xl bg-zinc-700/80" />
+              <div className="h-8 w-20 rounded-xl bg-zinc-800/60 border border-zinc-750" />
+            </div>
+
+            {/* Synopsis lines */}
+            <div className="space-y-2 pt-1">
+              <div className="h-3.5 w-full rounded bg-zinc-800" />
+              <div className="h-3.5 w-full rounded bg-zinc-800" />
+              <div className="h-3.5 w-4/5 rounded bg-zinc-800" />
+              <div className="h-3.5 w-3/5 rounded bg-zinc-800/70" />
+            </div>
+
+            {/* Quick specs grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-4 pt-3 border-t border-zinc-800/80">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="h-2.5 w-12 rounded bg-zinc-800/70" />
+                  <div className="h-3.5 w-20 rounded bg-zinc-800" />
+                </div>
+              ))}
+            </div>
+
+            {/* Genre tags */}
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              <div className="h-3 w-12 rounded bg-zinc-800/50" />
+              {[48, 60, 52, 44, 56].map((w, i) => (
+                <div key={i} className="h-5 rounded-md bg-zinc-900 border border-zinc-800" style={{ width: w }} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content: 8/4 grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        {/* Left col-span-8 */}
+        <div className="lg:col-span-8 space-y-5">
+          {/* Tab bar */}
+          <div className="flex items-center gap-1 p-1 bg-zinc-900/90 border border-zinc-800 rounded-xl">
+            <div className="h-8 w-32 rounded-lg bg-zinc-700/70" />
+            <div className="h-8 w-36 rounded-lg bg-zinc-800/50" />
+            <div className="h-8 w-44 rounded-lg bg-zinc-800/50" />
+            <div className="h-8 w-32 rounded-lg bg-zinc-800/50" />
+          </div>
+
+          {/* Episode rows */}
+          <div className="space-y-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-14 rounded-xl bg-zinc-900/70 border border-zinc-800/80"
+                style={{ opacity: 1 - i * 0.08 }}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Right column / metadata & synopsis */}
-        <div className="lg:col-span-3 space-y-5">
-          <div className="h-9 w-2/3 rounded-lg bg-zinc-800 text-2xl font-bold">
-            Anime Japanese and English Title
+        {/* Right col-span-4 */}
+        <div className="lg:col-span-4 space-y-5">
+          {/* Trailer card */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-4 space-y-3">
+            <div className="h-3.5 w-28 rounded bg-zinc-800" />
+            <div className="aspect-video w-full rounded-xl bg-zinc-800/80" />
           </div>
-          <div className="flex gap-2">
-            <span className="px-3 py-1 rounded-full bg-zinc-800 text-xs">Action</span>
-            <span className="px-3 py-1 rounded-full bg-zinc-800 text-xs">Fantasy</span>
-            <span className="px-3 py-1 rounded-full bg-zinc-800 text-xs">Adventure</span>
+
+          {/* Info card */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 space-y-3">
+            <div className="h-3.5 w-36 rounded bg-zinc-800 mb-3 pb-2 border-b border-zinc-800" />
+            <div className="space-y-2.5">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="h-3 w-16 rounded bg-zinc-800/70" />
+                  <div className="h-3 rounded bg-zinc-800" style={{ width: 60 + (i % 3) * 20 }} />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="space-y-2 pt-2">
-            <p className="text-sm text-zinc-400">
-              Detailed synopsis description goes here explaining the storyline, characters, world setting, and episode synopsis in full detail.
-            </p>
-            <p className="text-sm text-zinc-400">
-              Secondary paragraph giving additional information about studio production and voice actors.
-            </p>
-          </div>
-          <div className="h-64 w-full rounded-2xl bg-zinc-900 border border-zinc-800 mt-6" />
         </div>
       </div>
     </PhantomLoader>

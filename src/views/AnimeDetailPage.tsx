@@ -99,7 +99,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
         // Phase 1: Core anime details and episodes (primary view)
         const [animeRes, epData] = await Promise.all([
           getUnifiedAnimeById(malId, { source: dataSource }),
-          getUnifiedEpisodes(malId).catch(() => ({ data: [] })),
+          getUnifiedEpisodes(malId, { source: dataSource }).catch(() => ({ data: [] })),
         ]);
 
         if (!isMounted) return;
@@ -544,6 +544,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
                   malId={malId}
                   totalEpisodes={anime.episodes}
                   episodesData={episodes}
+                  animeStatus={anime.status}
                   currentEp={watchProgress?.episodeNumber || 1}
                   onSelectEpisode={(epNum) => onNavigate(`/watch/${malId}/${epNum}`)}
                 />

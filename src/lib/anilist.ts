@@ -352,6 +352,12 @@ const MEDIA_FIELDS = `
     airingAt
     timeUntilAiring
   }
+  streamingEpisodes {
+    title
+    thumbnail
+    url
+    site
+  }
 `;
 
 const ANILIST_PAGE_QUERY = `
@@ -907,6 +913,62 @@ export async function getAniListRecommendations(
 
   return recs;
 }
+
+/**
+ * Get anime episodes list from AniList (24h cache)
+ */
+export async function getAniListEpisodes(
+  id: number,
+  isMalId: boolean = true
+): Promise<AnimeEpisode[]> {
+  try {
+    const variables = isMalId ? { idMal: id } : { id };
+    const json = await fetchAniListGraphQL<any>(ANILIST_DETAIL_QUERY, variables, 86400);
+    const media = json?.Media;
+    if (!media) return [];
+
+    const streamEps = media.streamingEpisodes || [];
+
+    if (Array.isArray(streamEps) && streamEps.length > 0) {
+      return streamEps.map((ep: any, idx: number) => {
+        const rawTitle = ep.title || '';
+        const match = rawTitle.match(/Episode\s+(\d+)\s*-\s*(.+)/i) || rawTitle.match(/E(\d+)\s*-\s*(.+)/i);
+        const epNum = match ? parseInt(match[1], 10) : idx + 1;
+        const title = match ? match[2].trim() : rawTitle || `Episode ${epNum}`;
+
+        return {
+          mal_id: epNum,
+          title: title,
+          episode: `Episode ${epNum}`,
+          aired: undefined,
+          score: null,
+          filler: false,
+          recap: false,
+        };
+      });
+    }
+
+    // Fallback: If AniList streamingEpisodes is empty, build episode list from AniList episode metadata
+    const airedCount = media.nextAiringEpisode?.episode
+      ? media.nextAiringEpisode.episode - 1
+      : media.episodes || 12;
+
+    const count = Math.max(airedCount, 1);
+    return Array.from({ length: count }, (_, i) => ({
+      mal_id: i + 1,
+      title: `Episode ${i + 1}`,
+      episode: `Episode ${i + 1}`,
+      aired: undefined,
+      score: null,
+      filler: false,
+      recap: false,
+    }));
+  } catch (err) {
+    console.warn('[AniList getAniListEpisodes Error]', err);
+    return [];
+  }
+}
+
 
 /**
  * Static & dynamic list of AniList Genres

@@ -57,7 +57,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
 
     Promise.all([
       getUnifiedAnimeById(malId, { source: dataSource }),
-      getUnifiedEpisodes(malId).catch(() => ({ data: [] })),
+      getUnifiedEpisodes(malId, { source: dataSource }).catch(() => ({ data: [] })),
     ])
       .then(([animeRes, epData]) => {
         if (isMounted) {
@@ -112,8 +112,11 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [malId, epNum, anime]);
 
-  const maxEpisodes = Math.max(anime?.episodes || 0, episodes.length, epNum);
-  const hasNextEp = epNum < maxEpisodes || maxEpisodes === 0;
+  const isAiring = anime?.status === 'Currently Airing';
+  const maxEpisodes = isAiring && episodes.length > 0
+    ? Math.max(episodes.length, epNum)
+    : Math.max(anime?.episodes || 0, episodes.length, epNum);
+  const hasNextEp = epNum < maxEpisodes;
   const hasPrevEp = epNum > 1;
 
   const handleNextEp = () => {
@@ -275,6 +278,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
             malId={malId}
             totalEpisodes={anime?.episodes}
             episodesData={episodes}
+            animeStatus={anime?.status}
             currentEp={epNum}
             onSelectEpisode={(targetEpNum) => {
               onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`);

@@ -402,9 +402,38 @@ export async function getUnifiedAnimeById(
  */
 export async function getUnifiedEpisodes(
   malId: number,
-  page: number = 1
+  options?: UnifiedQueryOptions & { page?: number }
 ): Promise<{ data: AnimeEpisode[]; pagination?: Pagination }> {
-  return await jikanApi.getAnimeEpisodes(malId, page);
+  const source = options?.source || 'auto';
+  const page = options?.page || 1;
+
+  if (source === 'jikan') {
+    try {
+      const res = await jikanApi.getAnimeEpisodes(malId, page);
+      if (res.data && res.data.length > 0) return res;
+    } catch (err) {
+      console.warn('[Jikan Episodes Error]', err);
+    }
+  }
+
+  // Primary: Try AniList GraphQL API (Fast, high-rate-limit, accurate episode list)
+  try {
+    const list = await anilistApi.getAniListEpisodes(malId, true);
+    if (list && list.length > 0) return { data: list };
+  } catch (err) {
+    console.warn('[AniList Episodes Error, trying Jikan]', err);
+  }
+
+  // Failover: Try Jikan API
+  try {
+    const res = await jikanApi.getAnimeEpisodes(malId, page);
+    if (res.data && res.data.length > 0) return res;
+  } catch (err) {
+    console.warn('[Jikan Episodes Error, using Fallback]', err);
+  }
+
+  // Fallback Generator
+  return { data: generateFallbackEpisodes(malId, 12) };
 }
 
 /**
