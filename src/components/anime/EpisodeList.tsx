@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Play, Check, Search, LayoutGrid, List, Sparkles } from 'lucide-react';
+import { Play, Check, Search, LayoutGrid, List, Sparkles, Clock } from 'lucide-react';
 import { AnimeEpisode } from '../../types';
 import { Badge } from '../ui/Badge';
 
@@ -7,6 +7,8 @@ interface EpisodeListProps {
   malId: number;
   totalEpisodes?: number | null;
   episodesData?: AnimeEpisode[];
+  /** Pass anime.status so we know if it's airing */
+  animeStatus?: string | null;
   currentEp?: number;
   onSelectEpisode: (epNum: number) => void;
   watchedEpisodes?: number[];
@@ -17,6 +19,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
   malId,
   totalEpisodes,
   episodesData = [],
+  animeStatus,
   currentEp = 1,
   onSelectEpisode,
   watchedEpisodes = [],
@@ -26,30 +29,50 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedRangeIndex, setSelectedRangeIndex] = useState(0);
 
-  // Compute episode count
-  const count = Math.max(
-    totalEpisodes || 0,
-    episodesData.length,
-    currentEp || 1
+  const isAiring = animeStatus === 'Currently Airing';
+
+  const apiCount = useMemo(
+    () => episodesData.filter((ep) => ep.mal_id > 0).length,
+    [episodesData]
   );
 
-  // Create episode items array
+  /**
+   * Episode count to display:
+   * - If Currently Airing AND API has aired episodes: ONLY show aired episodes (apiCount).
+   * - If Finished Airing or no API data yet: show totalEpisodes or apiCount.
+   */
+  const count = useMemo(() => {
+    if (isAiring && apiCount > 0) {
+      return Math.max(apiCount, currentEp || 1);
+    }
+    const val = Math.max(totalEpisodes || 0, apiCount, currentEp || 1);
+    return val > 0 ? val : 12;
+  }, [totalEpisodes, apiCount, isAiring, currentEp]);
+
+  // Create episode items array for aired episodes only
   const allEpisodes = useMemo(() => {
     const list: Array<{
       epNum: number;
-      title?: string;
+      title: string;
       titleJapanese?: string;
       aired?: string;
       filler?: boolean;
     }> = [];
 
     for (let i = 1; i <= count; i++) {
-      const metadata = episodesData.find((ep) => ep.mal_id === i || ep.mal_id === i);
+      const metadata = episodesData.find((ep) => ep.mal_id === i);
+      const hasRealTitle = !!metadata?.title && metadata.title !== `Episode ${i}`;
+
+      let formattedDate: string | undefined = undefined;
+      if (metadata?.aired) {
+        formattedDate = metadata.aired.includes('T') ? metadata.aired.split('T')[0] : metadata.aired;
+      }
+
       list.push({
         epNum: i,
-        title: metadata?.title || `Episode ${i}`,
+        title: hasRealTitle ? metadata!.title : `Episode ${i}`,
         titleJapanese: metadata?.title_japanese || undefined,
-        aired: metadata?.aired || undefined,
+        aired: formattedDate,
         filler: metadata?.filler || false,
       });
     }
@@ -105,8 +128,14 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-orange-400" />
           <h3 className="text-base font-bold text-white font-heading">
-            Episodes ({count})
+            Episodes ({count}{isAiring && totalEpisodes && totalEpisodes > count ? `/${totalEpisodes}` : ''})
           </h3>
+          {isAiring && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Airing
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -174,10 +203,11 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
 
       {/* Episodes Rendering: Grid View */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-10 gap-2 max-h-[380px] overflow-y-auto pr-1">
+        <div data-lenis-prevent className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-10 gap-2 max-h-[380px] overflow-y-auto pr-1">
           {filteredEpisodes.map((ep) => {
             const isCurrent = currentEp === ep.epNum;
             const isWatched = watchedEpisodes.includes(ep.epNum) || ep.epNum < currentEp;
+            const hasTitle = ep.title && ep.title !== `Episode ${ep.epNum}`;
 
             return (
               <button
@@ -192,7 +222,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
                     ? 'bg-zinc-800/90 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:border-orange-500/50'
                     : 'bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800 hover:text-white'
                 }`}
-                title={`Episode ${ep.epNum}: ${ep.title}`}
+                title={hasTitle ? `Ep ${ep.epNum}: ${ep.title}` : `Episode ${ep.epNum}`}
               >
                 {isCurrent && (
                   <Play className="w-2.5 h-2.5 fill-white text-white absolute left-1.5 top-1.5" />
@@ -209,10 +239,11 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
 
       {/* Episodes Rendering: Detailed List View */}
       {viewMode === 'list' && (
-        <div className="space-y-1.5 max-h-[380px] overflow-y-auto pr-1 divide-y divide-zinc-800/40">
+        <div data-lenis-prevent className="space-y-1 max-h-[380px] overflow-y-auto pr-1">
           {filteredEpisodes.map((ep) => {
             const isCurrent = currentEp === ep.epNum;
             const isWatched = watchedEpisodes.includes(ep.epNum) || ep.epNum < currentEp;
+            const hasRealTitle = ep.title && ep.title !== `Episode ${ep.epNum}`;
 
             return (
               <button
@@ -220,7 +251,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
                 id={`ep-list-item-${ep.epNum}`}
                 type="button"
                 onClick={() => onSelectEpisode(ep.epNum)}
-                className={`w-full px-3.5 py-2.5 rounded-xl text-left flex items-center justify-between gap-3 transition-colors cursor-pointer ${
+                className={`w-full px-3 py-2.5 rounded-xl text-left flex items-center justify-between gap-3 transition-colors cursor-pointer ${
                   isCurrent
                     ? 'bg-orange-600/20 border border-orange-500/40 text-white'
                     : 'hover:bg-zinc-800/80 text-zinc-300'
@@ -237,26 +268,35 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
                     {isCurrent ? <Play className="w-3.5 h-3.5 fill-white" /> : ep.epNum}
                   </div>
                   <div className="min-w-0">
-                    <p className={`text-xs sm:text-sm font-medium truncate ${isCurrent ? 'text-orange-300' : 'text-zinc-200'}`}>
+                    <p className={`text-xs sm:text-sm font-semibold truncate ${
+                      isCurrent ? 'text-orange-300' : hasRealTitle ? 'text-zinc-100' : 'text-zinc-300'
+                    }`}>
                       {ep.title}
                     </p>
-                    {ep.aired && (
-                      <p className="text-[10px] text-zinc-500">{ep.aired}</p>
-                    )}
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {ep.aired && (
+                        <p className="text-[10px] text-zinc-500 font-mono">{ep.aired}</p>
+                      )}
+                      {ep.titleJapanese && (
+                        <p className="text-[10px] text-zinc-600 truncate max-w-[140px]">{ep.titleJapanese}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-1.5 shrink-0">
                   {ep.filler && (
-                    <Badge variant="warning" size="sm">
-                      Filler
-                    </Badge>
+                    <Badge variant="warning" size="sm">Filler</Badge>
                   )}
-                  {isWatched && (
+                  {isWatched ? (
                     <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-mono">
-                      <Check className="w-3 h-3" /> Watched
+                      <Check className="w-3 h-3" />
                     </span>
-                  )}
+                  ) : isCurrent ? (
+                    <span className="flex items-center gap-1 text-[10px] text-orange-400 font-mono">
+                      <Play className="w-3 h-3 fill-orange-400" />
+                    </span>
+                  ) : null}
                 </div>
               </button>
             );

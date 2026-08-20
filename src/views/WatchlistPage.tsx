@@ -70,36 +70,38 @@ export const WatchlistPage: React.FC = () => {
 
       {/* Items Grid */}
       {filteredItems.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4 lg:gap-5">
           {filteredItems.map((item) => {
             const lastEp = item.lastWatchedEpisode || 1;
             return (
               <div
                 key={item.malId}
-                className="group relative flex flex-col rounded-2xl bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700 overflow-hidden transition-all"
+                className="group relative flex flex-col h-full rounded-2xl bg-zinc-900/50 border border-zinc-800/80 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 overflow-hidden"
               >
                 {/* Poster */}
                 <div
                   onClick={() => onNavigate(`/anime/${item.malId}`)}
-                  className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-850 cursor-pointer"
+                  className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-950 cursor-pointer"
                 >
-                  {item.image ? (
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : null}
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+
+                  {/* Subtle gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent opacity-80 pointer-events-none" />
 
                   {/* Play CTA Overlay */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="absolute inset-0 bg-zinc-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onNavigate(`/watch/${item.malId}/${lastEp}`);
                       }}
-                      className="w-12 h-12 rounded-full bg-orange-600 hover:bg-orange-500 text-white flex items-center justify-center shadow-lg cursor-pointer"
+                      className="w-12 h-12 rounded-full bg-orange-600 hover:bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-600/40 scale-90 group-hover:scale-100 transition-all cursor-pointer"
                       title={`Play Episode ${lastEp}`}
                     >
                       <Play className="w-5 h-5 fill-white ml-0.5" />
@@ -107,24 +109,26 @@ export const WatchlistPage: React.FC = () => {
                   </div>
 
                   {/* Status Badge */}
-                  <div className="absolute top-2.5 left-2.5">
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-zinc-900/80 backdrop-blur-md text-orange-300 border border-orange-500/30">
+                  <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono uppercase font-bold tracking-wider bg-zinc-950/80 backdrop-blur-md text-orange-300 border border-orange-500/30">
                       {item.status.replace('_', ' ')}
                     </span>
                   </div>
 
                   {/* Score */}
                   {item.score && (
-                    <div className="absolute top-2.5 right-2.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-zinc-900/80 backdrop-blur-md text-amber-400">
-                      <Star className="w-2.5 h-2.5 fill-amber-400" />
-                      {item.score}
+                    <div className="absolute top-2.5 right-2.5 z-10 pointer-events-none">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-zinc-950/80 backdrop-blur-md text-amber-400 border border-white/10">
+                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                        {typeof item.score === 'number' ? item.score.toFixed(1) : item.score}
+                      </span>
                     </div>
                   )}
 
                   {/* Last watched indicator */}
                   {item.lastWatchedEpisode && (
-                    <div className="absolute bottom-2.5 left-2.5">
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-orange-950/90 border border-orange-500/30 text-orange-300">
+                    <div className="absolute bottom-2.5 right-2.5 z-10 pointer-events-none">
+                      <span className="px-2 py-0.5 rounded-md bg-orange-950/90 border border-orange-500/50 backdrop-blur-md text-orange-400 font-bold font-mono text-[10px]">
                         EP {item.lastWatchedEpisode}
                       </span>
                     </div>
@@ -132,15 +136,21 @@ export const WatchlistPage: React.FC = () => {
                 </div>
 
                 {/* Info */}
-                <div className="p-3 flex flex-col justify-between flex-1 gap-2">
-                  <h3
-                    onClick={() => onNavigate(`/anime/${item.malId}`)}
-                    className="text-xs font-semibold text-white hover:text-orange-400 transition-colors line-clamp-2 cursor-pointer leading-snug"
-                  >
-                    {item.title}
-                  </h3>
+                <div className="p-3 flex flex-col flex-1 justify-between gap-2">
+                  <div className="space-y-1">
+                    <h3
+                      onClick={() => onNavigate(`/anime/${item.malId}`)}
+                      className="text-xs sm:text-sm font-semibold text-zinc-100 hover:text-orange-400 transition-colors line-clamp-2 cursor-pointer leading-snug min-h-[2.4rem] flex items-start"
+                      title={item.title}
+                    >
+                      {item.title}
+                    </h3>
+                    <p className="text-[11px] text-zinc-400 truncate h-4">
+                      {item.type || 'Anime'}
+                    </p>
+                  </div>
 
-                  <div className="flex items-center justify-between pt-1 border-t border-zinc-800/60 text-xs">
+                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 text-xs">
                     <button
                       type="button"
                       onClick={() => onNavigate(`/watch/${item.malId}/${lastEp}`)}
@@ -153,7 +163,7 @@ export const WatchlistPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => removeFromWatchlist(item.malId)}
-                      className="p-1 rounded-md text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
+                      className="p-1 rounded-md text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
                       title="Remove from Watchlist"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

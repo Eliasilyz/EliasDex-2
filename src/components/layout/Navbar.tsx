@@ -21,11 +21,16 @@ const ClientOnly = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const Navbar: React.FC = () => {
+  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { watchlist, history } = useWatch();
   const pathname = usePathname();
   const currentPath = pathname || '/';
   const onNavigate = useAppNavigate();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleNav = (path: string) => {
     setMobileMenuOpen(false);
@@ -37,9 +42,10 @@ export const Navbar: React.FC = () => {
     { label: 'Top Anime', path: '/top', icon: Flame },
     { label: 'Schedule', path: '/schedule', icon: Calendar },
     { label: 'Browse', path: '/browse', icon: Compass },
-    { label: 'Watchlist', path: '/watchlist', icon: Bookmark, count: watchlist.length },
-    { label: 'History', path: '/history', icon: History, count: history.length },
+    { label: 'Watchlist', path: '/watchlist', icon: Bookmark, count: mounted ? watchlist.length : 0 },
+    { label: 'History', path: '/history', icon: History, count: mounted ? history.length : 0 },
   ];
+
 
   const isActive = (path: string) => {
     if (path === '/' && (currentPath === '/' || currentPath === '')) return true;
@@ -48,8 +54,9 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl transition-all" suppressHydrationWarning>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning>
+
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
           <button
@@ -69,8 +76,9 @@ export const Navbar: React.FC = () => {
           </button>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1" suppressHydrationWarning>
             {navLinks.map((link) => {
+
               const Icon = link.icon;
               const active = isActive(link.path);
               return (

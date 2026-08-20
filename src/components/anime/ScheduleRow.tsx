@@ -5,6 +5,7 @@ import { getUnifiedSchedule } from '../../lib/animeApi';
 import { useDataSource } from '../../context/DataSourceContext';
 import { getFallbackSchedule } from '../../lib/fallbackData';
 import { Skeleton } from '../ui/Skeleton';
+import { PhantomLoader } from '../ui/PhantomLoader';
 
 const DAYS = [
   { id: 'monday', label: 'Monday', short: 'Mon' },
@@ -113,11 +114,11 @@ export const ScheduleRow: React.FC<{
 
       {/* Schedule Items Carousel Container */}
       <div className="relative group/carousel">
-        {/* Left / Right Nav Arrows */}
+        {/* Left / Right Nav Arrows (visible on sm+ screens to prevent mobile overflow) */}
         <button
           type="button"
           onClick={() => handleScroll('left')}
-          className="absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
+          className="hidden sm:flex absolute -left-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
           aria-label="Scroll left"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -126,7 +127,7 @@ export const ScheduleRow: React.FC<{
         <button
           type="button"
           onClick={() => handleScroll('right')}
-          className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
+          className="hidden sm:flex absolute -right-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 border border-zinc-700 text-white shadow-xl items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:bg-zinc-800 cursor-pointer"
           aria-label="Scroll right"
         >
           <ChevronRight className="w-5 h-5" />
@@ -139,21 +140,21 @@ export const ScheduleRow: React.FC<{
         >
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="w-64 shrink-0 rounded-2xl bg-zinc-900/60 border border-zinc-800 p-3 space-y-3"
-              >
-                <div className="flex gap-3">
-                  <Skeleton className="w-16 h-22 rounded-xl shrink-0" />
-                  <div className="flex-1 space-y-2 py-1">
-                    <Skeleton className="h-4 w-4/5" />
-                    <Skeleton className="h-3 w-1/2" />
-                    <Skeleton className="h-3 w-2/3" />
+              <PhantomLoader key={i} loading className="shrink-0">
+                <div className="w-64 rounded-2xl bg-zinc-900/80 border border-zinc-800 p-3 space-y-3">
+                  <div className="flex gap-3">
+                    <div className="w-16 h-22 rounded-xl bg-zinc-800 shrink-0" />
+                    <div className="flex-1 space-y-2 py-1">
+                      <div className="h-4 w-4/5 rounded bg-zinc-800" />
+                      <div className="h-3 w-1/2 rounded bg-zinc-800/70" />
+                      <div className="h-3 w-2/3 rounded bg-zinc-800/70" />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </PhantomLoader>
             ))
           ) : scheduleItems.length > 0 ? (
+
             scheduleItems.map((anime) => {
               const img =
                 anime.images?.webp?.image_url ||
@@ -168,7 +169,7 @@ export const ScheduleRow: React.FC<{
                 <div
                   key={anime.mal_id}
                   id={`schedule-card-${anime.mal_id}`}
-                  className="w-72 shrink-0 rounded-2xl bg-zinc-900/60 hover:bg-zinc-850/80 border border-zinc-800/80 hover:border-zinc-700 p-3 transition-all flex flex-col justify-between group hover:shadow-lg hover:shadow-orange-950/20"
+                  className="w-[260px] sm:w-72 shrink-0 rounded-2xl bg-zinc-900/60 hover:bg-zinc-850/80 border border-zinc-800/80 hover:border-zinc-700 p-3 transition-all flex flex-col justify-between group hover:shadow-lg hover:shadow-orange-950/20"
                 >
                   <div className="flex gap-3">
                     <div

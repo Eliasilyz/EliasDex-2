@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
+@import "@aejkatappaja/phantom-ui/ssr.css";
 
 @layer base {
   :root {
@@ -6,14 +8,28 @@
     --font-heading: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
   }
 
+  html {
+    scroll-behavior: auto !important;
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
   body {
     font-family: var(--font-sans);
+    overflow-x: hidden;
+    max-width: 100%;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
   }
 }
+
 
 ::-webkit-scrollbar {
   width: 7px;
@@ -61,3 +77,50 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* LazySizes Smooth Blur-Up Fade-In */
+.lazyload,
+.lazyloading {
+  opacity: 0;
+  filter: blur(8px);
+  transition: opacity 0.4s ease-out, filter 0.4s ease-out;
+}
+
+.lazyloaded {
+  opacity: 1;
+  filter: blur(0);
+  transition: opacity 0.4s ease-out, filter 0.4s ease-out;
+}
+
+/* Phantom Shimmer System */
+@keyframes phantom-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  60%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+.phantom-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.phantom-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  animation: phantom-sweep 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+

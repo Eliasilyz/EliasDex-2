@@ -1,0 +1,41 @@
+{
+  "name": "EliasDex AnimeStream",
+  "short_name": "EliasDex",
+  "description": "Minimalist, modern, and fast anime browsing and streaming web application.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#f97316",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "anime", "video"],
+  "shortcuts": [
+    {
+      "name": "Browse Anime",
+      "short_name": "Browse",
+      "description": "Explore popular anime",
+      "url": "/browse",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Watchlist",
+      "short_name": "Watchlist",
+      "description": "View saved anime",
+      "url": "/watchlist",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

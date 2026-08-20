@@ -72,11 +72,11 @@ export const GlobalMusicPlayer: React.FC = () => {
       {/* 2. Floating Bottom Music Player Bar */}
       <div
         id="global-music-player-bar"
-        className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl transition-all duration-300 ${
-          isMinimized ? 'translate-y-20 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+        className={`fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300 ${
+          isMinimized ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
         }`}
       >
-        <div className="bg-zinc-950/95 backdrop-blur-xl border border-zinc-750 shadow-2xl rounded-2xl p-3 sm:p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-white ring-1 ring-white/10">
+        <div className="bg-zinc-950/95 backdrop-blur-xl border border-zinc-750 shadow-2xl rounded-2xl p-2.5 sm:p-3.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 text-white ring-1 ring-white/10">
           {/* Left Track Info */}
           <div className="flex items-center gap-3 w-full sm:w-auto min-w-0 flex-1">
             {/* Spinning Vinyl / Poster */}
@@ -135,108 +135,111 @@ export const GlobalMusicPlayer: React.FC = () => {
             </div>
           </div>
 
-          {/* Center Playback Controls */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-            {/* Playback Mode (Loop / Shuffle) */}
-            <button
-              type="button"
-              onClick={handleToggleMode}
-              title={`Mode: ${playbackMode}`}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
-            >
-              {playbackMode === 'loop' && <Repeat className="w-3.5 h-3.5 text-zinc-300" />}
-              {playbackMode === 'loop-one' && <Repeat1 className="w-3.5 h-3.5 text-orange-400" />}
-              {playbackMode === 'shuffle' && <Shuffle className="w-3.5 h-3.5 text-orange-400" />}
-            </button>
-
-            {/* Prev Track */}
-            <button
-              type="button"
-              onClick={prevTrack}
-              disabled={!hasMultiple}
-              className={`p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer ${
-                !hasMultiple ? 'opacity-40 cursor-not-allowed' : ''
-              }`}
-              title="Previous Track"
-            >
-              <SkipBack className="w-4 h-4 fill-current" />
-            </button>
-
-            {/* Main Play/Pause Button */}
-            <button
-              type="button"
-              onClick={togglePlay}
-              className="w-9 h-9 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-orange-600/40 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-              title={isPlaying ? 'Pause' : 'Play'}
-            >
-              {isLoading ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : isPlaying ? (
-                <Pause className="w-4 h-4 fill-white" />
-              ) : (
-                <Play className="w-4 h-4 fill-white ml-0.5" />
-              )}
-            </button>
-
-            {/* Next Track */}
-            <button
-              type="button"
-              onClick={nextTrack}
-              disabled={!hasMultiple}
-              className={`p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer ${
-                !hasMultiple ? 'opacity-40 cursor-not-allowed' : ''
-              }`}
-              title="Next Track"
-            >
-              <SkipForward className="w-4 h-4 fill-current" />
-            </button>
-          </div>
-
-          {/* Right Action Tools */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Playlist Drawer Button */}
-            {playlist.length > 1 && (
+          {/* Mobile Bottom Controls Group (wraps controls + right actions in one row on small screens) */}
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0">
+            {/* Playback Controls */}
+            <div className="flex items-center gap-1.5 sm:gap-3">
+              {/* Playback Mode (Loop / Shuffle) */}
               <button
                 type="button"
-                onClick={() => setShowPlaylistDrawer(!showPlaylistDrawer)}
-                className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                  showPlaylistDrawer
-                    ? 'bg-orange-600 text-white border-orange-500'
-                    : 'bg-zinc-900 border-zinc-750 text-zinc-300 hover:text-white'
-                }`}
-                title="Playlist Tracks"
+                onClick={handleToggleMode}
+                title={`Mode: ${playbackMode}`}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
               >
-                <ListMusic className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline text-[11px]">{playlist.length}</span>
+                {playbackMode === 'loop' && <Repeat className="w-3.5 h-3.5 text-zinc-300" />}
+                {playbackMode === 'loop-one' && <Repeat1 className="w-3.5 h-3.5 text-orange-400" />}
+                {playbackMode === 'shuffle' && <Shuffle className="w-3.5 h-3.5 text-orange-400" />}
               </button>
-            )}
 
-            {/* Watch Video Mode Button */}
-            <button
-              type="button"
-              onClick={() => setShowVideoModal(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-400 hover:text-orange-300 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Watch Anime Opening / Ending Video"
-            >
-              <Tv className="w-3.5 h-3.5" />
-              <span className="text-[11px]">Video MV</span>
-            </button>
+              {/* Prev Track */}
+              <button
+                type="button"
+                onClick={prevTrack}
+                disabled={!hasMultiple}
+                className={`p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer ${
+                  !hasMultiple ? 'opacity-40 cursor-not-allowed' : ''
+                }`}
+                title="Previous Track"
+              >
+                <SkipBack className="w-4 h-4 fill-current" />
+              </button>
 
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={closePlayer}
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
-              title="Close Player"
-            >
-              <X className="w-4 h-4" />
-            </button>
+              {/* Main Play/Pause Button */}
+              <button
+                type="button"
+                onClick={togglePlay}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-orange-600/40 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                title={isPlaying ? 'Pause' : 'Play'}
+              >
+                {isLoading ? (
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : isPlaying ? (
+                  <Pause className="w-3.5 h-3.5 fill-white" />
+                ) : (
+                  <Play className="w-3.5 h-3.5 fill-white ml-0.5" />
+                )}
+              </button>
+
+              {/* Next Track */}
+              <button
+                type="button"
+                onClick={nextTrack}
+                disabled={!hasMultiple}
+                className={`p-1.5 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer ${
+                  !hasMultiple ? 'opacity-40 cursor-not-allowed' : ''
+                }`}
+                title="Next Track"
+              >
+                <SkipForward className="w-4 h-4 fill-current" />
+              </button>
+            </div>
+
+            {/* Right Action Tools */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Playlist Drawer Button */}
+              {playlist.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setShowPlaylistDrawer(!showPlaylistDrawer)}
+                  className={`p-1.5 sm:p-2 rounded-xl border text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+                    showPlaylistDrawer
+                      ? 'bg-orange-600 text-white border-orange-500'
+                      : 'bg-zinc-900 border-zinc-750 text-zinc-300 hover:text-white'
+                  }`}
+                  title="Playlist Tracks"
+                >
+                  <ListMusic className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline text-[11px]">{playlist.length}</span>
+                </button>
+              )}
+
+              {/* Watch Video Mode Button */}
+              <button
+                type="button"
+                onClick={() => setShowVideoModal(true)}
+                className="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-500/30 text-orange-400 hover:text-orange-300 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                title="Watch Anime Opening / Ending Video"
+              >
+                <Tv className="w-3.5 h-3.5" />
+                <span className="hidden xs:inline text-[11px]">Video MV</span>
+              </button>
+
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={closePlayer}
+                className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Close Player"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Playlist Quick Drawer */}
         {showPlaylistDrawer && playlist.length > 1 && (
-          <div className="mt-2 bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 rounded-2xl p-3 shadow-2xl space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
+          <div data-lenis-prevent className="mt-2 bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 rounded-2xl p-3 shadow-2xl space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between pb-1.5 border-b border-zinc-800 text-xs text-zinc-400">
               <span className="font-semibold text-zinc-200">Theme Songs Queue</span>
               <span>{playlist.length} Tracks</span>

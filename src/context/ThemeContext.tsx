@@ -13,17 +13,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<ThemeMode>(() => {
-    if (typeof window !== 'undefined') {
+  const [theme, setThemeState] = useState<ThemeMode>('dark');
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
+
+  // Load saved theme on mount
+  useEffect(() => {
+    try {
       const saved = localStorage.getItem('animestream_theme') as ThemeMode;
       if (saved && ['light', 'dark', 'system'].includes(saved)) {
-        return saved;
+        setThemeState(saved);
       }
-    }
-    return 'dark'; // default to dark for streaming theme
-  });
-
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
+    } catch {}
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -48,7 +49,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     applyTheme(theme);
-    localStorage.setItem('animestream_theme', theme);
+    try {
+      localStorage.setItem('animestream_theme', theme);
+    } catch {}
 
     // Listener for system preference changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');

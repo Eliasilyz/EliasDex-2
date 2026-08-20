@@ -15,21 +15,23 @@ const DataSourceContext = createContext<DataSourceContextType | undefined>(undef
 const DATA_SOURCE_STORAGE_KEY = 'animestream_datasource_preference';
 
 export const DataSourceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [dataSource, setDataSourceState] = useState<DataSource>(() => {
-    if (typeof window !== 'undefined') {
+  const [dataSource, setDataSourceState] = useState<DataSource>('auto');
+
+  // Load saved preference on mount
+  useEffect(() => {
+    try {
       const saved = localStorage.getItem(DATA_SOURCE_STORAGE_KEY) as DataSource;
       if (saved && ['auto', 'jikan', 'anilist'].includes(saved)) {
-        return saved;
+        setDataSourceState(saved);
       }
-    }
-    return 'auto';
-  });
+    } catch {}
+  }, []);
 
   const setDataSource = (source: DataSource) => {
     setDataSourceState(source);
-    if (typeof window !== 'undefined') {
+    try {
       localStorage.setItem(DATA_SOURCE_STORAGE_KEY, source);
-    }
+    } catch {}
   };
 
   const getSourceInfo = () => {

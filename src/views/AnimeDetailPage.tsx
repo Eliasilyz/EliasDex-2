@@ -32,7 +32,7 @@ import { AnimeRelationsList } from '../components/anime/AnimeRelationsList';
 import { TrailerSection } from '../components/anime/TrailerSection';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
-import { Skeleton } from '../components/ui/Skeleton';
+import { Skeleton, DetailPageSkeleton } from '../components/ui/Skeleton';
 import { TitleLanguageToggle } from '../components/ui/TitleLanguageToggle';
 import { useWatch } from '../context/WatchContext';
 import { useTitleLanguage } from '../context/TitleLanguageContext';
@@ -99,7 +99,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
         // Phase 1: Core anime details and episodes (primary view)
         const [animeRes, epData] = await Promise.all([
           getUnifiedAnimeById(malId, { source: dataSource }),
-          getUnifiedEpisodes(malId).catch(() => ({ data: [] })),
+          getUnifiedEpisodes(malId, { source: dataSource }).catch(() => ({ data: [] })),
         ]);
 
         if (!isMounted) return;
@@ -175,18 +175,12 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-pulse pb-16">
-        <Skeleton className="w-full h-80 rounded-2xl" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            <Skeleton className="h-64 rounded-xl" />
-            <Skeleton className="h-48 rounded-xl" />
-          </div>
-          <Skeleton className="h-96 rounded-xl" />
-        </div>
+      <div className="pb-16 pt-2">
+        <DetailPageSkeleton />
       </div>
     );
   }
+
 
   if (error || !anime) {
     return (
@@ -366,17 +360,42 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
               )}
             </div>
 
-            {/* Mobile Watch Buttons (visible on small screens) */}
-            <div className="flex md:hidden items-center gap-2 pt-1">
+            {/* Mobile Watch & Action Buttons (visible on small screens) */}
+            <div className="flex md:hidden flex-wrap items-center gap-2 pt-1">
               <Button
                 variant="primary"
                 size="sm"
                 onClick={() => onNavigate(`/watch/${malId}/${targetEp}`)}
                 icon={<Play className="w-3.5 h-3.5 fill-white" />}
-                className="flex-1 justify-center"
+                className="flex-1 min-w-[130px] justify-center"
               >
                 {watchProgress ? `Resume Ep ${watchProgress.episodeNumber}` : 'Watch Now'}
               </Button>
+
+              {/* Mobile Quick Watchlist Selector */}
+              <div className="relative">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon={<Bookmark className={`w-3.5 h-3.5 ${watchlistStatus ? 'text-orange-400 fill-orange-400' : 'text-zinc-400'}`} />}
+                >
+                  <span className="text-[11px] truncate max-w-[80px]">
+                    {watchlistStatus ? watchlistStatus.replace('_', ' ') : 'List'}
+                  </span>
+                </Button>
+                <select
+                  value={watchlistStatus || ''}
+                  onChange={(e) => handleStatusChange((e.target.value as any) || 'remove')}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                >
+                  <option value="">+ Add to Watchlist</option>
+                  <option value="watching">Watching</option>
+                  <option value="plan_to_watch">Plan to Watch</option>
+                  <option value="completed">Completed</option>
+                  <option value="dropped">Dropped</option>
+                  {watchlistStatus && <option value="remove">Remove from List</option>}
+                </select>
+              </div>
 
               <button
                 type="button"
@@ -525,6 +544,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
                   malId={malId}
                   totalEpisodes={anime.episodes}
                   episodesData={episodes}
+                  animeStatus={anime.status}
                   currentEp={watchProgress?.episodeNumber || 1}
                   onSelectEpisode={(epNum) => onNavigate(`/watch/${malId}/${epNum}`)}
                 />

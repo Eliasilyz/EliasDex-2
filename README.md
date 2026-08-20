@@ -36,6 +36,10 @@ EliasDex 2 is a web-based anime platform focused on browsing, discovering, track
 
 It combines multiple APIs to provide anime metadata, schedules, episodes, characters, staff, themes, trailers, and streaming sources without relying on a single provider. Because apparently one API failing wasn't enough for humanity.
 
+## 🖼️ Screenshots
+![](https://files.catbox.moe/33m58e.png)
+![](https://files.catbox.moe/xhxx06.png)
+
 ## ✨ Features
 
 - 🎬 Anime discovery and browsing

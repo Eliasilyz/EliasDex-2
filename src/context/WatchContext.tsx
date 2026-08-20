@@ -28,47 +28,47 @@ const HISTORY_STORAGE_KEY = 'animestream_watch_history';
 const WATCHLIST_STORAGE_KEY = 'animestream_watchlist';
 
 export const WatchProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [history, setHistory] = useState<WatchProgress[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(HISTORY_STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
+  const [history, setHistory] = useState<WatchProgress[]>([]);
+  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const [watchlist, setWatchlist] = useState<WatchlistItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(WATCHLIST_STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-      } catch {
-        return [];
+  // Load initial data from localStorage on mount (prevents SSR hydration mismatch)
+  useEffect(() => {
+    try {
+      const savedHistory = localStorage.getItem(HISTORY_STORAGE_KEY);
+      if (savedHistory) {
+        setHistory(JSON.parse(savedHistory));
       }
+      const savedWatchlist = localStorage.getItem(WATCHLIST_STORAGE_KEY);
+      if (savedWatchlist) {
+        setWatchlist(JSON.parse(savedWatchlist));
+      }
+    } catch (e) {
+      console.warn('Failed to load from localStorage', e);
+    } finally {
+      setIsLoaded(true);
     }
-    return [];
-  });
+  }, []);
 
   // Persist history
   useEffect(() => {
+    if (!isLoaded) return;
     try {
       localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
     } catch (e) {
       console.warn('Failed to save watch history to localStorage', e);
     }
-  }, [history]);
+  }, [history, isLoaded]);
 
   // Persist watchlist
   useEffect(() => {
+    if (!isLoaded) return;
     try {
       localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(watchlist));
     } catch (e) {
       console.warn('Failed to save watchlist to localStorage', e);
     }
-  }, [watchlist]);
+  }, [watchlist, isLoaded]);
 
   const recordWatchProgress = (data: {
     malId: number;

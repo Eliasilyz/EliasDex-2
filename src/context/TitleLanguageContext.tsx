@@ -30,29 +30,31 @@ const TitleLanguageContext = createContext<TitleLanguageContextType | undefined>
 const STORAGE_KEY = 'animestream_title_language';
 
 export const TitleLanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [titleLanguage, setTitleLanguageState] = useState<TitleLanguage>(() => {
-    if (typeof window !== 'undefined') {
+  const [titleLanguage, setTitleLanguageState] = useState<TitleLanguage>('en');
+
+  // Load saved language on mount
+  useEffect(() => {
+    try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'en' || saved === 'jp') {
-        return saved;
+        setTitleLanguageState(saved);
       }
-    }
-    return 'en'; // Default to English as requested
-  });
+    } catch {}
+  }, []);
 
   const setTitleLanguage = useCallback((lang: TitleLanguage) => {
     setTitleLanguageState(lang);
-    if (typeof window !== 'undefined') {
+    try {
       localStorage.setItem(STORAGE_KEY, lang);
-    }
+    } catch {}
   }, []);
 
   const toggleTitleLanguage = useCallback(() => {
     setTitleLanguageState((prev) => {
       const next = prev === 'en' ? 'jp' : 'en';
-      if (typeof window !== 'undefined') {
+      try {
         localStorage.setItem(STORAGE_KEY, next);
-      }
+      } catch {}
       return next;
     });
   }, []);
