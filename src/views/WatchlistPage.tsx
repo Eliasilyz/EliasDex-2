@@ -24,6 +24,7 @@ export const WatchlistPage: React.FC = () => {
     { id: 'dropped', label: 'Dropped', count: watchlist.filter((i) => i.status === 'dropped').length },
   ];
 
+  
   return (
     <div className="space-y-8 pb-16">
       {/* Header */}
