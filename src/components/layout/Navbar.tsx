@@ -2,11 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Play, Flame, Calendar, Compass, Bookmark, History, Menu, X, Sparkles } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Play, Flame, Calendar, Compass, Bookmark, History, Menu, X, Sparkles, User as UserIcon } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { TitleLanguageToggle } from '../ui/TitleLanguageToggle';
 import { DataSourceSelector } from '../ui/DataSourceSelector';
+import { LevelBadge } from '../ui/LevelBadge';
+import { ShadcnButton } from '../ui/shadcn/button';
 import { useWatch } from '../../context/WatchContext';
 import { useAppNavigate } from '@/lib/useNavigate';
 
@@ -24,6 +27,7 @@ export const Navbar: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { watchlist, history } = useWatch();
+  const { data: session } = useSession();
   const pathname = usePathname();
   const currentPath = pathname || '/';
   const onNavigate = useAppNavigate();
@@ -131,6 +135,42 @@ export const Navbar: React.FC = () => {
             <div suppressHydrationWarning>
               <ClientOnly>
                 <ThemeToggle />
+              </ClientOnly>
+            </div>
+
+            {/* User Account / Profile */}
+            <div className="shrink-0" suppressHydrationWarning>
+              <ClientOnly>
+                {session?.user ? (
+                  <button
+                    type="button"
+                    id="nav-profile-btn"
+                    onClick={() => handleNav('/profile')}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer group"
+                    aria-label="Go to profile"
+                  >
+                    {session.user.avatarUrl ? (
+                      <img
+                        src={session.user.avatarUrl}
+                        alt={session.user.username}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <UserIcon className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                    )}
+                    <LevelBadge level={session.user.level || 0} size="sm" />
+                  </button>
+                ) : (
+                  <ShadcnButton
+                    id="nav-signin-btn"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleNav('/login')}
+                    className="h-8 px-3 text-xs"
+                  >
+                    Sign In
+                  </ShadcnButton>
+                )}
               </ClientOnly>
             </div>
 

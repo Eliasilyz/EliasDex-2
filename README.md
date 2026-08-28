@@ -130,107 +130,179 @@ The application routes external API requests through its own Next.js API endpoin
 
 ## 🏗️ Architecture
 
+### Data Flow
+
 ```text
-                         ┌──────────────────┐
-                         │      EliasDex 2      │
-                         │   Next.js App    │
-                         └────────┬─────────┘
-                                  │
-             ┌────────────────────┼────────────────────┐
-             │                    │                    │
-             ▼                    ▼                    ▼
-       ┌───────────┐        ┌───────────┐        ┌───────────┐
-       │  AniList  │        │   Jikan   │        │  AniKoto   │
-       │   GraphQL │        │    MAL    │        │ Streaming  │
-       └───────────┘        └───────────┘        └───────────┘
-             │                    │                    │
-             └────────────────────┼────────────────────┘
-                                  ▼
-                         ┌─────────────────┐
-                         │  API / Fallback │
-                         │     Layer       │
-                         └────────┬────────┘
-                                  ▼
-                         ┌─────────────────┐
-                         │ React Components│
-                         │     + Context   │
-                         └────────┬────────┘
-                                  ▼
-                         ┌─────────────────┐
-                         │ Anime Discovery │
-                         │ & Watch UI      │
-                         └─────────────────┘
+                     ┌──────────────────┐
+                     │    EliasDex 2    │
+                     │   Next.js App    │
+                     └────────┬─────────┘
+                              │
+           ┌──────────────────┼──────────────────┐
+           │                  │                  │
+           ▼                  ▼                  ▼
+     ┌──────────┐        ┌──────────┐      ┌──────────┐
+     │ AniList  │        │  Jikan   │      │ AniKoto  │
+     │ GraphQL  │        │   MAL    │      │Streaming │
+     └──────────┘        └──────────┘      └──────────┘
+           │                  │                  │
+           └──────────────────┼──────────────────┘
+                              ▼
+                     ┌─────────────────┐
+                     │  Anime Metadata │
+                     │  & Streaming    │
+                     └────────┬────────┘
+                              ▼
+                     ┌─────────────────┐
+                     │  React + Hooks  │
+                     │   + Context     │
+                     └────────┬────────┘
+                              ▼
+                     ┌─────────────────┐
+                     │   UI Layer      │
+                     │  (Components)   │
+                     └─────────────────┘
 ```
+
+### User Data Layer (Optional)
+
+When `MONGODB_URI` is configured:
+
+```text
+┌─────────────────────────────────────────┐
+│          EliasDex 2 (Next.js)           │
+│                                         │
+│  ┌─────────────────────────────────┐   │
+│  │  API Routes & Server Actions    │   │
+│  │  (/api/*, server functions)     │   │
+│  └────────────┬────────────────────┘   │
+│               │                        │
+│  ┌────────────▼────────────────────┐   │
+│  │  Repository Layer               │   │
+│  │  (src/models/*.ts)              │   │
+│  │  - user.ts                      │   │
+│  │  - watchHistory.ts              │   │
+│  │  - favorites.ts                 │   │
+│  │  - chatMessages.ts              │   │
+│  │  - comments.ts                  │   │
+│  └────────────┬────────────────────┘   │
+│               │                        │
+│  ┌────────────▼────────────────────┐   │
+│  │  Database Client Singleton      │   │
+│  │  (src/lib/db.ts)                │   │
+│  │  - Connection pooling           │   │
+│  │  - Fallback on DB_ENABLED=false │   │
+│  └────────────┬────────────────────┘   │
+│               │                        │
+└───────────────┼────────────────────────┘
+                │
+                ▼
+          ┌──────────────┐
+          │   MongoDB    │
+          │   Database   │
+          └──────────────┘
+```
+
+**Collections:**
+- `users` — account credentials & profile
+- `watch_history` — episode progress per user
+- `favorites` — user's favorite anime
+- `chat_messages` — global chat messages
+- `comments` — anime comments per episode
+
+All queries include DB availability checks; operations gracefully return empty results when database is unavailable.
 
 ## 📁 Project Structure
 
 ```text
 EliasDex 2/
-├── assets/
-│
 ├── src/
-│   ├── app/
-│   │   ├── anime/
-│   │   │   └── [malId]/
-│   │   │       └── page.tsx
-│   │   │
+│   ├── app/                          # Next.js App Router pages & API
 │   │   ├── api/
-│   │   │   ├── anikoto/
-│   │   │   │   └── [...path]/
-│   │   │   │       └── route.ts
-│   │   │   ├── anilist/
-│   │   │   │   └── route.ts
-│   │   │   ├── health/
-│   │   │   │   └── route.ts
-│   │   │   ├── jikan/
-│   │   │   │   └── [...path]/
-│   │   │   │       └── route.ts
-│   │   │   ├── music/
-│   │   │   │   └── search/
-│   │   │   │       └── route.ts
-│   │   │   └── stream/
-│   │   │       └── route.ts
+│   │   │   ├── anikoto/[...path]    # Anime stream sources proxy
+│   │   │   ├── anilist/             # AniList GraphQL proxy
+│   │   │   ├── jikan/[...path]      # Jikan/MAL API proxy
+│   │   │   ├── music/search         # Music search endpoint
+│   │   │   ├── stream/              # Stream resolution endpoint
+│   │   │   └── health/              # Health check endpoint
 │   │   │
-│   │   ├── browse/
-│   │   ├── history/
-│   │   ├── schedule/
-│   │   ├── search/
-│   │   ├── top/
-│   │   ├── watch/
-│   │   └── watchlist/
+│   │   ├── anime/[malId]/           # Anime detail page
+│   │   ├── browse/                  # Browse all anime
+│   │   ├── search/                  # Search page
+│   │   ├── schedule/                # Airing schedule
+│   │   ├── top/                     # Top anime rankings
+│   │   ├── watch/[malId]/[ep]       # Episode player
+│   │   ├── watchlist/               # User watchlist (DB-optional)
+│   │   ├── history/                 # Watch history (DB-optional)
+│   │   ├── layout.tsx               # Root layout
+│   │   ├── page.tsx                 # Homepage
+│   │   └── globals.css              # Global styles
 │   │
-│   ├── components/
-│   │   ├── anime/
-│   │   ├── layout/
-│   │   ├── music/
-│   │   ├── player/
-│   │   ├── providers/
-│   │   └── ui/
+│   ├── components/                  # Reusable React components
+│   │   ├── anime/                   # Anime-specific components
+│   │   ├── layout/                  # Layout wrappers (Navbar, Footer)
+│   │   ├── music/                   # Music player
+│   │   ├── player/                  # Video player
+│   │   ├── providers/               # Context providers
+│   │   ├── ui/                      # Shadcn/UI & custom UI
+│   │   └── DbStatusBanner.tsx       # Dev-only DB status banner
 │   │
-│   ├── context/
-│   ├── lib/
+│   ├── context/                     # React Context definitions
+│   │   ├── DataSourceContext        # API source selection
+│   │   ├── MusicPlayerContext       # Global music state
+│   │   ├── ThemeContext             # Dark/light theme
+│   │   ├── TitleLanguageContext     # Japanese/English titles
+│   │   └── WatchContext             # Watch progress
+│   │
+│   ├── lib/                         # Utilities & helpers
+│   │   ├── env.ts                   # Environment config (DB_ENABLED)
+│   │   ├── db.ts                    # MongoDB client singleton
 │   │   ├── server/
-│   │   ├── anikoto.ts
-│   │   ├── anilist.ts
-│   │   ├── animeApi.ts
-│   │   ├── cache.ts
-│   │   ├── fallbackData.ts
-│   │   ├── jikan.ts
-│   │   ├── music.ts
-│   │   ├── rateLimiter.ts
-│   │   └── stream.ts
+│   │   │   ├── apiHandlers.ts       # Common API route logic
+│   │   │   └── response.ts          # Standardized responses
+│   │   ├── anikoto.ts               # AniKoto API wrapper
+│   │   ├── anilist.ts               # AniList GraphQL wrapper
+│   │   ├── jikan.ts                 # Jikan API wrapper
+│   │   ├── animeApi.ts              # Unified anime API layer
+│   │   ├── cache.ts                 # Custom caching logic
+│   │   ├── rateLimiter.ts           # API rate limiting
+│   │   ├── stream.ts                # Stream resolution
+│   │   ├── music.ts                 # Music search
+│   │   ├── metadata.ts              # Metadata construction
+│   │   ├── fallbackData.ts          # Fallback seed data
+│   │   └── utils.ts                 # General utilities
 │   │
-│   ├── views/
-│   └── types.ts
+│   ├── models/                      # Database repositories (DB-optional)
+│   │   ├── user.ts                  # User CRUD operations
+│   │   ├── watchHistory.ts          # Watch history queries
+│   │   ├── favorites.ts             # Favorites queries
+│   │   ├── chatMessages.ts          # Chat message queries
+│   │   └── comments.ts              # Comment queries
+│   │
+│   ├── views/                       # Complex view components
+│   ├── types.ts                     # Global TypeScript types
+│   └── phantom-ui.d.ts              # Phantom UI type definitions
 │
-├── assets/
-├── metadata.json
-├── next.config.ts
-├── package.json
-├── postcss.config.mjs
-├── README.md
-└── tsconfig.json
+├── scripts/
+│   └── create-indexes.ts            # MongoDB index creation
+│
+├── public/                          # Static assets
+├── .github/                         # GitHub config
+├── metadata.json                    # Anime metadata cache
+├── next.config.ts                   # Next.js configuration
+├── tsconfig.json                    # TypeScript configuration
+├── package.json                     # Dependencies
+├── postcss.config.mjs               # PostCSS/Tailwind config
+├── .env.example                     # Environment template
+├── README.md                        # This file
+└── LICENSE                          # Project license
 ```
+
+**Key conventions:**
+- `src/app` — Next.js routes (server components by default)
+- `src/lib` — Shared utilities & external integrations
+- `src/models` — Database access layer (gracefully handles missing DB)
+- `src/components` — Reusable UI components (client components as needed)
 
 ## 🛠️ Tech Stack
 
@@ -395,19 +467,108 @@ http://localhost:3000
 
 ## ⚙️ Environment Variables
 
-Create a `.env.local` file if your deployment requires environment-specific configuration.
-
-Example:
+EliasDex 2 supports optional database configuration. Create a `.env.local` file based on `.env.example`:
 
 ```env
-ANILIST_API_URL=https://graphql.anilist.co
-JIKAN_API_URL=https://api.jikan.moe/v4
-ANIKOTO_API_URL=https://anikoto.deno.dev
+# External anime data sources (required for core functionality)
+JIKAN_BASE_URL="https://api.jikan.moe/v4"
+ANIKOTO_BASE_URL="https://anikotoapi.site"
+MEGAPLAY_BASE_URL="https://megaplay.buzz"
+
+# MongoDB connection (optional for persistence)
+MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net/eliasdex"
 ```
 
-Use the actual endpoints supported by your deployment configuration.
+### Database Configuration (Optional)
 
-Do not commit secrets or private API credentials.
+**Without `MONGODB_URI` (No-DB Mode):**
+- ✅ Anime browsing, search, schedules work normally
+- ✅ Episode streaming available
+- ✅ Guest mode (stateless JWT-only session) enabled
+- ❌ Watchlist disabled
+- ❌ Watch history not persisted
+- ❌ User accounts & authentication disabled
+- ❌ Comments & global chat disabled
+
+**With `MONGODB_URI` (Full Persistence):**
+- ✅ User authentication & accounts
+- ✅ Persistent watchlist & favorites
+- ✅ Watch history tracking
+- ✅ User levels & XP system
+- ✅ Global chat & comments
+- ✅ All features enabled
+
+This design allows local development without external DB setup, while production deployments can enable full user data persistence.
+
+**Security:** Do not commit `.env.local` or expose `MONGODB_URI` publicly. Use environment secrets in production.
+
+## 🗄️ Database Schema
+
+When `MONGODB_URI` is configured, the following collections are created automatically on first use:
+
+### `users`
+```typescript
+{
+  _id: ObjectId,
+  email: string (unique),
+  passwordHash: string,
+  username: string,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### `watch_history`
+```typescript
+{
+  _id: ObjectId,
+  userId: string,
+  animeId: number (AniList ID),
+  episodeNumber: number,
+  watchedAt: Date,
+  progress: number (0-100)
+}
+```
+
+### `favorites`
+```typescript
+{
+  _id: ObjectId,
+  userId: string,
+  animeId: number (AniList ID),
+  addedAt: Date
+}
+```
+
+### `chat_messages`
+```typescript
+{
+  _id: ObjectId,
+  userId: string,
+  username: string,
+  content: string,
+  createdAt: Date
+}
+```
+
+### `comments`
+```typescript
+{
+  _id: ObjectId,
+  userId: string,
+  username: string,
+  animeId: number (AniList ID),
+  content: string,
+  createdAt: Date
+}
+```
+
+**Run index creation:**
+```bash
+npm run build && node --require ts-node/register src/scripts/create-indexes.ts
+```
+
+If `MONGODB_URI` is unset, this script exits silently without error.
 
 ## 🧪 Health Check
 
@@ -424,37 +585,44 @@ This can be used by deployment platforms, monitoring services, or uptime checks.
 EliasDex 2 is designed around multiple providers instead of treating one API as the entire universe.
 
 ```text
-Request
-   │
-   ▼
-Anime API Layer
-   │
-   ├── AniList
-   │
-   ├── Jikan
-   │
-   └── AniKoto
-   │
-   ▼
-Normalization
-   │
-   ▼
-Cache
-   │
-   ▼
-Fallback
-   │
-   ▼
-UI
+User Request
+     │
+     ▼
+┌─────────────────────────────────┐
+│  Unified Anime API Layer        │
+│  (src/lib/animeApi.ts)          │
+└──────────┬──────────────────────┘
+           │
+     ┌─────┴─────┬─────────┐
+     ▼           ▼         ▼
+  AniList     Jikan    AniKoto
+  (Metadata) (Details) (Streaming)
+     │           │         │
+     └─────┬─────┴────┬────┘
+           ▼          ▼
+       ┌────────────────────┐
+       │ Fallback & Cache   │
+       │ (src/lib/cache.ts) │
+       └────────────────────┘
+           │
+           ▼
+       ┌────────────────────┐
+       │   UI Components    │
+       └────────────────────┘
 ```
 
-This approach helps reduce the impact of:
+**Benefits:**
+- **Resilience** — if one API fails, others provide fallback
+- **Rate limit tolerance** — distribute traffic across providers
+- **Rich metadata** — combine strengths of each source
+- **Flexibility** — easy to swap or add providers
 
-- API downtime
-- Rate limits
-- Missing metadata
-- Provider-specific response formats
-- Temporary network failures
+**AniList ID Strategy:**
+EliasDex 2 uses AniList IDs as the internal canonical identifier (`animeId`). AniList's `idMal` field reconciles with MyAnimeList IDs when needed. This ensures consistent references across:
+- User watch history
+- Favorites & watchlist
+- Comments & chat
+- Stream links
 
 ## 📺 Watch Flow
 
@@ -518,54 +686,99 @@ Anime theme songs can also be displayed directly from the anime detail page.
 | `/history`            | Watch history           |
 | `/watch/[malId]/[ep]` | Episode streaming       |
 
-## 🚀 Production Build
+## 🚀 Deployment
 
-Build the application:
+### Local Development (No Database)
 
-```bash
-npm run build
-```
-
-Start production server:
+Perfect for quick setup without external dependencies:
 
 ```bash
-npm run start
+git clone https://github.com/your-username/EliasDex-2.git
+cd EliasDex-2
+npm install
+npm run dev
 ```
 
-For Bun:
+Visit `http://localhost:3000`. Browsing works fully; user persistence is disabled.
 
-```bash
-bun run build
-bun run start
-```
+A dev-only banner appears in the bottom-left corner indicating "Database offline."
 
-## 📈 Performance
+### Production (With MongoDB)
 
-EliasDex 2 includes several mechanisms intended to reduce unnecessary API traffic:
+1. **Set up MongoDB:**
+   ```bash
+   # Atlas (recommended): create cluster at mongodb.com/cloud/atlas
+   # Self-hosted: run MongoDB server locally or on VPS
+   ```
 
-- API caching
-- Rate limiting
-- Server-side request handling
-- Reusable components
-- Loading skeletons
-- Fallback responses
-- Centralized API clients
+2. **Configure environment:**
+   ```bash
+   export MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net/eliasdex"
+   ```
 
-The goal is simple: fewer requests, less waiting, fewer things catching fire.
+3. **Build & deploy:**
+   ```bash
+   npm run build
+   npm run start
+   ```
 
-## 🔐 Security Considerations
+4. **Create indexes (one-time):**
+   ```bash
+   npm run build
+   node --require ts-node/register src/scripts/create-indexes.ts
+   ```
 
-External API requests are routed through server-side endpoints where appropriate.
+**Hosting options:**
+- **Vercel** — native Next.js support, zero-config
+- **Railway, Render, Fly.io** — straightforward Node.js deployments
+- **Self-hosted VPS** — full control, bring your own MongoDB
 
-Recommended production practices:
+## 📈 Performance Considerations
 
-- Keep private credentials server-side
-- Validate API parameters
-- Apply request rate limits
-- Avoid exposing unnecessary upstream API details
-- Sanitize user-controlled query parameters
-- Configure appropriate CORS behavior
-- Monitor upstream API failures
+EliasDex 2 includes several mechanisms to reduce unnecessary API traffic:
+
+- **Client-side caching** (src/lib/cache.ts) — memoize frequent queries
+- **Rate limiting** (src/lib/rateLimiter.ts) — throttle API calls per source
+- **Server-side proxying** (/api/* routes) — centralize external requests
+- **Reusable components** — minimize re-renders
+- **Loading skeletons** — perceived performance improvement
+- **Fallback responses** — graceful degradation on provider outage
+
+The goal: fewer requests, faster loads, fewer cascading failures.
+
+## 🔐 Security & Best Practices
+
+### Database Security
+
+- **Never commit `.env.local`** — use `.gitignore` to exclude it
+- **Rotate credentials regularly** — especially MongoDB connection strings
+- **Use IP whitelisting** — if your MongoDB provider supports it
+- **Enable authentication** — require strong passwords for DB accounts
+- **Validate input** — all repository functions sanitize user IDs before querying
+
+### API Security
+
+- All external API requests are routed through Next.js server-side routes
+- API keys and credentials are stored server-side only
+- User-controlled query parameters are validated before forwarding to upstream APIs
+- CORS is configured to prevent unauthorized cross-origin requests
+
+### Authentication (When Enabled)
+
+- Passwords are hashed before storage (NextAuth.js handles this)
+- Sessions use JWT tokens with no server-side session store required
+- Guest mode (stateless) is available when DB is offline
+- Credentials provider disabled when `DB_ENABLED = false`
+
+### Deployment Checklist
+
+- [ ] Set `NODE_ENV=production` in your deployment
+- [ ] Configure `MONGODB_URI` with a strong, unique password
+- [ ] Use HTTPS only (enforced by hosting providers)
+- [ ] Enable rate limiting on API endpoints in production
+- [ ] Monitor logs for suspicious activity
+- [ ] Set up uptime monitoring via `/api/health`
+- [ ] Review & test auth flows before launch
 
 ## ⚠️ Disclaimer
 
@@ -589,46 +802,75 @@ If this project uses third-party assets, APIs, libraries, or media, their respec
 
 ## 🤝 Contributing
 
-Contributions are welcome.
+Contributions are welcome. To get started:
 
-```bash
-git checkout -b feature/your-feature
-```
+1. **Fork the repository** and clone your fork locally
+2. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+3. **Make your changes** and test thoroughly
+4. **Follow the project conventions:**
+   - Use TypeScript strict mode
+   - Follow existing code style (camelCase functions, PascalCase components)
+   - Keep components focused and reusable
+   - Add repository-fallback checks for any new DB operations
+5. **Open a pull request** with a clear description
 
-Make your changes, test them, then open a pull request.
-
-Keep changes focused and avoid turning one small feature into a 47-file architectural pilgrimage.
+Keep changes focused and avoid turning one small feature into a multi-file refactor without discussion.
 
 ## 🗺️ Roadmap
 
-- [ ] Improved recommendation engine
-- [ ] More streaming providers
-- [ ] Better episode progress synchronization
-- [ ] Advanced anime filtering
-- [ ] User accounts
-- [ ] Cloud watchlist synchronization
+**Phase 2 (Current):**
+- [ ] NextAuth.js v5 integration with Credentials provider
+- [ ] User accounts & authentication UI
+- [ ] Persistent watchlist sync
+
+**Phase 3:**
+- [ ] User levels & XP system
+- [ ] Global chat with Socket.IO
+- [ ] Episode comments & reactions
 - [ ] Personalized recommendations
-- [ ] Improved mobile player
+
+**Phase 4:**
+- [ ] Advanced anime filtering
+- [ ] Better episode progress synchronization
 - [ ] PWA improvements
-- [ ] Better API failure recovery
 - [ ] Automated API health monitoring
 
-## ⭐ Project Goals
+**Exploration:**
+- [ ] More streaming providers
+- [ ] Improved mobile player
+- [ ] Social features (follows, activity feed)
 
-EliasDex 2 aims to provide a fast and clean anime experience with:
+## ⭐ Project Philosophy
+
+EliasDex 2 is built around these core principles:
 
 ```text
-Discover
-   ↓
-Search
-   ↓
-Explore
-   ↓
-Track
-   ↓
-Watch
-   ↓
-Continue
+┌─────────────────────────────────┐
+│      No Single Point of Failure  │
+│  (Multiple API providers, work   │
+│   without DB for browsing)       │
+└─────────────────────────────────┘
+           ▼
+┌─────────────────────────────────┐
+│    Simple, Clean Architecture    │
+│  (Clear separation of concerns,  │
+│   repositories, no ORM overhead) │
+└─────────────────────────────────┘
+           ▼
+┌─────────────────────────────────┐
+│  Developer-Friendly Setup        │
+│  (Works locally without external │
+│   DB, graceful degradation)      │
+└─────────────────────────────────┘
+           ▼
+┌─────────────────────────────────┐
+│   Performance by Default         │
+│  (Caching, rate limiting, CDN-   │
+│   ready static generation)       │
+└─────────────────────────────────┘
 ```
 
-Built with Next.js, TypeScript, and a mildly unreasonable number of API integrations.
+Built with Next.js 14+, TypeScript strict mode, MongoDB, and a carefully curated set of external APIs.

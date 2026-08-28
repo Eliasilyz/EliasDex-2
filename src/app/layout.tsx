@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import { AppProviders } from '@/components/providers/AppProviders';
 import { AppShell } from '@/components/layout/AppShell';
 import { constructMetadata } from '@/lib/metadata';
+import { DbStatusBanner } from '@/components/DbStatusBanner';
 import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AppProviders>
           <AppShell>{children}</AppShell>
         </AppProviders>
+        <DbStatusBanner />
       </body>
     </html>
   );
