@@ -12,6 +12,7 @@ import { LanguageToggle } from '../components/player/LanguageToggle';
 import { ServerSelector } from '../components/player/ServerSelector';
 import { ServerNotice } from '../components/player/ServerNotice';
 import { EpisodeList } from '../components/anime/EpisodeList';
+import { ChatPanel } from '../components/chat/ChatPanel';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { TitleLanguageToggle } from '../components/ui/TitleLanguageToggle';
@@ -28,6 +29,7 @@ import {
   Sparkles,
   RotateCcw,
   CheckCircle2,
+  MessageCircle,
 } from 'lucide-react';
 
 interface WatchPageProps {
@@ -49,6 +51,8 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   const [autoNext, setAutoNext] = useState(true);
   const [loading, setLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
+
+  const [activeSideTab, setActiveSideTab] = useState<'episodes' | 'chat'>('episodes');
 
   // Fetch anime metadata and episodes
   useEffect(() => {
@@ -144,55 +148,54 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   const episodeTitle = currentEpMeta?.title ? `${currentEpMeta.title}` : `Episode ${epNum}`;
 
   return (
-    <div className="space-y-6 pb-16">
+    <div className="space-y-4 pb-16">
       {/* Top Breadcrumb & Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
             onClick={() => onNavigate(`/anime/${malId}`)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl transition-colors cursor-pointer shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Anime Details</span>
           </button>
 
-          <h2 className="text-sm font-bold text-white truncate max-w-xs sm:max-w-md">
+          <h2 className="text-sm font-bold text-white truncate">
             {anime ? getTitle(anime) : 'Anime Stream'}
           </h2>
         </div>
 
         {/* Language and Audio Toggles */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <TitleLanguageToggle />
           <LanguageToggle value={lang} onChange={(newLang) => setLang(newLang)} />
         </div>
       </div>
 
-      {/* Main Grid: Player on left (2 cols), Episode List on right (1 col) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Player Left Section */}
+      {/* Main Layout: 2-column on lg+, stacked on mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5 items-start">
+        {/* ── LEFT: Player + Controls ── */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Embedded MegaPlay Video Player */}
+          {/* Iframe Player */}
           <PlayerFrame
             src={streamUrl}
             title={`${anime?.title || 'Anime'} - Episode ${epNum}`}
             onEnded={handleVideoEnded}
           />
 
-          {/* Player Navigation & Quick Actions Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
-            <div className="space-y-0.5">
+          {/* Navigation Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800/80">
+            <div className="space-y-0.5 min-w-0">
               <span className="text-xs font-bold text-orange-400 font-mono">
                 EPISODE {epNum}
               </span>
-              <h3 className="text-sm font-semibold text-white truncate max-w-sm sm:max-w-md">
+              <h3 className="text-sm font-semibold text-white truncate max-w-[180px] sm:max-w-md">
                 {episodeTitle}
               </h3>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Prev Episode */}
               <Button
                 variant="secondary"
                 size="sm"
@@ -203,7 +206,6 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
                 Prev
               </Button>
 
-              {/* Next Episode */}
               <Button
                 variant="primary"
                 size="sm"
@@ -215,7 +217,6 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
                 <ChevronRight className="w-4 h-4" />
               </Button>
 
-              {/* Auto Next Toggle */}
               <button
                 type="button"
                 onClick={() => setAutoNext(!autoNext)}
@@ -231,15 +232,15 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
             </div>
           </div>
 
-          {/* Server Selector & Notice */}
-          <div className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 space-y-3">
+          {/* Server Selector */}
+          <div className="p-3 sm:p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 space-y-3">
             <ServerSelector selectedSource={source} onSelectSource={(s) => setSource(s)} />
             <ServerNotice />
           </div>
 
           {/* Anime Info Accordion */}
           {anime && (
-            <div className="p-5 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 space-y-3">
+            <div className="p-4 sm:p-5 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Info className="w-4 h-4 text-orange-400" />
@@ -252,7 +253,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
                   onClick={() => setShowDetails(!showDetails)}
                   className="text-xs text-orange-400 hover:text-orange-300 font-semibold cursor-pointer"
                 >
-                  {showDetails ? 'Hide Details' : 'Show Details'}
+                  {showDetails ? 'Hide' : 'Show'}
                 </button>
               </div>
 
@@ -272,18 +273,68 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
           )}
         </div>
 
-        {/* Episodes Sidebar Right Section */}
-        <div className="space-y-4">
-          <EpisodeList
-            malId={malId}
-            totalEpisodes={anime?.episodes}
-            episodesData={episodes}
-            animeStatus={anime?.status}
-            currentEp={epNum}
-            onSelectEpisode={(targetEpNum) => {
-              onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`);
-            }}
-          />
+        {/* ── RIGHT: Episodes + Chat Sidebar ── */}
+        <div className="space-y-0">
+          {/* Tab switcher (visible only on mobile/tablet — desktop shows both stacked) */}
+          <div className="flex lg:hidden rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900/60 mb-3">
+            <button
+              type="button"
+              onClick={() => setActiveSideTab('episodes')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
+                activeSideTab === 'episodes'
+                  ? 'bg-zinc-800 text-white'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" />
+              Episodes
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveSideTab('chat')}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
+                activeSideTab === 'chat'
+                  ? 'bg-zinc-800 text-white'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              Chat
+            </button>
+          </div>
+
+          {/* Mobile: conditionally show active tab */}
+          <div className="lg:hidden">
+            {activeSideTab === 'episodes' ? (
+              <EpisodeList
+                malId={malId}
+                totalEpisodes={anime?.episodes}
+                episodesData={episodes}
+                animeStatus={anime?.status}
+                currentEp={epNum}
+                onSelectEpisode={(targetEpNum) => {
+                  onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`);
+                }}
+              />
+            ) : (
+              <ChatPanel roomId={`anime-${malId}`} />
+            )}
+          </div>
+
+          {/* Desktop: both panels stacked */}
+          <div className="hidden lg:flex flex-col gap-4">
+            <EpisodeList
+              malId={malId}
+              totalEpisodes={anime?.episodes}
+              episodesData={episodes}
+              animeStatus={anime?.status}
+              currentEp={epNum}
+              onSelectEpisode={(targetEpNum) => {
+                onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`);
+              }}
+            />
+            <ChatPanel roomId={`anime-${malId}`} />
+          </div>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import '@/lib/polyfills';
 import '@/lib/lazysizes';
+import { SessionProvider } from 'next-auth/react';
 import { SmoothScrollProvider } from '@/components/providers/SmoothScrollProvider';
 
 
@@ -18,23 +19,25 @@ import { Toaster } from '@/components/ui/shadcn/toaster';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <SmoothScrollProvider>
-      <ThemeProvider>
-        <TitleLanguageProvider>
-          <DataSourceProvider>
-            <WatchProvider>
-              <MusicPlayerProvider>
-                <PWAInstaller />
-                <JQueryEffectsProvider />
-                {children}
-                <PWAInstallBanner />
-                <Toaster />
-              </MusicPlayerProvider>
-            </WatchProvider>
-          </DataSourceProvider>
-        </TitleLanguageProvider>
-      </ThemeProvider>
-    </SmoothScrollProvider>
+    <SessionProvider>
+      <SmoothScrollProvider>
+        <ThemeProvider>
+          <TitleLanguageProvider>
+            <DataSourceProvider>
+              <WatchProvider>
+                <MusicPlayerProvider>
+                  <PWAInstaller />
+                  <JQueryEffectsProvider />
+                  {children}
+                  <PWAInstallBanner />
+                  <Toaster />
+                </MusicPlayerProvider>
+              </WatchProvider>
+            </DataSourceProvider>
+          </TitleLanguageProvider>
+        </ThemeProvider>
+      </SmoothScrollProvider>
+    </SessionProvider>
   );
 }
 

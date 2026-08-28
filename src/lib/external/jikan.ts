@@ -1,0 +1,33 @@
+import {
+  fetchJikan,
+  getAnimeById,
+  getSeasonNow,
+  getTopAnime,
+  getSchedule,
+  searchAnime,
+  getAnimeEpisodes,
+  getAnimeGenres,
+  getAnimeRecommendations,
+  getAnimeCharacters,
+  getAnimeThemes,
+  getAnimeStaff,
+  getAnimeRelations,
+  getAnimeExternalLinks,
+} from "../jikan";
+
+export {
+  fetchJikan,
+  getAnimeById,
+  getSeasonNow,
+  getTopAnime,
+  getSchedule,
+  searchAnime,
+  getAnimeEpisodes,
+  getAnimeGenres,
+  getAnimeRecommendations,
+  getAnimeCharacters,
+  getAnimeThemes,
+  getAnimeStaff,
+  getAnimeRelations,
+  getAnimeExternalLinks,
+};
