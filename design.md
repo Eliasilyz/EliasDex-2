@@ -207,18 +207,40 @@ NEXT_PUBLIC_MEGAPLAY_BASE_URL="https://megaplay.buzz"
 
 ## 6. Visual Design System
 
-Sistem desain EliasDex 2 mengusung tema **Dark Modern Anime Streaming Platform** yang memadukan palet warna netral *zinc* gelap dengan aksen *vibrant orange* dan *amber*.
+Sistem desain EliasDex 2 mengusung tema **Dark Modern Anime Streaming Platform** yang memadukan palet netral achromatic **"Ink Wash"** dengan aksen *vibrant orange* dan *amber*.
 
 ### A. Color Palette
 
-#### 1. Core Background & Surface Colors
-- **App Canvas Background**: `#09090b` (`bg-[#09090b]` / `bg-zinc-950`)
-- **Surface Elevation 1 (Card Base)**: `rgba(24, 24, 27, 0.4)` sampai `rgba(24, 24, 27, 0.6)` (`bg-zinc-900/40` / `bg-zinc-900/60`)
-- **Surface Elevation 2 (Card Hover / Inset)**: `rgba(32, 32, 35, 0.8)` (`bg-zinc-850`) / `bg-zinc-800` (`#27272a`)
-- **Surface Elevation 3 (Navbar / Dropdowns / Modals)**: `rgba(9, 9, 11, 0.95)` (`bg-zinc-950/95`) dengan `backdrop-blur-xl` atau `backdrop-blur-2xl`
-- **Surface Elevation 4 (Interactive Pill & Buttons)**: `#27272a` (`bg-zinc-800`), hover `#3f3f46` (`bg-zinc-700`)
+#### 0. Ink Wash — Neutral Anchor Tones
+Empat titik jangkar dari palette yang diberikan, dari paling gelap ke paling terang:
+
+| Token | Hex | Peran |
+| :--- | :--- | :--- |
+| `ink-950` | `#252525` | Titik ekstrem gelap — canvas di dark mode |
+| `ink-700` | `#545454` | Mid-dark |
+| `ink-500` | `#7D7D7D` | Mid-light |
+| `ink-300` | `#CFCFCF` | Titik ekstrem terang — canvas di light mode |
+
+Dua ekstrem tambahan (`#FFFFFF` putih & `#000000` hitam) dipakai HANYA untuk teks utama berkontras maksimum — bukan bagian dari 4 warna sumber, tapi diperlukan karena palette-nya tidak menyediakan titik putih/hitam murni.
+
+#### 1. Dark Mode — Core Background & Surface Colors
+Elevasi bergerak dari titik ekstrem (`ink-950`) MENUJU tengah skala — makin tinggi elevasinya, makin dekat ke `ink-700`/`ink-500`:
+- **App Canvas Background**: `ink-950` `#252525`
+- **Surface Elevation 1 (Card Base)**: `#333333` *(derived, interpolasi antara `ink-950` dan `ink-700`)*
+- **Surface Elevation 2 (Card Hover / Inset)**: `ink-700` `#545454`
+- **Surface Elevation 3 (Navbar / Dropdowns / Modals)**: `rgba(37, 37, 37, 0.95)` (`ink-950` nyaris solid) dengan `backdrop-blur-xl`/`backdrop-blur-2xl` — tetap HANYA di overlay fungsional (navbar sticky, dropdown, modal, floating music player), jangan diperluas ke `AnimeCard`/container statis (V2)
+- **Surface Elevation 4 (Interactive Pill & Buttons)**: `ink-700` `#545454`, hover `ink-500` `#7D7D7D`
+
+#### 1b. Light Mode — Core Background & Surface Colors *(sebaliknya dari dark mode)*
+Peran dibalik memakai 4 anchor yang sama: canvas pindah ke ekstrem terang (`ink-300`), dan elevasi tetap bergerak MENUJU tengah skala — tapi dari arah terang, jadi makin gelap saat elevasinya naik (logika yang persis simetris dengan dark mode, bukan sekadar "kartu putih di atas halaman abu-abu" generik):
+- **App Canvas Background**: `ink-300` `#CFCFCF`
+- **Surface Elevation 1 (Card Base)**: `#BFBFBF` *(derived, interpolasi antara `ink-300` dan `ink-500`)*
+- **Surface Elevation 2 (Card Hover / Inset)**: `ink-500` `#7D7D7D`
+- **Surface Elevation 3 (Navbar / Dropdowns / Modals)**: `rgba(207, 207, 207, 0.95)` (`ink-300` nyaris solid) dengan `backdrop-blur-xl`/`backdrop-blur-2xl`, aturan pemakaian sama seperti dark mode
+- **Surface Elevation 4 (Interactive Pill & Buttons)**: `ink-500` `#7D7D7D`, hover `ink-700` `#545454`
 
 #### 2. Primary Accent & Brand Colors
+Aksen brand TIDAK berubah antara dark/light mode — orange/amber sudah cukup kontras di kedua ekstrem `ink-950` maupun `ink-300`:
 - **Brand Primary (Orange)**: `#ea580c` (`orange-600`)
 - **Brand Primary Hover**: `#f97316` (`orange-500`)
 - **Brand Primary Light / Text Accent**: `#fb923c` (`orange-400`), `#fdba74` (`orange-300`)
@@ -241,13 +263,40 @@ Sistem desain EliasDex 2 mengusung tema **Dark Modern Anime Streaming Platform**
 - **Manga / Source Material Badge (Purple)**: `#c084fc` (`purple-400`), `#a855f7` (`purple-500`)
   - Tint: `bg-purple-500/10 border-purple-500/20 text-purple-300`
 - **YouTube / Trailer (Red)**: `#dc2626` (`red-600`), `#ef4444` (`red-500`)
+- ⚠️ **Needs rendered verification**: tint semantic di atas (`/10`–`/30` opacity) dibuat untuk berbaur dengan canvas gelap `#252525`. Di light mode canvas jadi `#CFCFCF` yang jauh lebih terang, jadi opacity-nya kemungkinan perlu dinaikkan (mis. `/20` → `/30`+) supaya badge tetap terbaca — cek langsung saat di-render, jangan asumsi angka yang sama otomatis kontras di kedua mode.
 
-#### 4. Typography & Border Neutral Colors
-- **Heading & Primary Text**: `#ffffff` (`text-white`) dan `#f4f4f5` (`text-zinc-100`)
-- **Secondary Body Text**: `#e4e4e7` (`text-zinc-200`) dan `#d4d4d8` (`text-zinc-300`)
-- **Muted & Metadata Text**: `#a1a1aa` (`text-zinc-400`)
-- **Subtle / Placeholder Text**: `#71717a` (`text-zinc-500`) dan `#52525b` (`text-zinc-600`)
-- **Default Borders**: `rgba(63, 63, 70, 0.6)` (`border-zinc-800/60` – `border-zinc-800`), `border-zinc-700/80`
+#### 4. Typography & Border Neutral Colors — Dark Mode
+- **Heading & Primary Text**: `#ffffff` *(ekstrem putih, di luar 4 anchor — kontras 15.3:1 di atas `#252525`)*
+- **Secondary Body Text**: `ink-300` `#CFCFCF` *(kontras 9.85:1 di atas canvas — aman)*
+- **Muted & Metadata Text**: `ink-500` `#7D7D7D` *(kontras 3.73:1 — cukup untuk teks besar/ikon, TIDAK untuk teks kecil/body; lihat catatan di bawah)*
+- **Subtle / Placeholder Text**: `ink-700` `#545454` *(kontras ~2:1 — dekoratif/disabled saja, jangan dipakai untuk placeholder yang perlu terbaca)*
+- **Default Borders**: `rgba(84, 84, 84, 0.6)` (`ink-700` tint), hover `rgba(125, 125, 125, 0.7)` (`ink-500` tint)
+
+#### 4b. Typography & Border Neutral Colors — Light Mode
+- **Heading & Primary Text**: `#000000` *(ekstrem hitam, di luar 4 anchor — kontras 13.5:1 di atas `#CFCFCF`)*
+- **Secondary Body Text**: `ink-950` `#252525` *(kontras 9.85:1 — simetris dengan dark mode)*
+- **Muted & Metadata Text**: `ink-700` `#545454` *(kontras 4.87:1 di atas canvas terang — lolos AA teks normal)*
+- **Subtle / Placeholder Text**: `ink-500` `#7D7D7D` *(kontras ~2.6:1 — dekoratif/disabled saja)*
+- **Default Borders**: `rgba(125, 125, 125, 0.6)` (`ink-500` tint), hover `rgba(84, 84, 84, 0.7)` (`ink-700` tint)
+- ⚠️ **Needs rendered verification**: tombol `Surface Elevation 4` (`ink-500` `#7D7D7D`) dengan teks putih di atasnya berada di ~4.1:1 — pas-pasan untuk teks kecil. Kalau label tombol di bawah 14px/bold, ganti base ke `ink-700` `#545454` (7.6:1) supaya aman.
+
+#### 5. Zinc → Ink Wash Migration Map
+Class Tailwind `zinc-*` masih dipakai apa adanya di tabel Component Style Specifications (§D) di bawah — ini peta 1:1 supaya bisa di-replace mekanis (find & replace) tanpa baca ulang tiap baris:
+
+| Class lama (`zinc-*`) | Ganti dengan |
+| :--- | :--- |
+| `bg-zinc-950`, `bg-zinc-950/95` | `bg-surface-canvas`, `bg-surface-canvas/95` |
+| `bg-zinc-900/40`, `bg-zinc-900/60`, `bg-zinc-900/90` | `bg-surface-canvas` + opacity yang sama (`ink-950` di dark, `ink-300` di light) |
+| `bg-zinc-850` | `bg-surface-raised` |
+| `bg-zinc-800`, `border-zinc-800`, `border-zinc-800/60` | `ink-700` (`#545454` dark / `#7D7D7D` light) |
+| `bg-zinc-700`, `border-zinc-700/80`, `border-zinc-700/50` | `ink-500` (`#7D7D7D` dark / `#545454` light) |
+| `border-zinc-750` | `border-border-subtle` |
+| `text-zinc-100` | Primary text (`#FFFFFF` dark / `#000000` light) |
+| `text-zinc-200`, `text-zinc-300` | `ink-300` dark / `ink-950` light |
+| `text-zinc-400` | `ink-500` dark / `ink-700` light |
+| `text-zinc-500` | `ink-700` dark / `ink-500` light |
+
+Terapkan lewat CSS variable + `[data-theme="light"]` override (lihat §8.5), bukan class Tailwind `dark:`/`light:` terpisah — biar satu sumber kebenaran token, bukan dua set utility yang bisa divergen.
 
 ---
 
@@ -266,15 +315,16 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
 - **Body / Interface Font**: `Plus Jakarta Sans` (Weights: `300`, `400`, `500`, `600`, `700`, `800`)
 - **Headings Font (`h1`–`h6`, Brand Logo, Section Titles)**: `Outfit` (Weights: `500`, `600`, `700`, `800`)
 - **Numbers, Codes, & Timestamps**: System `font-mono`
+- **Perf note (lightweight)**: skala tipografi di bawah ini sebenarnya hanya memakai `400/500/600/700/800` dari Plus Jakarta Sans (`300` tidak dipakai di manapun pada tabel hierarki) dan `600/700/800` dari Outfit (`500` tidak dipakai). Drop weight yang tidak terpakai dari `next/font/google` subset agar payload font awal lebih kecil — tiap weight statis yang di-load adalah file terpisah.
 
 #### 2. Typographic Scale Hierarchy
 - **Hero Title (`h1`)**: `text-2xl sm:text-4xl md:text-5xl font-extrabold font-heading tracking-tight leading-tight`
 - **Page Title (`h1` on Subpages)**: `text-xl sm:text-2xl font-extrabold font-heading text-white tracking-tight`
 - **Section Heading (`h2`)**: `text-lg sm:text-xl font-bold font-heading text-white tracking-tight`
 - **Sub-Section / Modal Heading (`h3`)**: `text-sm sm:text-base font-bold font-heading text-white`
-- **Card Title (`h3` / `h4`)**: `text-xs sm:text-sm font-semibold text-zinc-100 hover:text-orange-400 line-clamp-2`
+- **Card Title (`h3` / `h4`)**: `text-[13px] sm:text-sm font-semibold text-zinc-100 hover:text-orange-400 line-clamp-2` (dinaikkan dari `text-xs`/12px — ini link yang bisa diklik di ratusan poster grid, bukan label statis, jadi perlu di atas ambang keterbacaan 12px)
 - **Body Regular**: `text-xs sm:text-sm text-zinc-300 leading-relaxed`
-- **Metadata / Chips / Badges**: `text-[10px]` sampai `text-xs font-medium` atau `font-mono font-bold`
+- **Metadata / Chips / Badges**: `text-[10px]` khusus untuk badge/counter satu-dua karakter (mis. jumlah episode, rank number); frasa metadata yang lebih panjang (studio, tanggal, durasi) tetap minimal `text-xs`
 
 ---
 
@@ -316,8 +366,8 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
 | | `outline` | `border border-zinc-700/80 text-zinc-300 bg-zinc-900/60 backdrop-blur-sm` |
 | | `sub` | `bg-orange-500/20 text-orange-300 border border-orange-500/30 font-semibold uppercase tracking-wider` |
 | | `dub` | `bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold uppercase tracking-wider` |
-| **AnimeCard** | Standard | Poster aspect `3/4`, border `border-zinc-800/60`, hover `border-zinc-700/80 hover:shadow-xl hover:shadow-orange-950/20` |
-| **Episode Button** | Active | `bg-orange-600 text-white border-orange-400 shadow-md shadow-orange-600/40 ring-2 ring-orange-400/50` |
+| **AnimeCard** | Standard | Poster aspect `3/4`, border `border-zinc-800/60`, hover `border-zinc-700/80 hover:shadow-xl hover:shadow-black/40` (neutral elevation — no colored glow; every card in a grid would otherwise repeat the same tinted shadow with no state meaning) |
+| **Episode Button** | Active | `bg-orange-600 text-white border-orange-400 shadow-md shadow-orange-600/40 ring-2 ring-orange-400/50` — reserved for the single "currently selected episode" state; do not reuse this glow on hover or default states |
 | | Watched | `bg-zinc-800/90 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:border-orange-500/50` |
 | | Unwatched | `bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800 hover:text-white` |
 | **Global Music Player** | Floating Bar | `bg-zinc-950/95 backdrop-blur-xl border border-zinc-750 shadow-2xl rounded-2xl ring-1 ring-white/10` |
@@ -348,6 +398,9 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
   - Transisi tombol: `transition-all active:scale-[0.98]`
   - Equalizer bar animation: Keyframe bouncing vertical bars (`animate-[bounce_0.8s_ease-in-out_infinite]`)
   - Spinning Vinyl: `animate-spin` dengan durasi 4–6 detik
+- **Reduced Motion**:
+  - Semua animasi dekoratif/berkelanjutan (Lenis smooth scroll, vinyl spin, equalizer bounce, hover zoom `scale-105`, `active:scale-[0.98]`) wajib tunduk pada media query `prefers-reduced-motion: reduce` — matikan `smoothWheel`/`syncTouch` di `SmoothScrollProvider`, hentikan `animate-spin`/`animate-bounce`, dan ganti transform-based hover dengan perubahan warna/border saja
+  - Equalizer bounce dan vinyl spin dikecualikan dari kategori "motion dekoratif generik" karena keduanya merepresentasikan status audio real-time (playing/paused) — bukan hiasan tanpa arti, jadi boleh tetap ada saat `prefers-reduced-motion` off
 
 ---
 
@@ -469,8 +522,22 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
 4. **Persistent Playback Pemutar Musik**:
    - *Kondisi*: Lagu tema OP/ED diputar secara background saat navigasi antar halaman berlangsung.
    - *Solusi di Kode*: `GlobalMusicPlayer.tsx` me-mount iframe YouTube no-cookie tersembunyi secara permanen di tingkat root `AppShell`, sehingga audio tetap berlanjut tanpa terhenti ketika pengguna berpindah rute halaman.
-5. **Inkonsistensi Nilai Warna & Class Tailwind**:
-   - Terdapat penggunaan background hex hardcoded `#09090b` di `layout.tsx` dan `AppShell.tsx` yang setara dengan `bg-zinc-950`.
-   - Penggunaan arbitrary class utility Tailwind seperti `bg-zinc-850`, `border-zinc-750`, `filter blur-xs`, dan `aspect-[21/9]` berjalan dengan baik di Tailwind v4 `@import "tailwindcss";`, namun perlu dipertahankan konsistensinya saat penambahan komponen baru di masa depan.
+5. **Inkonsistensi Nilai Warna & Class Tailwind** *(fix disarankan)*:
+   - *Kondisi*: Hex hardcoded `#09090b` (duplikat dari `bg-zinc-950`) di `layout.tsx`/`AppShell.tsx`, plus arbitrary utility ad hoc (`bg-zinc-850`, `border-zinc-750`, `blur-xs`) yang tidak terdaftar di skala Tailwind resmi — tiap pemakaian baru berisiko generate class arbitrary baru yang sedikit beda (`bg-[#1f1f22]` vs `bg-zinc-850`), membengkakkan CSS terkompilasi dan bikin surface elevation tidak konsisten.
+   - *Solusi*: Daftarkan sekali sebagai custom token di `tailwind.config`/`@theme` (Tailwind v4), lalu pakai nama semantik di seluruh komponen — bukan hex/arbitrary berulang:
+     ```css
+     @theme {
+       --color-surface-canvas: #252525;      /* ink-950 — canvas dark mode, pengganti hardcoded #09090b lama */
+       --color-surface-raised: #333333;      /* derived — pengganti bg-zinc-850 ad hoc */
+       --color-border-subtle: #545454;       /* ink-700 — pengganti border-zinc-750 ad hoc */
+     }
+
+     [data-theme="light"] {
+       --color-surface-canvas: #CFCFCF;      /* ink-300 — canvas light mode */
+       --color-surface-raised: #BFBFBF;      /* derived */
+       --color-border-subtle: #7D7D7D;       /* ink-500 */
+     }
+     ```
+     Referensikan sebagai `bg-surface-canvas`, `bg-surface-raised`, `border-border-subtle`. Ini juga yang mendukung tujuan *lightweight*: satu token dipakai berulang kali menghasilkan lebih sedikit unique class di output CSS dibanding banyak varian arbitrary yang mirip-mirip.
 6. **In-Memory Server Cache Scope**:
    - Cache memory di `src/lib/cache.ts` menggunakan runtime `Map<string, CacheEntry>`. Pada deployment serverless multi-instance (seperti Vercel), cache instance berlaku per-lambda container, sedangkan di browser didukung oleh client-side caching.
