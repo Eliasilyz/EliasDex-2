@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { updateWatchProgress, getWatchHistory } from "@/models/watchHistory";
+import { updateWatchProgress, getWatchHistory, clearWatchHistory, deleteWatchHistoryEntry } from "@/models/watchHistory";
 import { addXp, findUserById } from "@/models/user";
 import { XP_PER_EPISODE, levelFromXp } from "@/lib/xp";
 import { z } from "zod";
@@ -80,6 +80,54 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("Watch progress error:", err);
+    return NextResponse.json(
+      { error: err.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const history = await getWatchHistory(session.user.id, 200);
+    return NextResponse.json({ history });
+  } catch (err: any) {
+    console.error("Watch history fetch error:", err);
+    return NextResponse.json(
+      { error: err.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+
+    if (body.clearAll) {
+      const ok = await clearWatchHistory(session.user.id);
+      return NextResponse.json({ success: ok });
+    }
+
+    const animeId = Number(body.animeId);
+    if (!animeId || !Number.isInteger(animeId)) {
+      return NextResponse.json({ error: "animeId is required" }, { status: 400 });
+    }
+
+    const ok = await deleteWatchHistoryEntry(session.user.id, animeId);
+    return NextResponse.json({ success: ok });
+  } catch (err: any) {
+    console.error("Watch history delete error:", err);
     return NextResponse.json(
       { error: err.message || "Internal server error" },
       { status: 500 }

@@ -26,7 +26,7 @@ const ClientOnly = ({ children }: { children: React.ReactNode }) => {
 export const Navbar: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { watchlist, history } = useWatch();
+  const { watchlist, history, userLevel } = useWatch();
   const { data: session } = useSession();
   const pathname = usePathname();
   const currentPath = pathname || '/';
@@ -158,7 +158,7 @@ export const Navbar: React.FC = () => {
                     ) : (
                       <UserIcon className="w-4 h-4 text-zinc-400 group-hover:text-white" />
                     )}
-                    <LevelBadge level={session.user.level || 0} size="sm" />
+                    <LevelBadge level={userLevel ?? session.user.level ?? 0} size="sm" />
                   </button>
                 ) : (
                   <ShadcnButton

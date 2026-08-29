@@ -29,7 +29,7 @@ export interface WatchHistoryEntry {
   lastWatchedAt: Date;
 }
 
-export type WatchlistStatus = "watching" | "plan_to_watch" | "completed" | "dropped";
+export type WatchlistStatus = "watching" | "plan_to_watch" | "completed" | "on_hold" | "dropped";
 
 export interface Favorite {
   _id?: ObjectId;

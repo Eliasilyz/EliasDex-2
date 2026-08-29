@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAppNavigate } from '@/lib/useNavigate';
 import { Anime, AnimeEpisode, StreamSource } from '../types';
@@ -53,6 +53,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   const [activeSideTab, setActiveSideTab] = useState<'episodes' | 'chat'>('episodes');
+  const [markedWatched, setMarkedWatched] = useState(false);
 
   // Fetch anime metadata and episodes
   useEffect(() => {
@@ -83,6 +84,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   // Record progress whenever anime or episode loads
   useEffect(() => {
     if (anime) {
+      setMarkedWatched(false);
       const img =
         anime.images?.webp?.large_image_url ||
         anime.images?.jpg?.large_image_url ||
@@ -123,13 +125,34 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   const hasNextEp = epNum < maxEpisodes;
   const hasPrevEp = epNum > 1;
 
+  // Mark the current episode as completed so the account earns XP/level.
+  const markCurrentCompleted = useCallback(() => {
+    if (!anime) return;
+    const img =
+      anime.images?.webp?.large_image_url ||
+      anime.images?.jpg?.large_image_url ||
+      anime.images?.webp?.image_url ||
+      '';
+    recordWatchProgress({
+      malId: anime.mal_id,
+      title: anime.title_english || anime.title,
+      image: img,
+      episodeNumber: epNum,
+      totalEpisodes: anime.episodes,
+      language: lang,
+      completed: true,
+    });
+  }, [anime, epNum, lang, recordWatchProgress]);
+
   const handleNextEp = () => {
+    markCurrentCompleted();
     const next = epNum + 1;
     onNavigate(`/watch/${malId}/${next}?lang=${lang}`);
   };
 
   const handlePrevEp = () => {
     if (epNum > 1) {
+      markCurrentCompleted();
       const prev = epNum - 1;
       onNavigate(`/watch/${malId}/${prev}?lang=${lang}`);
     }
@@ -138,6 +161,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   const handleVideoEnded = () => {
     if (autoNext && hasNextEp) {
       console.log('Video ended. Triggering auto-next episode...');
+      markCurrentCompleted();
       handleNextEp();
     }
   };
@@ -216,6 +240,23 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
                 <span>Next</span>
                 <ChevronRight className="w-4 h-4" />
               </Button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  markCurrentCompleted();
+                  setMarkedWatched(true);
+                }}
+                className={`p-2 rounded-xl text-xs font-medium border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                  markedWatched
+                    ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/30'
+                    : 'bg-zinc-850 text-zinc-300 border-zinc-800 hover:text-white hover:bg-zinc-800'
+                }`}
+                title="Mark this episode as watched (earns XP)"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{markedWatched ? 'Watched' : 'Mark Watched'}</span>
+              </button>
 
               <button
                 type="button"
