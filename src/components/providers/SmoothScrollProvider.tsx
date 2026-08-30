@@ -23,15 +23,21 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
   }, [pathname]);
 
   const lenisOptions = useMemo(
-    () => ({
-      lerp: 0.15, // Snappy & lightweight damping (eliminates sluggish drag/heavy inertia)
-      smoothWheel: true,
-      syncTouch: false, // 100% native responsive 120fps touch scroll on mobile/trackpads
-      wheelMultiplier: 1.15, // Responsive distance per scroll tick
-      touchMultiplier: 1,
-      autoResize: true,
-      allowNestedScroll: true,
-    }),
+    () => {
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      return {
+        lerp: 0.15, // Snappy & lightweight damping (eliminates sluggish drag/heavy inertia)
+        smoothWheel: !prefersReducedMotion, // Disable inertial scroll under prefers-reduced-motion (§6.E)
+        syncTouch: false, // 100% native responsive 120fps touch scroll on mobile/trackpads
+        wheelMultiplier: 1.15, // Responsive distance per scroll tick
+        touchMultiplier: 1,
+        autoResize: true,
+        allowNestedScroll: true,
+      };
+    },
     []
   );
 

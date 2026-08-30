@@ -18,21 +18,20 @@ export async function initJQueryEffects() {
           position: 'absolute',
           top: y + 'px',
           left: x + 'px',
-          width: '0px',
-          height: '0px',
+          width: '300px',
+          height: '300px',
           borderRadius: '50%',
           backgroundColor: 'rgba(255, 255, 255, 0.35)',
-          transform: 'translate(-50%, -50%)',
+          transform: 'translate(-50%, -50%) scale(0)',
           pointerEvents: 'none',
-          transition: 'width 0.5s ease-out, height 0.5s ease-out, opacity 0.5s ease-out',
+          transition: 'transform 0.5s ease-out, opacity 0.5s ease-out',
         });
 
         $btn.css('position', 'relative').css('overflow', 'hidden').append($ripple);
 
         setTimeout(() => {
           $ripple.css({
-            width: '300px',
-            height: '300px',
+            transform: 'translate(-50%, -50%) scale(1)',
             opacity: '0',
           });
         }, 10);
@@ -69,7 +68,7 @@ export async function jqNotify(message: string, type: 'info' | 'success' | 'erro
     const { default: $ } = await import('jquery');
 
     const bgColors = {
-      info: 'bg-zinc-900 border-zinc-700 text-zinc-100',
+      info: 'bg-surface-canvas border-ink-500 text-surface-primary',
       success: 'bg-emerald-950 border-emerald-500/50 text-emerald-200',
       error: 'bg-red-950 border-red-500/50 text-red-200',
     };

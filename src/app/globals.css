@@ -2,6 +2,82 @@
 @import "lenis/dist/lenis.css";
 @import "@aejkatappaja/phantom-ui/ssr.css";
 
+/* ============================================================
+   EliasDex 2 — "Ink Wash" Design Tokens (Tailwind v4 @theme)
+   Source of truth: DESIGN.md §6.A and §8.5
+   ============================================================ */
+
+@theme {
+  /* Focus (anchor) tokens — values are theme-aware & flip symmetrically
+     between dark (default) and light ([data-theme="light"]) so a single
+     token + one CSS override drives every surface. See §8.5 migration map. */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-heading: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Ink Wash neutral anchors (dark default). Values flip in light override. */
+  --color-ink-950: #252525;  /* canvas dark / secondary-text light */
+  --color-ink-700: #545454;  /* mid-dark surface (elevation 2/4) */
+  --color-ink-500: #959595;  /* mid-light surface (hover) — bumped from #7D7D7D for AA text contrast (~5.3:1 on canvas) */
+  --color-ink-300: #CFCFCF;  /* secondary text dark / canvas light */
+
+  /* Surface semantics (derived from the anchors) */
+  --color-surface-canvas: #0a0e27;    /* deep dark navy canvas */
+  --color-surface-raised: #141a3e;    /* derived — elevation 1 card base */
+  --color-surface-primary: #FFFFFF;   /* primary text (extreme white) */
+
+  /* Border semantics */
+  --color-border-subtle: #545454;     /* ink-700 — default border */
+}
+
+/* Light Mode — symmetric reversal of the elevation logic (not just canvas
+   swap): elevations move TOWARD the mid-scale from the light end, so they
+   get darker as elevation rises. §6.A.1b + §8.5 */
+[data-theme="light"] {
+  --color-ink-950: #CFCFCF;
+  --color-ink-700: #7D7D7D;
+  --color-ink-500: #545454;
+  --color-ink-300: #252525;
+
+  --color-surface-canvas: #CFCFCF;    /* ink-300 — app canvas light */
+  --color-surface-raised: #BFBFBF;    /* derived — elevation 1 */
+  --color-surface-primary: #000000;   /* primary text (extreme black) */
+
+  --color-border-subtle: #7D7D7D;     /* ink-500 */
+}
+
+/* ============================================================
+   Light-safe semantic/badge text — darkens pastel & mid accent
+   tones under [data-theme="light"] so tinted chips stay readable.
+   (See §6.E / contrast flag a in the objective — reported step 6.)
+   ============================================================ */
+@layer utilities {
+  [data-theme="light"] .text-emerald-300,
+  [data-theme="light"] .text-emerald-400 { color: #047857; }
+
+  [data-theme="light"] .text-amber-300 { color: #b45309; }
+  [data-theme="light"] .text-amber-400 { color: #92400e; }
+
+  [data-theme="light"] .text-orange-300 { color: #c2410c; }
+  [data-theme="light"] .text-orange-400 { color: #c2410c; }
+  [data-theme="light"] .text-orange-500 { color: #9a3412; }
+
+  [data-theme="light"] .text-sky-300 { color: #0369a1; }
+  [data-theme="light"] .text-sky-400 { color: #0284c7; }
+
+  [data-theme="light"] .text-cyan-300 { color: #0e7490; }
+  [data-theme="light"] .text-cyan-400 { color: #0891b2; }
+
+  [data-theme="light"] .text-blue-300 { color: #1d4ed8; }
+  [data-theme="light"] .text-blue-400 { color: #2563eb; }
+
+  [data-theme="light"] .text-green-300 { color: #15803d; }
+  [data-theme="light"] .text-yellow-300 { color: #a16207; }
+
+  [data-theme="light"] .text-red-300,
+  [data-theme="light"] .text-red-400 { color: #b91c1c; }
+  [data-theme="light"] .text-red-500 { color: #991b1b; }
+}
+
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -23,6 +99,29 @@
     font-family: var(--font-sans);
     overflow-x: hidden;
     max-width: 100%;
+    background-color: var(--color-surface-canvas);
+  }
+
+  /* ============================================================
+     Dark Tech-Grid Background — fixed full-viewport layer,
+     sits behind all content (z-index: -1, pointer-events: none).
+     Lines: thin (1px) blue (#3b5bfd) evenly spaced squares.
+     Glow/vignette: radial mask — brightest at center, fades to edges.
+     Pure CSS (no image assets); spacing/colors are easy to tune.
+     ============================================================ */
+  .tech-grid-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--color-surface-canvas);
+    background-image:
+      radial-gradient(ellipse 85% 85% at 50% 50%, transparent 0%, var(--color-surface-canvas) 85%),
+      radial-gradient(ellipse 55% 55% at 50% 50%, rgba(59, 91, 253, 0.18) 0%, transparent 70%),
+      linear-gradient(to right, rgba(59, 91, 253, 0.42) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(59, 91, 253, 0.42) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+    background-position: center, center, center, center;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -37,16 +136,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(9, 9, 11, 0.6);
+  background: var(--color-surface-canvas);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(82, 82, 91, 0.45);
+  background: var(--color-ink-700);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(113, 113, 122, 0.7);
+  background: var(--color-ink-500);
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -121,6 +220,35 @@
   animation: phantom-sweep 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   border-radius: inherit;
+}
+
+/* ============================================================
+   Reduced Motion — DESIGN.md §6.E
+   Decorative/continuous motion is disabled under
+   prefers-reduced-motion. Equalizer bounce & vinyl spin are
+   EXEMPT because they represent real-time audio status (playing),
+   not decoration — re-enabled via the .audio-live marker.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Audio status (equalizer bounce / vinyl spin while playing) — keep */
+  .audio-live,
+  .audio-live::before,
+  .audio-live::after {
+    animation-duration: var(--audio-dur, 4s) !important;
+    animation-iteration-count: infinite !important;
+  }
 }
 
 

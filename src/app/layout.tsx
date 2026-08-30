@@ -9,13 +9,13 @@ import './globals.css';
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-sans',
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700', '800'],
 });
 
 const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-heading',
-  weight: ['500', '600', '700', '800'],
+  weight: ['600', '700', '800'],
 });
 
 export const metadata: Metadata = constructMetadata();
@@ -33,9 +33,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body
 
-        className="bg-[#09090b] text-zinc-100 antialiased selection:bg-orange-600 selection:text-white min-h-screen"
+        className="text-surface-primary antialiased selection:bg-orange-600 selection:text-white min-h-screen relative"
         suppressHydrationWarning
       >
+        <div className="tech-grid-background" aria-hidden="true" />
         <AppProviders>
           <AppShell>{children}</AppShell>
         </AppProviders>

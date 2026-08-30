@@ -13,7 +13,7 @@ interface LevelBadgeProps {
 }
 
 const LEVEL_COLORS: Record<number, string> = {
-  0: "text-zinc-500",
+  0: "text-ink-500",
   1: "text-gray-400",
   2: "text-gray-300",
   3: "text-slate-300",
@@ -58,14 +58,14 @@ export const LevelBadge: React.FC<LevelBadgeProps> = ({
       ? "from-yellow-500/20 via-orange-500/20 to-red-500/20"
       : computedLevel >= 5
       ? "from-blue-500/20 via-cyan-500/20 to-emerald-500/20"
-      : "from-zinc-700/20 via-zinc-600/20 to-zinc-500/20";
+      : "from-ink-700/20 via-ink-500/20 to-ink-300/20";
 
   return (
     <span
       className={cn(
         "inline-flex shrink-0 items-center gap-1 font-semibold border transition-colors",
         bgGradient,
-        `border-${computedLevel >= 10 ? "yellow" : "zinc"}-500/30`,
+        `border-${computedLevel >= 10 ? "yellow" : "ink"}-500/30`,
         config.badge,
         colorClass,
         className

@@ -323,7 +323,7 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
 - **Section Heading (`h2`)**: `text-lg sm:text-xl font-bold font-heading text-white tracking-tight`
 - **Sub-Section / Modal Heading (`h3`)**: `text-sm sm:text-base font-bold font-heading text-white`
 - **Card Title (`h3` / `h4`)**: `text-[13px] sm:text-sm font-semibold text-zinc-100 hover:text-orange-400 line-clamp-2` (dinaikkan dari `text-xs`/12px — ini link yang bisa diklik di ratusan poster grid, bukan label statis, jadi perlu di atas ambang keterbacaan 12px)
-- **Body Regular**: `text-xs sm:text-sm text-zinc-300 leading-relaxed`
+- **Body Regular**: `text-sm text-zinc-300 leading-relaxed` (was `text-xs sm:text-sm`; running body copy no longer drops to 12px on mobile, where it's hardest to read)
 - **Metadata / Chips / Badges**: `text-[10px]` khusus untuk badge/counter satu-dua karakter (mis. jumlah episode, rank number); frasa metadata yang lebih panjang (studio, tanggal, durasi) tetap minimal `text-xs`
 
 ---
@@ -353,7 +353,7 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
 
 | Komponen | Varian | Gaya Visual & Class List Kunci |
 | :--- | :--- | :--- |
-| **Button** | `primary` | `bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-600/25 active:scale-[0.98]` |
+| **Button** | `primary` | `bg-orange-600 hover:bg-orange-500 text-white shadow-sm shadow-orange-600/20 active:scale-[0.98]` — the one colored shadow kept in the system; every other component below uses flat fill or neutral elevation so this stays legible as "the primary action" instead of one glow among several |
 | | `secondary` | `bg-zinc-800 hover:bg-zinc-700 text-zinc-100 active:scale-[0.98]` |
 | | `outline` | `border border-zinc-700/80 hover:border-zinc-500 bg-zinc-900/40 text-zinc-200 hover:bg-zinc-800/60 active:scale-[0.98]` |
 | | `ghost` | `text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50` |
@@ -363,14 +363,14 @@ Dua font family Google diintegrasikan melalui `next/font/google` di `layout.tsx`
 | | `success` | `bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium` |
 | | `warning` | `bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium` |
 | | `info` | `bg-sky-500/20 text-sky-300 border border-sky-500/30 font-medium` |
-| | `outline` | `border border-zinc-700/80 text-zinc-300 bg-zinc-900/60 backdrop-blur-sm` |
+| | `outline` | `border border-zinc-700/80 text-zinc-300 bg-zinc-900/60` (dropped `backdrop-blur-sm` — the badge sits on an already-opaque card, so the blur had nothing to blur and only added GPU cost) |
 | | `sub` | `bg-orange-500/20 text-orange-300 border border-orange-500/30 font-semibold uppercase tracking-wider` |
 | | `dub` | `bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold uppercase tracking-wider` |
 | **AnimeCard** | Standard | Poster aspect `3/4`, border `border-zinc-800/60`, hover `border-zinc-700/80 hover:shadow-xl hover:shadow-black/40` (neutral elevation — no colored glow; every card in a grid would otherwise repeat the same tinted shadow with no state meaning) |
-| **Episode Button** | Active | `bg-orange-600 text-white border-orange-400 shadow-md shadow-orange-600/40 ring-2 ring-orange-400/50` — reserved for the single "currently selected episode" state; do not reuse this glow on hover or default states |
+| **Episode Button** | Active | `bg-orange-600 text-white border border-orange-400` — the solid orange fill already reads as "selected" at a glance across a full episode grid; the extra shadow + ring on top of it were redundant emphasis competing with the Button component's own glow, so this state now carries one signal (fill) instead of three (fill + shadow + ring) |
 | | Watched | `bg-zinc-800/90 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:border-orange-500/50` |
 | | Unwatched | `bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:bg-zinc-800 hover:text-white` |
-| **Global Music Player** | Floating Bar | `bg-zinc-950/95 backdrop-blur-xl border border-zinc-750 shadow-2xl rounded-2xl ring-1 ring-white/10` |
+| **Global Music Player** | Floating Bar | `bg-zinc-950/95 backdrop-blur-xl border border-zinc-750 shadow-lg rounded-2xl` — pulled the shadow down from `shadow-2xl` to `shadow-lg` and dropped `ring-1 ring-white/10` (a hairline border and a maxed-out shadow blur were fighting for the same "edge" job, and the ring only duplicated the border) |
 
 ---
 

@@ -41,21 +41,21 @@ export const PWAInstallBanner: React.FC = () => {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-sm z-50 p-4 rounded-2xl bg-zinc-950/95 border border-orange-500/30 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-sm z-50 p-4 rounded-2xl bg-surface-canvas/95 border border-orange-500/30 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">
             <Smartphone className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-white font-heading">Install EliasDex</h4>
-            <p className="text-xs text-zinc-400 mt-0.5">Install app for fast, offline-ready streaming experience</p>
+            <h4 className="text-sm font-bold text-surface-primary font-heading">Install EliasDex</h4>
+            <p className="text-xs text-ink-500 mt-0.5">Install app for fast, offline-ready streaming experience</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => setShowBanner(false)}
-          className="text-zinc-500 hover:text-zinc-300 p-1 cursor-pointer"
+          className="text-ink-500 hover:text-ink-300 p-1 cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>

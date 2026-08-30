@@ -13,7 +13,7 @@ export const LanguageToggle: React.FC<LanguageToggleProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`inline-flex items-center p-1 bg-zinc-900 border border-zinc-800 rounded-xl ${className}`}>
+    <div className={`inline-flex items-center p-1 bg-surface-canvas border border-ink-700 rounded-xl ${className}`}>
       <button
         type="button"
         id="lang-toggle-sub"
@@ -21,7 +21,7 @@ export const LanguageToggle: React.FC<LanguageToggleProps> = ({
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
           value === 'sub'
             ? 'bg-orange-600 text-white shadow-sm'
-            : 'text-zinc-400 hover:text-zinc-200'
+            : 'text-ink-500 hover:text-ink-300'
         }`}
       >
         <Subtitles className="w-3.5 h-3.5" />
@@ -35,7 +35,7 @@ export const LanguageToggle: React.FC<LanguageToggleProps> = ({
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
           value === 'dub'
             ? 'bg-amber-600 text-white shadow-sm'
-            : 'text-zinc-400 hover:text-zinc-200'
+            : 'text-ink-500 hover:text-ink-300'
         }`}
       >
         <Volume2 className="w-3.5 h-3.5" />

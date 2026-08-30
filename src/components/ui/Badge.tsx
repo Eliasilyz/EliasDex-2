@@ -17,11 +17,11 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const variantClasses = {
     primary: 'bg-orange-600/90 text-white font-medium',
-    secondary: 'bg-zinc-800 text-zinc-300 border border-zinc-700/50',
+    secondary: 'bg-ink-700 text-ink-300 border border-ink-500/50',
     success: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium',
     warning: 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium',
     info: 'bg-sky-500/20 text-sky-300 border border-sky-500/30 font-medium',
-    outline: 'border border-zinc-700/80 text-zinc-300 bg-zinc-900/60 backdrop-blur-sm',
+    outline: 'border border-ink-500/80 text-ink-300 bg-surface-canvas/60 backdrop-blur-sm',
     sub: 'bg-orange-500/20 text-orange-300 border border-orange-500/30 font-semibold uppercase tracking-wider',
     dub: 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold uppercase tracking-wider',
   }[variant];

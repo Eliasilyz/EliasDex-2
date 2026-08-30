@@ -42,8 +42,8 @@ export const AnimeGrid: React.FC<AnimeGridProps> = ({
         <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mb-3">
           <AlertCircle className="w-6 h-6" />
         </div>
-        <h3 className="text-base font-semibold text-zinc-200 mb-1">Failed to load content</h3>
-        <p className="text-sm text-zinc-400 mb-4">{error}</p>
+        <h3 className="text-base font-semibold text-ink-300 mb-1">Failed to load content</h3>
+        <p className="text-sm text-ink-500 mb-4">{error}</p>
         {onRetry && (
           <Button variant="secondary" size="sm" onClick={onRetry} icon={<RefreshCw className="w-3.5 h-3.5" />}>
             Try Again
@@ -56,11 +56,11 @@ export const AnimeGrid: React.FC<AnimeGridProps> = ({
   if (!loading && items.length === 0) {
     return (
       <div className="py-16 px-4 flex flex-col items-center justify-center text-center max-w-md mx-auto">
-        <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-500 flex items-center justify-center mb-3">
+        <div className="w-12 h-12 rounded-2xl bg-surface-canvas border border-ink-700 text-ink-500 flex items-center justify-center mb-3">
           <Inbox className="w-6 h-6" />
         </div>
-        <h3 className="text-base font-semibold text-zinc-300 mb-1">No Anime Found</h3>
-        <p className="text-sm text-zinc-400">{emptyMessage}</p>
+        <h3 className="text-base font-semibold text-ink-300 mb-1">No Anime Found</h3>
+        <p className="text-sm text-ink-500">{emptyMessage}</p>
       </div>
     );
   }

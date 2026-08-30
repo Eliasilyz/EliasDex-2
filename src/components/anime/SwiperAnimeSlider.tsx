@@ -60,13 +60,13 @@ export const SwiperAnimeSlider: React.FC<SwiperAnimeSliderProps> = ({
       {/* Slider Controls */}
       <button
         type="button"
-        className={`${prevClass} absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 hover:bg-orange-500 border border-zinc-700 text-white flex items-center justify-center shadow-lg opacity-0 group-hover/slider:opacity-100 transition-all duration-200 cursor-pointer`}
+        className={`${prevClass} absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-surface-canvas/90 hover:bg-orange-500 border border-ink-500 text-white flex items-center justify-center shadow-lg opacity-0 group-hover/slider:opacity-100 transition-all duration-200 cursor-pointer`}
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
       <button
         type="button"
-        className={`${nextClass} absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-zinc-900/90 hover:bg-orange-500 border border-zinc-700 text-white flex items-center justify-center shadow-lg opacity-0 group-hover/slider:opacity-100 transition-all duration-200 cursor-pointer`}
+        className={`${nextClass} absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-surface-canvas/90 hover:bg-orange-500 border border-ink-500 text-white flex items-center justify-center shadow-lg opacity-0 group-hover/slider:opacity-100 transition-all duration-200 cursor-pointer`}
       >
         <ChevronRight className="w-5 h-5" />
       </button>

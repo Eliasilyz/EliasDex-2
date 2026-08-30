@@ -6,7 +6,7 @@ import { GlobalMusicPlayer } from '@/components/music/GlobalMusicPlayer';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#09090b] text-zinc-100 selection:bg-orange-600 selection:text-white pb-12 overflow-x-hidden">
+    <div className="min-h-screen flex flex-col text-surface-primary selection:bg-orange-600 selection:text-white pb-12 overflow-x-hidden">
       <Navbar />
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">{children}</main>
       <Footer />

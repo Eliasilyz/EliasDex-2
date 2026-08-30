@@ -15,14 +15,14 @@ export const ServerNotice: React.FC<{ className?: string }> = ({ className = '' 
         <p className="font-semibold text-orange-100">
           Streaming Tips & Controls
         </p>
-        <p className="text-zinc-300 leading-relaxed text-[11px]">
+        <p className="text-ink-300 leading-relaxed text-xs">
           If the video is slow or buffering, switch between <span className="text-white font-medium">Zoko</span>, <span className="text-white font-medium">MegaPlay</span>, and <span className="text-white font-medium">Backup servers</span> above. You can toggle SUB / DUB anytime.
         </p>
       </div>
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="text-zinc-400 hover:text-zinc-200 p-1 rounded-lg cursor-pointer"
+        className="text-ink-500 hover:text-ink-300 p-1 rounded-lg cursor-pointer"
         title="Dismiss"
       >
         <X className="w-3.5 h-3.5" />

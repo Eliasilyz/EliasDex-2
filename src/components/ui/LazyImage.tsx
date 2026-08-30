@@ -27,9 +27,9 @@ export const LazyImage: React.FC<LazyImageProps> = ({
 
   if (hasError || !src) {
     return (
-      <div className={`w-full h-full flex flex-col items-center justify-center bg-zinc-900 text-zinc-600 ${containerClassName}`}>
+      <div className={`w-full h-full flex flex-col items-center justify-center bg-surface-canvas text-ink-500 ${containerClassName}`}>
         <Film className="w-8 h-8 mb-1" />
-        <span className="text-[10px]">No Image</span>
+        <span className="text-xs">No Image</span>
       </div>
     );
   }

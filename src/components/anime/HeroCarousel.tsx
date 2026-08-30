@@ -62,7 +62,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
 
   return (
     <div
-      className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800/80 shadow-2xl group/hero min-h-[380px] sm:min-h-[460px] md:min-h-[520px] flex items-center"
+      className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-surface-canvas border border-ink-700/80 shadow-2xl group/hero min-h-[380px] sm:min-h-[460px] md:min-h-[520px] flex items-center"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -73,11 +73,11 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
             key={currentAnime.mal_id}
             src={backdropUrl}
             alt={title}
-            className="w-full h-full object-cover object-center scale-105 filter blur-xs brightness-[0.4] transition-all duration-700 animate-in fade-in"
+            className="w-full h-full object-cover object-center scale-105 filter blur-sm brightness-[0.4] transition-all duration-700 animate-in fade-in"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-surface-canvas via-surface-canvas/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-surface-canvas via-surface-canvas/80 to-transparent" />
       </div>
 
       {/* Content Layout */}
@@ -98,13 +98,13 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
             )}
 
             {currentAnime.status && (
-              <Badge variant="secondary" className="font-mono text-[11px]">
+              <Badge variant="secondary" className="font-mono text-xs">
                 {currentAnime.status}
               </Badge>
             )}
 
             {currentAnime.season && (
-              <span className="text-xs text-zinc-400 capitalize font-medium">
+              <span className="text-xs text-ink-500 capitalize font-medium">
                 {currentAnime.season} {currentAnime.year}
               </span>
             )}
@@ -114,12 +114,12 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
           <div>
             <h1
               id="hero-anime-title"
-              className="text-xl sm:text-3xl md:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight line-clamp-2"
+              className="text-2xl sm:text-4xl md:text-5xl font-extrabold font-heading text-surface-primary tracking-tight leading-tight line-clamp-2"
             >
               {title}
             </h1>
             {secondaryTitle && (
-              <p className="text-xs text-zinc-400 mt-1 font-sans">
+              <p className="text-xs text-ink-500 mt-1 font-sans">
                 {secondaryTitle}
               </p>
             )}
@@ -131,7 +131,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
               {currentAnime.genres.slice(0, 4).map((g) => (
                 <span
                   key={g.mal_id}
-                  className="px-2.5 py-1 rounded-lg text-xs font-medium bg-zinc-900/80 text-zinc-300 border border-zinc-750"
+                  className="px-2.5 py-1 rounded-lg text-xs font-medium bg-surface-canvas/80 text-ink-300 border border-border-subtle"
                 >
                   {g.name}
                 </span>
@@ -141,7 +141,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
 
           {/* Synopsis */}
           {currentAnime.synopsis && (
-            <p className="text-xs sm:text-sm text-zinc-300/90 line-clamp-3 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-ink-300/90 line-clamp-3 max-w-xl leading-relaxed">
               {currentAnime.synopsis}
             </p>
           )}
@@ -190,7 +190,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
 
         {/* Small Poster preview on desktop */}
         <div className="hidden lg:block shrink-0">
-          <div className="w-44 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-zinc-700/60 bg-zinc-800 rotate-1 group-hover/hero:rotate-0 transition-transform duration-300">
+          <div className="w-44 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-ink-500/60 bg-ink-700 rotate-1 group-hover/hero:rotate-0 transition-transform duration-300">
             {posterUrl && (
               <img
                 src={posterUrl}
@@ -207,7 +207,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
         type="button"
         id="hero-prev-btn"
         onClick={handlePrev}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/hero:opacity-100 transition-opacity cursor-pointer"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-surface-canvas/80 hover:bg-ink-700 border border-ink-500/80 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/hero:opacity-100 transition-opacity cursor-pointer"
         aria-label="Previous Featured Anime"
       >
         <ChevronLeft className="w-6 h-6" />
@@ -217,7 +217,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
         type="button"
         id="hero-next-btn"
         onClick={handleNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/80 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/hero:opacity-100 transition-opacity cursor-pointer"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-surface-canvas/80 hover:bg-ink-700 border border-ink-500/80 text-white shadow-xl flex items-center justify-center opacity-0 group-hover/hero:opacity-100 transition-opacity cursor-pointer"
         aria-label="Next Featured Anime"
       >
         <ChevronRight className="w-6 h-6" />
@@ -233,7 +233,7 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({
             className={`h-1.5 rounded-full transition-all cursor-pointer ${
               currentIndex === idx
                 ? 'w-6 bg-orange-500'
-                : 'w-1.5 bg-zinc-600 hover:bg-zinc-400'
+                : 'w-1.5 bg-ink-500 hover:bg-ink-300'
             }`}
             aria-label={`Go to slide ${idx + 1}`}
           />

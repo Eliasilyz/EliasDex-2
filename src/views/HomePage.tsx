@@ -94,11 +94,11 @@ export const HomePage: React.FC = () => {
 
       {/* Continue Watching Strip */}
       {history && history.length > 0 && (
-        <section className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 space-y-3">
+        <section className="p-4 rounded-2xl bg-surface-canvas/40 border border-ink-700/80 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <History className="w-4 h-4 text-orange-400" />
-              <h3 className="text-sm font-bold text-white font-heading">
+              <h3 className="text-sm font-bold text-surface-primary font-heading">
                 Continue Watching
               </h3>
             </div>
@@ -112,15 +112,15 @@ export const HomePage: React.FC = () => {
           </div>
 
           <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
-            {history.slice(0, 6).map((item) => (
+            {history.slice(0, 6).map((item, idx) => (
               <div
-                key={item.malId}
+                key={`${item.malId}-${item.episodeNumber}-${item.language}-${idx}`}
                 onClick={() => onNavigate(`/watch/${item.malId}/${item.episodeNumber}`)}
-                className="w-48 sm:w-56 shrink-0 p-2.5 rounded-xl bg-zinc-800/90 hover:bg-zinc-800 border border-zinc-700/60 cursor-pointer transition-all flex items-center gap-3 group jq-ripple"
+                className="w-48 sm:w-56 shrink-0 p-2.5 rounded-xl bg-ink-700/90 hover:bg-ink-700 border border-ink-500/60 cursor-pointer transition-all flex items-center gap-3 group jq-ripple"
               >
-                <div className="w-12 h-16 rounded-lg overflow-hidden bg-zinc-900 shrink-0 relative">
+                <div className="w-12 h-16 rounded-lg overflow-hidden bg-surface-canvas shrink-0 relative">
                   {item.image ? (
-                    <LazyImage src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <LazyImage src={item.image} alt={item.title} className="w-full h-full object-cover  transition-transform" />
                   ) : null}
 
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -128,13 +128,13 @@ export const HomePage: React.FC = () => {
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-xs font-semibold text-white truncate group-hover:text-orange-400 transition-colors">
+                  <h4 className="text-xs font-semibold text-surface-primary truncate group-hover:text-orange-400 transition-colors">
                     {item.title}
                   </h4>
-                  <p className="text-[11px] text-orange-300 font-mono mt-0.5">
+                  <p className="text-xs text-orange-300 font-mono mt-0.5">
                     Episode {item.episodeNumber}
                   </p>
-                  <span className="text-[10px] text-zinc-400 uppercase">
+                  <span className="text-xs text-ink-500 uppercase">
                     {item.language}
                   </span>
                 </div>
@@ -160,10 +160,10 @@ export const HomePage: React.FC = () => {
               <Flame className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight font-heading">
+              <h2 className="text-lg sm:text-xl font-bold text-surface-primary tracking-tight font-heading">
                 Most Popular Anime
               </h2>
-              <p className="text-xs text-zinc-400">All-time top fan favorites</p>
+              <p className="text-xs text-ink-500">All-time top fan favorites</p>
             </div>
           </div>
 
@@ -201,10 +201,10 @@ export const HomePage: React.FC = () => {
               <Tv className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight font-heading">
+              <h2 className="text-lg sm:text-xl font-bold text-surface-primary tracking-tight font-heading">
                 Top Airing Now
               </h2>
-              <p className="text-xs text-zinc-400">Currently broadcasting anime series</p>
+              <p className="text-xs text-ink-500">Currently broadcasting anime series</p>
             </div>
           </div>
 
@@ -242,10 +242,10 @@ export const HomePage: React.FC = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight font-heading">
+              <h2 className="text-lg sm:text-xl font-bold text-surface-primary tracking-tight font-heading">
                 Upcoming & Anticipated
               </h2>
-              <p className="text-xs text-zinc-400">Exciting anime coming next season</p>
+              <p className="text-xs text-ink-500">Exciting anime coming next season</p>
             </div>
           </div>
 

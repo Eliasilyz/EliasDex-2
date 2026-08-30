@@ -30,10 +30,10 @@ export const HistoryPage: React.FC = () => {
             <History className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-white font-heading tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-surface-primary font-heading tracking-tight">
               Watch History
             </h1>
-            <p className="text-xs text-zinc-400">Resume recently watched anime episodes</p>
+            <p className="text-xs text-ink-500">Resume recently watched anime episodes</p>
           </div>
         </div>
 
@@ -59,18 +59,18 @@ export const HistoryPage: React.FC = () => {
           {history.map((item) => (
             <div
               key={item.malId}
-              className="p-3.5 rounded-2xl bg-zinc-900/60 hover:bg-zinc-850/80 border border-zinc-800/80 hover:border-zinc-700 flex gap-3.5 transition-all group"
+              className="p-3.5 rounded-2xl bg-surface-canvas/60 hover:bg-surface-raised/80 border border-ink-700/80 hover:border-ink-500 flex gap-3.5 transition-all group"
             >
               {/* Poster thumbnail */}
               <div
                 onClick={() => onNavigate(`/watch/${item.malId}/${item.episodeNumber}?lang=${item.language}`)}
-                className="w-20 aspect-[3/4] rounded-xl overflow-hidden bg-zinc-850 shrink-0 relative cursor-pointer"
+                className="w-20 aspect-[3/4] rounded-xl overflow-hidden bg-surface-raised shrink-0 relative cursor-pointer"
               >
                 {item.image && (
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    className="w-full h-full object-cover  transition-transform"
                   />
                 )}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
@@ -83,28 +83,28 @@ export const HistoryPage: React.FC = () => {
                 <div>
                   <h3
                     onClick={() => onNavigate(`/anime/${item.malId}`)}
-                    className="text-xs sm:text-sm font-semibold text-white group-hover:text-orange-400 transition-colors line-clamp-2 cursor-pointer leading-snug"
+                    className="text-[13px] sm:text-sm font-semibold text-surface-primary group-hover:text-orange-400 transition-colors line-clamp-2 cursor-pointer leading-snug"
                   >
                     {item.title}
                   </h3>
 
-                  <div className="flex items-center gap-2 mt-1.5 text-xs text-zinc-400">
+                  <div className="flex items-center gap-2 mt-1.5 text-xs text-ink-500">
                     <span className="font-mono font-bold text-orange-400">
                       Episode {item.episodeNumber}
                     </span>
                     <span>•</span>
-                    <span className="uppercase text-[10px] font-semibold text-zinc-400">
+                    <span className="uppercase text-xs font-semibold text-ink-500">
                       {item.language}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 text-[10px] text-zinc-500 mt-1">
+                  <div className="flex items-center gap-1 text-xs text-ink-500 mt-1">
                     <Clock className="w-3 h-3" />
                     <span>{formatTimeAgo(item.timestamp)}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 mt-2">
+                <div className="flex items-center justify-between pt-2 border-t border-ink-700/60 mt-2">
                   <button
                     type="button"
                     onClick={() => onNavigate(`/watch/${item.malId}/${item.episodeNumber}?lang=${item.language}`)}
@@ -117,7 +117,7 @@ export const HistoryPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => removeFromHistory(item.malId)}
-                    className="text-zinc-500 hover:text-rose-400 p-1 transition-colors cursor-pointer"
+                    className="text-ink-500 hover:text-rose-400 p-1 transition-colors cursor-pointer"
                     title="Remove from history"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -129,9 +129,9 @@ export const HistoryPage: React.FC = () => {
         </div>
       ) : (
         <div className="py-20 text-center space-y-3 max-w-sm mx-auto">
-          <History className="w-10 h-10 text-zinc-600 mx-auto" />
-          <h3 className="text-base font-semibold text-zinc-300">No Watch History</h3>
-          <p className="text-xs text-zinc-500">Episodes you watch will appear here for easy resumption.</p>
+          <History className="w-10 h-10 text-ink-500 mx-auto" />
+          <h3 className="text-base font-semibold text-ink-300">No Watch History</h3>
+          <p className="text-xs text-ink-500">Episodes you watch will appear here for easy resumption.</p>
           <Button variant="primary" size="sm" onClick={() => onNavigate('/')}>
             Start Watching
           </Button>

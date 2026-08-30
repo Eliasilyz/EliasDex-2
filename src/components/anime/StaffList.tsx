@@ -33,7 +33,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-24 bg-zinc-900/60 rounded-2xl border border-zinc-800" />
+          <div key={i} className="h-24 bg-surface-canvas/60 rounded-2xl border border-ink-700" />
         ))}
       </div>
     );
@@ -41,10 +41,10 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
 
   if (!staff || staff.length === 0) {
     return (
-      <div className="text-center py-12 px-4 rounded-2xl bg-zinc-900/30 border border-zinc-800/80 space-y-2">
-        <Users className="w-8 h-8 text-zinc-500 mx-auto" />
-        <p className="text-sm font-semibold text-zinc-300">No staff information available</p>
-        <p className="text-xs text-zinc-500">Production crew details have not been cataloged yet.</p>
+      <div className="text-center py-12 px-4 rounded-2xl bg-surface-canvas/30 border border-ink-700/80 space-y-2">
+        <Users className="w-8 h-8 text-ink-500 mx-auto" />
+        <p className="text-sm font-semibold text-ink-300">No staff information available</p>
+        <p className="text-xs text-ink-500">Production crew details have not been cataloged yet.</p>
       </div>
     );
   }
@@ -52,14 +52,14 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
   return (
     <div className="space-y-5">
       {/* Role Filter Tabs */}
-      <div className="flex items-center gap-1.5 p-1 bg-zinc-900/80 rounded-xl border border-zinc-800 text-xs overflow-x-auto">
+      <div className="flex items-center gap-1.5 p-1 bg-surface-canvas/80 rounded-xl border border-ink-700 text-xs overflow-x-auto">
         <button
           type="button"
           onClick={() => setFilterRole('all')}
           className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer whitespace-nowrap ${
             filterRole === 'all'
               ? 'bg-orange-500 text-white font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-zinc-200'
+              : 'text-ink-500 hover:text-ink-300'
           }`}
         >
           All Staff ({staff.length})
@@ -70,7 +70,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
           className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer whitespace-nowrap ${
             filterRole === 'director'
               ? 'bg-orange-500 text-white font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-zinc-200'
+              : 'text-ink-500 hover:text-ink-300'
           }`}
         >
           Directors & Leads
@@ -81,7 +81,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
           className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer whitespace-nowrap ${
             filterRole === 'story'
               ? 'bg-orange-500 text-white font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-zinc-200'
+              : 'text-ink-500 hover:text-ink-300'
           }`}
         >
           Original Creator & Design
@@ -92,7 +92,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
           className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer whitespace-nowrap ${
             filterRole === 'music'
               ? 'bg-orange-500 text-white font-semibold shadow-sm'
-              : 'text-zinc-400 hover:text-zinc-200'
+              : 'text-ink-500 hover:text-ink-300'
           }`}
         >
           Music & Sound
@@ -106,7 +106,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
           return (
             <div
               key={`${member.person.mal_id}-${idx}`}
-              className="bg-zinc-900/60 hover:bg-zinc-850/90 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-3.5 flex items-start gap-3.5 transition-all duration-200 shadow-sm"
+              className="bg-surface-canvas/60 hover:bg-surface-raised/90 border border-ink-700/80 hover:border-ink-500 rounded-2xl p-3.5 flex items-start gap-3.5 transition-all duration-200 shadow-sm"
             >
               {/* Staff Avatar */}
               {imgUrl ? (
@@ -114,10 +114,10 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
                   src={imgUrl}
                   alt={member.person.name}
                   referrerPolicy="no-referrer"
-                  className="w-12 h-14 rounded-xl object-cover border border-zinc-700/80 shrink-0"
+                  className="w-12 h-14 rounded-xl object-cover border border-ink-500/80 shrink-0"
                 />
               ) : (
-                <div className="w-12 h-14 rounded-xl bg-zinc-800 border border-zinc-750 flex items-center justify-center text-zinc-500 shrink-0">
+                <div className="w-12 h-14 rounded-xl bg-ink-700 border border-border-subtle flex items-center justify-center text-ink-300 shrink-0">
                   <Clapperboard className="w-5 h-5" />
                 </div>
               )}
@@ -125,7 +125,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
               {/* Staff Info */}
               <div className="min-w-0 flex-1 space-y-1.5">
                 <div className="flex items-start justify-between gap-1">
-                  <h4 className="text-xs font-bold text-zinc-100 truncate">
+                  <h4 className="text-xs font-bold text-surface-primary truncate">
                     {member.person.name}
                   </h4>
                   {member.person.url && (
@@ -133,7 +133,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
                       href={member.person.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-zinc-500 hover:text-orange-400 transition-colors p-0.5"
+                      className="text-ink-500 hover:text-orange-400 transition-colors p-0.5"
                       title="View Profile on MyAnimeList"
                     >
                       <ExternalLink className="w-3 h-3" />
@@ -146,7 +146,7 @@ export const StaffList: React.FC<StaffListProps> = ({ staff, isLoading = false }
                   {member.positions.map((pos, pIdx) => (
                     <span
                       key={pIdx}
-                      className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-800/90 text-orange-300/90 border border-zinc-750/70"
+                      className="px-2 py-0.5 rounded-md text-xs font-medium bg-ink-700/90 text-orange-300/90 border border-border-subtle/70"
                     >
                       {pos}
                     </span>

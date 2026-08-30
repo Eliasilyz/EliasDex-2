@@ -17,8 +17,8 @@ export default function ErrorBoundary({
         <AlertCircle className="w-6 h-6" />
       </div>
       <div>
-        <h2 className="text-lg font-bold text-white">Something went wrong</h2>
-        <p className="text-xs text-zinc-400 mt-1 max-w-xs">{error.message || "Failed to load content"}</p>
+        <h2 className="text-lg font-bold font-heading text-surface-primary">Something went wrong</h2>
+        <p className="text-xs text-ink-500 mt-1 max-w-xs">{error.message || "Failed to load content"}</p>
       </div>
       <div className="flex items-center gap-2">
         <ShadcnButton variant="secondary" size="sm" onClick={reset} className="gap-1.5">
