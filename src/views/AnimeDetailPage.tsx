@@ -30,6 +30,7 @@ import { CharacterList } from '../components/anime/CharacterList';
 import { ThemeSongsList } from '../components/anime/ThemeSongsList';
 import { AnimeRelationsList } from '../components/anime/AnimeRelationsList';
 import { TrailerSection } from '../components/anime/TrailerSection';
+import { MoreSeasons } from '../components/anime/MoreSeasons';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Skeleton, DetailPageSkeleton } from '../components/ui/Skeleton';
@@ -242,7 +243,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
    </nav>
 
    {/* 2. Top Anime Showcase Banner (Classic Anime Streaming Site Showcase) */}
-   <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-surface-canvas border border-ink-700 shadow-2xl">
+    <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-surface-canvas border border-ink-700 shadow-lg">
     {/* Background Wallpaper with Blur & Fade */}
     <div className="absolute inset-0 z-0">
      {backdropUrl && (
@@ -250,7 +251,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
        src={backdropUrl}
        alt={title}
        referrerPolicy="no-referrer"
-       className="w-full h-full object-cover object-center filter blur-md brightness-[0.25] scale-105"
+       className="w-full h-full object-cover object-center filter blur-md brightness-[0.18] scale-105"
       />
      )}
      <div className="absolute inset-0 bg-gradient-to-t from-surface-canvas via-surface-canvas/80 to-transparent" />
@@ -261,7 +262,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
     <div className="relative z-10 p-4 sm:p-7 flex flex-col md:flex-row gap-5 sm:gap-7 items-start">
      {/* Left Column: Cover Poster & Action Buttons */}
      <div className="w-36 sm:w-48 md:w-56 shrink-0 mx-auto md:mx-0 flex flex-col gap-3">
-      <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden shadow-2xl border-2 border-ink-500/80 bg-surface-canvas group">
+      <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden bg-transparent group">
        {posterUrl && (
         <img
          src={posterUrl}
@@ -273,17 +274,23 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
       </div>
 
       {/* Quick Mobile Action (under poster) */}
-      <div className="hidden md:flex flex-col gap-2 w-full">
-       <Button
-        id="hero-watch-btn"
-        variant="primary"
-        size="md"
-        onClick={() => onNavigate(`/watch/${malId}/${targetEp}`)}
-        icon={<Play className="w-4 h-4 fill-white" />}
-        className="w-full justify-center shadow-lg "
-       >
-        {watchProgress ? `Resume Ep ${watchProgress.episodeNumber}` : 'Watch Now'}
-       </Button>
+       <div className="hidden md:flex flex-col gap-2 w-full">
+        <Button
+         id="hero-watch-btn"
+         variant="primary"
+         size="md"
+         onClick={() => onNavigate(`/watch/${malId}/${targetEp}`)}
+         icon={<Play className="w-4 h-4 fill-white" />}
+         className="w-full justify-center shadow-lg "
+         disabled={!!anime.status && /not yet aired/i.test(anime.status)}
+         title={anime.status && /not yet aired/i.test(anime.status) ? 'Not yet aired' : undefined}
+        >
+         {anime.status && /not yet aired/i.test(anime.status)
+           ? 'Not Yet Aired'
+           : watchProgress
+             ? `Resume Ep ${watchProgress.episodeNumber}`
+             : 'Watch Now'}
+        </Button>
 
        {/* Watchlist Dropdown */}
        <div className="w-full relative">
@@ -361,16 +368,21 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
       </div>
 
       {/* Mobile Watch & Action Buttons (visible on small screens) */}
-      <div className="flex md:hidden flex-wrap items-center gap-2 pt-1">
-       <Button
-        variant="primary"
-        size="sm"
-        onClick={() => onNavigate(`/watch/${malId}/${targetEp}`)}
-        icon={<Play className="w-3.5 h-3.5 fill-white" />}
-        className="flex-1 min-w-[130px] justify-center"
-       >
-        {watchProgress ? `Resume Ep ${watchProgress.episodeNumber}` : 'Watch Now'}
-       </Button>
+       <div className="flex md:hidden flex-wrap items-center gap-2 pt-1">
+        <Button
+         variant="primary"
+         size="sm"
+         onClick={() => onNavigate(`/watch/${malId}/${targetEp}`)}
+         icon={<Play className="w-3.5 h-3.5 fill-white" />}
+         className="flex-1 min-w-[130px] justify-center"
+         disabled={!!anime.status && /not yet aired/i.test(anime.status)}
+        >
+         {anime.status && /not yet aired/i.test(anime.status)
+           ? 'Not Yet Aired'
+           : watchProgress
+             ? `Resume Ep ${watchProgress.episodeNumber}`
+             : 'Watch Now'}
+        </Button>
 
        {/* Mobile Quick Watchlist Selector */}
        <div className="relative">
@@ -409,7 +421,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
 
       {/* Synopsis */}
       <div className="text-xs sm:text-sm text-ink-300 leading-relaxed pt-1">
-        <p className={`${showFullSynopsis ? '' : 'line-clamp-3 sm:line-clamp-4'} max-w-prose`}>
+        <p className={`${showFullSynopsis ? '' : 'line-clamp-3 sm:line-clamp-4'} max-w-[55ch]`}>
         {anime.synopsis || 'No synopsis available.'}
        </p>
        {anime.synopsis && anime.synopsis.length > 200 && (
@@ -485,7 +497,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
        onClick={() => setActiveTabSection('episodes')}
        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
         activeTabSection === 'episodes'
-         ? 'bg-orange-600 text-white shadow-sm'
+         ? 'bg-orange-700 text-white shadow-sm'
          : 'text-ink-500 hover:text-ink-300'
        }`}
       >
@@ -499,7 +511,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
         onClick={() => setActiveTabSection('relations')}
         className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
          activeTabSection === 'relations'
-          ? 'bg-orange-600 text-white shadow-sm'
+          ? 'bg-orange-700 text-white shadow-sm'
           : 'text-ink-500 hover:text-ink-300'
         }`}
        >
@@ -513,7 +525,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
        onClick={() => setActiveTabSection('characters')}
        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
         activeTabSection === 'characters'
-         ? 'bg-orange-600 text-white shadow-sm'
+         ? 'bg-orange-700 text-white shadow-sm'
          : 'text-ink-500 hover:text-ink-300'
        }`}
       >
@@ -526,7 +538,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
        onClick={() => setActiveTabSection('themes')}
        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
         activeTabSection === 'themes'
-         ? 'bg-orange-600 text-white shadow-sm'
+         ? 'bg-orange-700 text-white shadow-sm'
          : 'text-ink-500 hover:text-ink-300'
        }`}
       >
@@ -555,10 +567,10 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
       {activeTabSection === 'relations' && (
        <div className="space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-ink-700">
-         <h3 className="text-sm font-bold text-surface-primary font-heading flex items-center gap-2">
+         <h2 className="text-sm font-bold text-surface-primary font-heading flex items-center gap-2">
           <GitFork className="w-4 h-4 text-orange-400" />
           <span>Franchise & Related Anime</span>
-         </h3>
+         </h2>
          <span className="text-xs text-ink-500">Prequels, Sequels & Spinoffs</span>
         </div>
         <AnimeRelationsList
@@ -572,10 +584,10 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
       {activeTabSection === 'characters' && (
        <div className="space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-ink-700">
-         <h3 className="text-sm font-bold text-surface-primary font-heading flex items-center gap-2">
+         <h2 className="text-sm font-bold text-surface-primary font-heading flex items-center gap-2">
           <Users className="w-4 h-4 text-orange-400" />
           <span>Characters & Voice Cast</span>
-         </h3>
+         </h2>
          <span className="text-xs text-ink-500">Japanese & English Cast</span>
         </div>
         <CharacterList characters={characters} />
@@ -586,10 +598,10 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
       {activeTabSection === 'themes' && (
        <div className="space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-ink-700">
-         <h3 className="text-sm font-bold text-surface-primary font-heading flex items-center gap-2">
+         <h2 className="text-sm font-bold text-surface-primary font-heading flex items-center gap-2">
           <Music className="w-4 h-4 text-orange-400" />
           <span>Opening & Ending Theme Songs</span>
-         </h3>
+         </h2>
          <span className="text-xs text-ink-500">Official Soundtrack</span>
         </div>
         <ThemeSongsList
@@ -602,24 +614,32 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
       )}
      </div>
 
-     {/* Recommended Anime / More Like This (Always on main column like Aniwatch/Crunchyroll) */}
-     {recommendations.length > 0 && (
-      <div className="space-y-4 pt-6 border-t border-ink-700">
-       <div className="flex items-center justify-between">
-        <h3 className="text-base font-bold text-surface-primary font-heading flex items-center gap-2">
-         <Sparkles className="w-4 h-4 text-orange-400" />
-         <span>You May Also Like</span>
-        </h3>
-        <span className="text-xs text-ink-500">Recommended Anime</span>
-       </div>
+      {/* More Seasons (Sequel / Prequel) — shown only if available */}
+      <MoreSeasons
+        relations={relations}
+        currentMalId={malId}
+        currentAnime={anime}
+        onNavigateAnime={(id) => onNavigate(`/anime/${id}`)}
+      />
 
-       <AnimeGrid
-        items={recommendations.slice(0, 8)}
-        onSelectAnime={(id) => onNavigate(`/anime/${id}`)}
-        onWatchAnime={(id, ep) => onNavigate(`/watch/${id}/${ep || 1}`)}
-       />
-      </div>
-     )}
+      {/* Recommended Anime / More Like This (Always on main column like Aniwatch/Crunchyroll) */}
+      {recommendations.length > 0 && (
+       <div className="space-y-4 pt-6 border-t border-ink-700">
+        <div className="flex items-center justify-between">
+         <h2 className="text-base font-bold text-surface-primary font-heading flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-orange-400" />
+          <span>You May Also Like</span>
+         </h2>
+         <span className="text-xs text-ink-500">Recommended Anime</span>
+        </div>
+
+        <AnimeGrid
+         items={recommendations.slice(0, 8)}
+         onSelectAnime={(id) => onNavigate(`/anime/${id}`)}
+         onWatchAnime={(id, ep) => onNavigate(`/watch/${id}/${ep || 1}`)}
+        />
+       </div>
+      )}
     </div>
 
     {/* Right Sidebar (col-span-4): Trailer Box, Details Info & Top Airing */}
@@ -627,20 +647,20 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
      {/* 1. Official Trailer Player Box */}
      {anime.trailer && (
       <div className="bg-surface-canvas/60 border border-ink-700/80 rounded-2xl p-4 space-y-3 shadow-sm">
-       <h3 className="text-xs font-bold text-ink-500 uppercase tracking-wider flex items-center gap-2">
+       <h2 className="text-xs font-bold text-ink-500 uppercase tracking-wider flex items-center gap-2">
         <Video className="w-3.5 h-3.5 text-rose-400" />
         <span>Official Trailer</span>
-       </h3>
+       </h2>
        <TrailerSection trailer={anime.trailer} title={title} posterImage={posterUrl} />
       </div>
      )}
 
      {/* 2. Anime Metadata Specifications Card */}
      <div className="bg-surface-canvas/60 border border-ink-700/80 rounded-2xl p-5 space-y-3 text-xs shadow-sm">
-      <h3 className="text-xs font-bold text-ink-300 uppercase tracking-wider pb-2 border-b border-ink-700 flex items-center justify-between">
+      <h2 className="text-xs font-bold text-ink-300 uppercase tracking-wider pb-2 border-b border-ink-700 flex items-center justify-between">
        <span>Anime Information</span>
        <span className="text-xs text-orange-400 font-mono">MAL ID: {anime.mal_id}</span>
-      </h3>
+      </h2>
 
       <div className="space-y-2 text-ink-300">
        {anime.title_japanese && (
@@ -756,7 +776,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
      {/* 3. Top Airing Anime Widget (Standard in anime streaming sidebars) */}
      {topAiring.length > 0 && (
       <div className="bg-surface-canvas/60 border border-ink-700/80 rounded-2xl p-4 space-y-3 text-xs shadow-sm">
-       <h3 className="text-xs font-bold text-surface-primary uppercase tracking-wider flex items-center justify-between">
+       <h2 className="text-xs font-bold text-surface-primary uppercase tracking-wider flex items-center justify-between">
         <span className="flex items-center gap-1.5">
          <TrendingUp className="w-3.5 h-3.5 text-orange-400" />
          Top Airing Anime
@@ -768,7 +788,7 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
         >
          View All
         </button>
-       </h3>
+       </h2>
 
        <div className="space-y-2 divide-y divide-ink-700/50">
         {topAiring.map((item, idx) => {
@@ -799,8 +819,8 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
             {idx + 1}
            </span>
 
-           {/* Poster */}
-           <div className="w-9 h-12 rounded-lg overflow-hidden bg-surface-canvas shrink-0 border border-ink-700 group-hover:border-orange-500 transition-colors">
+            {/* Poster */}
+            <div className="w-9 h-12 rounded-lg overflow-hidden bg-surface-canvas shrink-0 group-hover:opacity-90 transition-opacity">
             {itemImg ? (
              <img
               src={itemImg}
@@ -815,10 +835,10 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
            </div>
 
            {/* Info */}
-           <div className="min-w-0 flex-1">
-            <h4 className="text-xs font-semibold text-ink-300 group-hover:text-orange-400 transition-colors truncate">
-             {itemTitle}
-            </h4>
+            <div className="min-w-0 flex-1">
+             <h3 className="text-xs font-semibold text-ink-300 group-hover:text-orange-400 transition-colors truncate">
+              {itemTitle}
+             </h3>
             <div className="flex items-center gap-2 text-xs text-ink-500 mt-0.5">
              <span>{item.type || 'TV'}</span>
              <span>•</span>

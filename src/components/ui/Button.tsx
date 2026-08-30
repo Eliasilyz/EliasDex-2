@@ -22,7 +22,7 @@ export const Button: React.FC<ButtonProps> = ({
  }[size];
 
  const variantClasses = {
-  primary: 'bg-orange-600 hover:bg-orange-500 text-white font-semibold shadow-lg active:scale-[0.98]',
+   primary: 'bg-orange-700 hover:bg-orange-600 text-white font-semibold shadow-lg active:scale-[0.98]',
   secondary: 'bg-ink-700 hover:bg-ink-500 text-surface-primary active:scale-[0.98]',
   outline: 'border border-ink-500/80 hover:border-ink-500 bg-surface-canvas/40 text-ink-300 hover:bg-ink-700/60 active:scale-[0.98]',
   ghost: 'text-ink-300 hover:text-surface-primary hover:bg-ink-700/50',

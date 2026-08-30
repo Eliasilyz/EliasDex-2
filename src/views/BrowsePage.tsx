@@ -30,8 +30,9 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreId = null })
  const { dataSource } = useDataSource();
  const [genres, setGenres] = useState<Genre[]>([]);
  const [selectedGenreId, setSelectedGenreId] = useState<number | null>(initialGenreId);
- const [searchQuery, setSearchQuery] = useState<string>('');
- const [formatType, setFormatType] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
+  const [formatType, setFormatType] = useState<string>('');
  const [airingStatus, setAiringStatus] = useState<string>('');
  const [minScore, setMinScore] = useState<number>(0);
  const [sortBy, setSortBy] = useState<'popularity' | 'score' | 'favorites' | 'title' | 'start_date'>('popularity');
@@ -60,30 +61,39 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreId = null })
  }
  }, [initialGenreId]);
 
- // Main Data Fetcher
- useEffect(() => {
- let isMounted = true;
- setLoading(true);
- setError(null);
+  // Debounce search input in browse
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery.trim());
+      setCurrentPage(1);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
- const selectedGenre = genres.find((g) => g.mal_id === selectedGenreId);
- const genreParam = selectedGenre
-  ? selectedGenre.name
-  : selectedGenreId
-  ? String(selectedGenreId)
-  : undefined;
+  // Main Data Fetcher
+  useEffect(() => {
+  let isMounted = true;
+  setLoading(true);
+  setError(null);
 
- const filterParams: SearchFilters = {
-  genres: genreParam,
-  type: (formatType as any) || undefined,
-  status: (airingStatus as any) || undefined,
-  order_by: sortBy as any,
-  sort: sortBy === 'title' ? 'asc' : 'desc',
-  page: currentPage,
-  limit: 24,
- };
+  const selectedGenre = genres.find((g) => g.mal_id === selectedGenreId);
+  const genreParam = selectedGenre
+   ? selectedGenre.name
+   : selectedGenreId
+   ? String(selectedGenreId)
+   : undefined;
 
- getUnifiedSearchAnime(searchQuery, filterParams, { source: dataSource })
+  const filterParams: SearchFilters = {
+   genres: genreParam,
+   type: (formatType as any) || undefined,
+   status: (airingStatus as any) || undefined,
+   order_by: sortBy as any,
+   sort: sortBy === 'title' ? 'asc' : 'desc',
+   page: currentPage,
+   limit: 24,
+  };
+
+  getUnifiedSearchAnime(debouncedSearchQuery, filterParams, { source: dataSource })
   .then((res) => {
   if (isMounted) {
    let fetched = res.data || [];

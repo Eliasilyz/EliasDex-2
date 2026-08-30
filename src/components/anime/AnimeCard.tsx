@@ -4,6 +4,7 @@ import { Anime, WatchlistStatus } from '../../types';
 import { LazyImage } from '../ui/LazyImage';
 import { useWatch } from '../../context/WatchContext';
 import { useTitleLanguage } from '../../context/TitleLanguageContext';
+import { useAppNavigate } from '@/lib/useNavigate';
 
 interface AnimeCardProps {
  anime: Anime;
@@ -22,7 +23,8 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
  className = '',
 }) => {
  const { getWatchlistStatus, setWatchlistStatus, getWatchProgress } = useWatch();
- const { getTitle } = useTitleLanguage();
+  const onNavigate = useAppNavigate();
+  const { getTitle } = useTitleLanguage();
  const [showStatusMenu, setShowStatusMenu] = useState(false);
 
  const status = getWatchlistStatus(anime.mal_id);
@@ -40,24 +42,24 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
  const episodes = anime.episodes;
  const type = anime.type || 'TV';
 
- const handleClick = (e: React.MouseEvent) => {
-  e.preventDefault();
-  if (onSelect) {
-   onSelect(anime.mal_id);
-  } else {
-   window.location.hash = `#/anime/${anime.mal_id}`;
-  }
- };
+  const handleClick = (e: React.MouseEvent) => {
+   e.preventDefault();
+   if (onSelect) {
+    onSelect(anime.mal_id);
+   } else {
+    onNavigate(`/anime/${anime.mal_id}`);
+   }
+  };
 
- const handleQuickPlay = (e: React.MouseEvent) => {
-  e.stopPropagation();
-  const targetEp = progress ? progress.episodeNumber : 1;
-  if (onWatch) {
-   onWatch(anime.mal_id, targetEp);
-  } else {
-   window.location.hash = `#/watch/${anime.mal_id}/${targetEp}`;
-  }
- };
+  const handleQuickPlay = (e: React.MouseEvent) => {
+   e.stopPropagation();
+   const targetEp = progress ? progress.episodeNumber : 1;
+   if (onWatch) {
+    onWatch(anime.mal_id, targetEp);
+   } else {
+    onNavigate(`/watch/${anime.mal_id}/${targetEp}`);
+   }
+  };
 
  const handleStatusChange = (newStatus: WatchlistStatus | 'remove', e: React.MouseEvent) => {
   e.stopPropagation();
@@ -157,7 +159,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
          }}
          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
           status
-           ? 'bg-orange-600 text-white shadow-sm'
+           ? 'bg-orange-700 text-white shadow-sm'
            : 'text-ink-500 hover:text-white hover:bg-ink-700'
          }`}
          title="Bookmark / Watchlist"

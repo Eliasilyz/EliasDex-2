@@ -1,6 +1,7 @@
 import React from 'react';
 import { Anime } from '../../types';
 import { AnimeCard } from './AnimeCard';
+import { AnimeHoverCard } from './AnimeHoverCard';
 import { AnimeCardSkeleton } from '../ui/Skeleton';
 import { RefreshCw, AlertCircle, Inbox } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -68,12 +69,18 @@ export const AnimeGrid: React.FC<AnimeGridProps> = ({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4 lg:gap-5">
       {items.map((anime) => (
-        <AnimeCard
+        <AnimeHoverCard
           key={anime.mal_id}
           anime={anime}
           onSelect={onSelectAnime}
           onWatch={onWatchAnime}
-        />
+        >
+          <AnimeCard
+            anime={anime}
+            onSelect={onSelectAnime}
+            onWatch={onWatchAnime}
+          />
+        </AnimeHoverCard>
       ))}
     </div>
   );

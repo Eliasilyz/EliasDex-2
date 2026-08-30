@@ -193,7 +193,7 @@ export const ThemeSongsList: React.FC<ThemeSongsListProps> = ({
    onClick={() => setActiveTab('openings')}
    className={`px-3.5 py-1.5 rounded-lg font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
     activeTab === 'openings'
-    ? 'bg-orange-600 text-white font-semibold shadow-sm'
+    ? 'bg-orange-700 text-white font-semibold shadow-sm'
     : 'text-ink-500 hover:text-ink-300'
    }`}
    >
@@ -207,7 +207,7 @@ export const ThemeSongsList: React.FC<ThemeSongsListProps> = ({
    onClick={() => setActiveTab('endings')}
    className={`px-3.5 py-1.5 rounded-lg font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
     activeTab === 'endings'
-    ? 'bg-orange-600 text-white font-semibold shadow-sm'
+    ? 'bg-orange-700 text-white font-semibold shadow-sm'
     : 'text-ink-500 hover:text-ink-300'
    }`}
    >
@@ -292,7 +292,7 @@ export const ThemeSongsList: React.FC<ThemeSongsListProps> = ({
      }}
      className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center shrink-0 transition-all cursor-pointer shadow-md ${
       isCurrentlyPlaying
-      ? 'bg-orange-600 text-white scale-105'
+      ? 'bg-orange-700 text-white scale-105'
       : isThisTrackActive
       ? 'bg-orange-500 text-white'
       : 'bg-ink-700 hover:bg-orange-600 text-ink-300 hover:text-white border border-ink-500/80'
@@ -356,7 +356,7 @@ export const ThemeSongsList: React.FC<ThemeSongsListProps> = ({
      }}
      className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
       isCurrentlyPlaying
-      ? 'bg-orange-600 text-white shadow-md '
+      ? 'bg-orange-700 text-white shadow-md '
       : 'bg-ink-700 hover:bg-ink-500 text-ink-300 hover:text-white border border-ink-500'
      }`}
      >

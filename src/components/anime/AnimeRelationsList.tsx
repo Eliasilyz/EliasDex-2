@@ -49,7 +49,7 @@ export const AnimeRelationsList: React.FC<AnimeRelationsListProps> = ({
         {relations.map((relGroup, gIdx) => (
           <div
             key={gIdx}
-            className="bg-surface-canvas/60 border border-ink-700/80 rounded-2xl p-4 space-y-3 shadow-sm"
+            className="bg-transparent border-0 p-0 space-y-3"
           >
             {/* Relation Group Header */}
             <div className="flex items-center gap-2">

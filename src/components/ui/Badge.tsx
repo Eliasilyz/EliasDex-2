@@ -16,7 +16,7 @@ export const Badge: React.FC<BadgeProps> = ({
   const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs md:text-sm font-medium';
 
   const variantClasses = {
-    primary: 'bg-orange-600/90 text-white font-medium',
+    primary: 'bg-orange-700 text-white font-medium',
     secondary: 'bg-ink-700 text-ink-300 border border-ink-500/50',
     success: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium',
     warning: 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium',

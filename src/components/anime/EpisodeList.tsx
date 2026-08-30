@@ -29,9 +29,10 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
  const [selectedRangeIndex, setSelectedRangeIndex] = useState(0);
 
- const isAiring = animeStatus === 'Currently Airing';
+  const isAiring = animeStatus === 'Currently Airing';
+  const isNotYetAired = !!animeStatus && /not yet aired/i.test(animeStatus);
 
- const apiCount = useMemo(
+  const apiCount = useMemo(
  () => episodesData.filter((ep) => ep.mal_id > 0).length,
  [episodesData]
  );
@@ -121,15 +122,34 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
  return allEpisodes.slice(currentRange.start - 1, currentRange.end);
  }, [allEpisodes, searchQuery, ranges, selectedRangeIndex]);
 
- return (
- <div className={`w-full bg-surface-canvas/60 border border-ink-700/80 rounded-2xl p-4 sm:p-5 space-y-4 ${className}`}>
-  {/* Header & Controls */}
+  if (isNotYetAired) {
+    return (
+      <div className={`w-full rounded-2xl border border-ink-700/60 bg-surface-canvas/40 p-8 sm:p-10 text-center space-y-3 ${className}`}>
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto">
+          <Clock className="w-6 h-6" />
+        </div>
+        <h3 className="text-sm font-bold text-surface-primary">Not Yet Aired</h3>
+        <p className="text-xs text-ink-500 max-w-[40ch] mx-auto leading-relaxed">
+          This anime has not yet premiered. Episodes will be available here once broadcasting begins.
+        </p>
+        {totalEpisodes ? (
+          <p className="text-xs font-mono text-ink-300">
+            {totalEpisodes} episode{totalEpisodes > 1 ? 's' : ''} scheduled
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+
+  return (
+  <div className={`w-full bg-transparent border-0 rounded-none p-0 space-y-4 ${className}`}>
+   {/* Header & Controls */}
   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-ink-700">
-  <div className="flex items-center gap-2">
-   <Sparkles className="w-4 h-4 text-orange-400" />
-   <h3 className="text-base font-bold text-surface-primary font-heading">
-   Episodes ({count}{isAiring && totalEpisodes && totalEpisodes > count ? `/${totalEpisodes}` : ''})
-   </h3>
+   <div className="flex items-center gap-2">
+    <Sparkles className="w-4 h-4 text-orange-400" />
+    <h2 className="text-base font-bold text-surface-primary font-heading">
+    Episodes ({count}{isAiring && totalEpisodes && totalEpisodes > count ? `/${totalEpisodes}` : ''})
+    </h2>
    {isAiring && (
    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -191,7 +211,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
     onClick={() => setSelectedRangeIndex(idx)}
     className={`px-3 py-1 rounded-xl text-xs font-mono font-semibold whitespace-nowrap transition-colors cursor-pointer ${
     selectedRangeIndex === idx
-     ? 'bg-orange-600 text-white'
+     ? 'bg-orange-700 text-white'
      : 'bg-ink-700 hover:bg-ink-500/80 text-ink-300 border border-ink-500/60'
     }`}
    >
@@ -217,7 +237,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
     onClick={() => onSelectEpisode(ep.epNum)}
     className={`relative h-11 rounded-xl font-mono text-xs font-bold transition-all flex items-center justify-center cursor-pointer border ${
      isCurrent
-     ? 'bg-orange-600 text-white border-orange-400 shadow-md ring-2 '
+     ? 'bg-orange-700 text-white border-orange-400 shadow-md ring-2 '
      : isWatched
      ? 'bg-ink-700/90 text-ink-300 border-ink-500/80 hover:bg-ink-500 hover:border-orange-500/50'
      : 'bg-surface-canvas/90 text-ink-500 border-ink-700 hover:bg-ink-700 hover:text-white'
@@ -261,7 +281,7 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
      <div
      className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono text-xs font-bold shrink-0 ${
       isCurrent
-      ? 'bg-orange-600 text-white'
+      ? 'bg-orange-700 text-white'
       : 'bg-ink-700 text-ink-300'
      }`}
      >

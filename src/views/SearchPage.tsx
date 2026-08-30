@@ -57,18 +57,23 @@ export const SearchPage: React.FC<SearchPageProps> = ({ initialQuery = '' }) => 
   }
  }, [initialQuery]);
 
- // Debounced live typing search
- useEffect(() => {
-  const timer = setTimeout(() => {
-   const trimmed = query.trim();
-   if (trimmed !== activeSearchQuery) {
-    setActiveSearchQuery(trimmed);
-    setCurrentPage(1);
-   }
-  }, 350);
+  // Debounced live typing search & URL sync
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const trimmed = query.trim();
+      if (trimmed !== activeSearchQuery) {
+        setActiveSearchQuery(trimmed);
+        setCurrentPage(1);
+        // Sync query to URL bar without causing page jumps
+        if (typeof window !== 'undefined') {
+          const newUrl = trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : '/search';
+          window.history.replaceState(null, '', newUrl);
+        }
+      }
+    }, 350);
 
-  return () => clearTimeout(timer);
- }, [query, activeSearchQuery]);
+    return () => clearTimeout(timer);
+  }, [query, activeSearchQuery]);
 
  // Load available genres
  useEffect(() => {

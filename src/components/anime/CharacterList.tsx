@@ -63,7 +63,7 @@ export const CharacterList: React.FC<CharacterListProps> = ({ characters, isLoad
             onClick={() => setFilterRole('all')}
             className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
               filterRole === 'all'
-                ? 'bg-orange-600 text-white font-semibold shadow-sm'
+                ? 'bg-orange-700 text-white font-semibold shadow-sm'
                 : 'text-ink-500 hover:text-ink-300'
             }`}
           >
@@ -74,7 +74,7 @@ export const CharacterList: React.FC<CharacterListProps> = ({ characters, isLoad
             onClick={() => setFilterRole('Main')}
             className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
               filterRole === 'Main'
-                ? 'bg-orange-600 text-white font-semibold shadow-sm'
+                ? 'bg-orange-700 text-white font-semibold shadow-sm'
                 : 'text-ink-500 hover:text-ink-300'
             }`}
           >
@@ -85,7 +85,7 @@ export const CharacterList: React.FC<CharacterListProps> = ({ characters, isLoad
             onClick={() => setFilterRole('Supporting')}
             className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
               filterRole === 'Supporting'
-                ? 'bg-orange-600 text-white font-semibold shadow-sm'
+                ? 'bg-orange-700 text-white font-semibold shadow-sm'
                 : 'text-ink-500 hover:text-ink-300'
             }`}
           >

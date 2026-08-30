@@ -4,6 +4,7 @@ import { Anime } from '../../types';
 import { getUnifiedSearchAnime } from '../../lib/animeApi';
 import { useDataSource } from '../../context/DataSourceContext';
 import { useTitleLanguage } from '../../context/TitleLanguageContext';
+import { useAppNavigate } from '@/lib/useNavigate';
 
 interface SearchBarProps {
  onSearchSubmit?: (query: string) => void;
@@ -14,13 +15,15 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
- onSearchSubmit,
- onSelectAnime,
- className = '',
- placeholder = 'Search anime, movies, series...',
- compact = false,
+  onSearchSubmit,
+  onSelectAnime,
+  className = '',
+  placeholder,
+  compact = false,
 }) => {
- const { getTitle } = useTitleLanguage();
+  const effectivePlaceholder = placeholder ?? (compact ? 'Search anime...' : 'Search anime, movies, series...');
+  const onNavigate = useAppNavigate();
+  const { getTitle } = useTitleLanguage();
  const { dataSource } = useDataSource();
  const [query, setQuery] = useState('');
  const [results, setResults] = useState<Anime[]>([]);
@@ -85,25 +88,25 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return () => document.removeEventListener('mousedown', handleClickOutside);
  }, []);
 
- const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!query.trim()) return;
-  setIsOpen(false);
-  if (onSearchSubmit) {
-   onSearchSubmit(query.trim());
-  } else {
-   window.location.hash = `#/search?q=${encodeURIComponent(query.trim())}`;
-  }
- };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setIsOpen(false);
+    if (onSearchSubmit) {
+      onSearchSubmit(query.trim());
+    } else {
+      onNavigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
- const handleSelect = (malId: number) => {
-  setIsOpen(false);
-  if (onSelectAnime) {
-   onSelectAnime(malId);
-  } else {
-   window.location.hash = `#/anime/${malId}`;
-  }
- };
+  const handleSelect = (malId: number) => {
+    setIsOpen(false);
+    if (onSelectAnime) {
+      onSelectAnime(malId);
+    } else {
+      onNavigate(`/anime/${malId}`);
+    }
+  };
 
  return (
   <div ref={dropdownRef} className={`relative w-full ${className}`}>
@@ -121,10 +124,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
      onFocus={() => {
       if (query.trim().length >= 2) setIsOpen(true);
      }}
-     placeholder={placeholder}
-     className={`w-full bg-surface-canvas/90 border border-ink-500/60 rounded-xl pl-10 pr-20 py-2 text-sm text-surface-primary placeholder-ink-500 focus:outline-none focus:border-orange-500 focus:ring-2 focus:/20 transition-all ${
-      compact ? 'text-xs py-1.5' : ''
-     }`}
+     placeholder={effectivePlaceholder}
+      className={`w-full bg-surface-canvas/90 border border-ink-500/60 rounded-xl pl-10 pr-12 py-2.5 text-sm text-surface-primary placeholder-ink-500 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all ${
+       compact ? 'py-2.5' : 'py-2.5'
+      }`}
     />
     <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
      {isLoading && <Loader2 className="w-3.5 h-3.5 text-orange-400 animate-spin mr-1" />}

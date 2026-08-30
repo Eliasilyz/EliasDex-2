@@ -6,6 +6,7 @@ import { Navigation } from 'swiper/modules';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Anime } from '@/types';
 import { AnimeCard } from './AnimeCard';
+import { AnimeHoverCard } from './AnimeHoverCard';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -47,12 +48,14 @@ export const SwiperAnimeSlider: React.FC<SwiperAnimeSliderProps> = ({
         className="w-full py-2 !overflow-visible"
       >
         {items.map((anime) => (
-          <SwiperSlide key={anime.mal_id} className="!h-auto flex">
-            <AnimeCard
-              anime={anime}
-              onSelect={onSelectAnime}
-              onWatch={onWatchAnime}
-            />
+          <SwiperSlide key={anime.mal_id} className="!h-auto flex !overflow-visible">
+            <AnimeHoverCard anime={anime} onSelect={onSelectAnime} onWatch={onWatchAnime}>
+              <AnimeCard
+                anime={anime}
+                onSelect={onSelectAnime}
+                onWatch={onWatchAnime}
+              />
+            </AnimeHoverCard>
           </SwiperSlide>
         ))}
       </Swiper>
