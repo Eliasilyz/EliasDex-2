@@ -8,7 +8,6 @@ import { SearchBar } from './SearchBar';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { TitleLanguageToggle } from '../ui/TitleLanguageToggle';
 import { DataSourceSelector } from '../ui/DataSourceSelector';
-import { LevelBadge } from '../ui/LevelBadge';
 import { VerifiedBadge } from '../ui/VerifiedBadge';
 import { ShadcnButton } from '../ui/shadcn/button';
 import { UserNameDisplay } from '@/components/collectibles/UserNameDisplay';
@@ -34,7 +33,7 @@ export const Navbar: React.FC = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const settingsRef = React.useRef<HTMLDivElement>(null);
   const userMenuRef = React.useRef<HTMLDivElement>(null);
-  const { watchlist, history, userLevel } = useWatch();
+  const { watchlist, history } = useWatch();
   const { data: session } = useSession();
   const [navCollectibles, setNavCollectibles] = useState<ResolvedCollectibles | null>(null);
   const pathname = usePathname();
@@ -259,7 +258,6 @@ export const Navbar: React.FC = () => {
               />
              </span>
             {session.user.isVerified && <VerifiedBadge className="hidden lg:inline" />}
-            <LevelBadge level={userLevel ?? session.user.level ?? 0} size="sm" />
             <ChevronDown className={`w-3 h-3 text-ink-500 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
            </button>
 
