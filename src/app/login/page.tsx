@@ -1,8 +1,13 @@
 import { LoginForm } from "@/components/auth/LoginForm";
 import { GuestButton } from "@/components/auth/GuestButton";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await auth();
+  if (session?.user) redirect("/");
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md space-y-6">

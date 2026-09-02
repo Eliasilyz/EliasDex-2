@@ -27,7 +27,7 @@ interface TitleLanguageContextType {
 
 const TitleLanguageContext = createContext<TitleLanguageContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'animestream_title_language';
+const STORAGE_KEY = 'eliasdex_title_language';
 
 export const TitleLanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [titleLanguage, setTitleLanguageState] = useState<TitleLanguage>('en');

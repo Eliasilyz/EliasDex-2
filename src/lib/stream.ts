@@ -41,12 +41,6 @@ export const STREAM_SERVERS: StreamServerOption[] = [
     source: 's-2',
     description: 'Catalog episode source via Anikoto mapping',
   },
-  {
-    id: 'embed-fallback',
-    name: 'VidStream (Backup)',
-    source: 'fallback',
-    description: 'Alternative backup streaming player',
-  },
 ];
 
 /**
@@ -56,28 +50,26 @@ export function buildStreamUrl(
   source: StreamSource,
   id: string | number,
   epNum: number,
-  lang: 'sub' | 'dub' = 'sub'
+  lang: 'sub' | 'dub' = 'sub',
+  autoplay = false
 ): string {
   const cleanEp = Math.max(1, Math.floor(epNum));
-  // Extract pure origin without duplicate /stream/mal suffixes if present in env
   const rawBase = (MEGAPLAY_BASE_URL || 'https://megaplay.buzz').trim();
   const origin = rawBase.replace(/\/stream(\/.*)?$/i, '').replace(/\/+$/, '') || 'https://megaplay.buzz';
-  const cleanId = String(id).replace(/^(stream\/(mal|ani|s-2|fallback|zoko)\/)+/i, '').replace(/^\/+/, '');
+  const cleanId = String(id).replace(/^(stream\/(mal|ani|s-2|zoko)\/)+/i, '').replace(/^\/+/, '');
+  const ap = autoplay ? '&autoplay=1' : '';
 
   switch (source) {
     case 'zoko':
-      return `https://zokoanime.video/stream/mal/${cleanId}/${cleanEp}/${lang}?color=fb7185`;
+      return `https://zokoanime.video/stream/mal/${cleanId}/${cleanEp}/${lang}?color=fb7185${ap}`;
     case 'mal':
-      return `${origin}/stream/mal/${cleanId}/${cleanEp}/${lang}`;
+      return `${origin}/stream/mal/${cleanId}/${cleanEp}/${lang}${ap ? '?' + ap.slice(1) : ''}`;
     case 'ani':
-      return `${origin}/stream/ani/${cleanId}/${cleanEp}/${lang}`;
+      return `${origin}/stream/ani/${cleanId}/${cleanEp}/${lang}${ap ? '?' + ap.slice(1) : ''}`;
     case 's-2':
-      return `${origin}/stream/s-2/${cleanId}/${lang}`;
-    case 'fallback':
-      // Fallback alternative video embed provider
-      return `https://vidsrc.cc/v2/embed/anime/${cleanId}/${cleanEp}/${lang}`;
+      return `${origin}/stream/s-2/${cleanId}/${lang}${ap ? '?' + ap.slice(1) : ''}`;
     default:
-      return `https://zokoanime.video/stream/mal/${cleanId}/${cleanEp}/${lang}?color=fb7185`;
+      return `https://zokoanime.video/stream/mal/${cleanId}/${cleanEp}/${lang}?color=fb7185${ap}`;
   }
 }
 

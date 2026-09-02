@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
         <Play className="w-3.5 h-3.5 text-white fill-white ml-0.5" />
        </div>
        <span className="font-heading font-bold text-lg text-surface-primary">
-        Anime<span className="text-orange-400">Stream</span>
+         Elias<span className="text-orange-400">Dex</span>
        </span>
       </div>
       <p className="text-sm text-ink-500 max-w-md leading-relaxed">
@@ -77,7 +77,7 @@ export const Footer: React.FC = () => {
     </div>
 
     <div className="pt-8 border-t border-ink-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-500">
-     <p>© {new Date().getFullYear()} AnimeStream. All anime metadata belongs to MyAnimeList.</p>
+     <p>© {new Date().getFullYear()} EliasDex. All anime metadata belongs to MyAnimeList.</p>
      <span className="flex items-center gap-1">
       <span>Powered by Next.js</span>
      </span>

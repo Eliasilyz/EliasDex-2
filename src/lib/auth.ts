@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { DB_ENABLED } from "./env";
-import { findUserByEmail } from "@/models/user";
+import { findUserByEmail, findUserById } from "@/models/user";
 
 declare module "next-auth" {
   interface User {
@@ -14,6 +14,7 @@ declare module "next-auth" {
     level: number;
     isGuest: boolean;
     avatarUrl?: string;
+    isVerified: boolean;
   }
   interface Session {
     user: User;
@@ -29,6 +30,7 @@ declare module "next-auth/jwt" {
     level: number;
     isGuest: boolean;
     avatarUrl?: string;
+    isVerified: boolean;
   }
 }
 
@@ -70,6 +72,7 @@ export const authOptions: NextAuthOptions = {
           level: user.level,
           isGuest: user.isGuest,
           avatarUrl: user.avatarUrl,
+          isVerified: user.isVerified,
         };
       },
     }),
@@ -84,11 +87,32 @@ export const authOptions: NextAuthOptions = {
         token.level = user.level;
         token.isGuest = user.isGuest;
         token.avatarUrl = user.avatarUrl;
+        token.isVerified = user.isVerified;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
+        // Refresh user claims from DB so role/verified changes apply without re-login
+        const uid = token.id as string | undefined;
+        if (DB_ENABLED && uid) {
+          try {
+            const fresh = await findUserById(uid);
+            if (fresh) {
+              session.user.id = fresh._id ? fresh._id.toString() : uid;
+              session.user.email = fresh.email ?? session.user.email;
+              session.user.username = fresh.username ?? session.user.username;
+              session.user.role = fresh.role ?? (token.role as string);
+              session.user.level = fresh.level ?? (token.level as number);
+              session.user.isGuest = fresh.isGuest ?? (token.isGuest as boolean);
+              session.user.avatarUrl = fresh.avatarUrl ?? (token.avatarUrl as string | undefined);
+              session.user.isVerified = fresh.isVerified ?? (token.isVerified as boolean);
+              return session;
+            }
+          } catch {
+            // fall through to token values if DB is unavailable
+          }
+        }
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.username = token.username as string;
@@ -96,6 +120,7 @@ export const authOptions: NextAuthOptions = {
         session.user.level = token.level as number;
         session.user.isGuest = token.isGuest as boolean;
         session.user.avatarUrl = token.avatarUrl as string | undefined;
+        session.user.isVerified = token.isVerified as boolean;
       }
       return session;
     },
@@ -107,7 +132,9 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 30 * 24 * 60 * 60,
   },
-  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET || "dev-auth-secret-for-build-purposes-only-eliasdex2",
+  secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
+  // NOTE: If NEXTAUTH_SECRET is not set, NextAuth will throw at runtime.
+  // The previous hardcoded fallback was a critical security risk.
 };
 
 export async function auth() {

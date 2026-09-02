@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Anime } from '@/types';
 
 export const SITE_CONFIG = {
-  name: 'EliasDex AnimeStream',
+  name: 'EliasDex',
   shortName: 'EliasDex',
   description: 'Minimalist, modern, and fast anime browsing and streaming web application with high quality streams and multi-source API fallback.',
   url: process.env.NEXT_PUBLIC_APP_URL || 'https://eliasdex.vercel.app',

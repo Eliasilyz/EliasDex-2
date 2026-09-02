@@ -167,11 +167,11 @@ Aplikasi menyimpan preferensi pengguna dan riwayat secara lokal di browser (`loc
 
 | Storage Key | Tipe Data | Nilai / Default | Deskripsi |
 | :--- | :--- | :--- | :--- |
-| `animestream_theme` | String | `'dark'` (default), `'light'`, `'system'` | Preferensi tema warna UI |
-| `animestream_title_language` | String | `'en'` (default), `'jp'` | Preferensi bahasa judul (English vs Romaji/Kanji) |
-| `animestream_datasource_preference` | String | `'auto'` (default), `'jikan'`, `'anilist'` | Preferensi upstream data provider |
-| `animestream_watch_history` | JSON Array (`WatchProgress[]`) | `[]` (maks. 50 entri) | Riwayat episode anime yang ditonton beserta timestamp |
-| `animestream_watchlist` | JSON Array (`WatchlistItem[]`) | `[]` | Daftar anime yang disimpan (`watching`, `plan_to_watch`, `completed`, `dropped`) |
+| `eliasdex_theme` | String | `'dark'` (default), `'light'`, `'system'` | Preferensi tema warna UI |
+| `eliasdex_title_language` | String | `'en'` (default), `'jp'` | Preferensi bahasa judul (English vs Romaji/Kanji) |
+| `eliasdex_datasource_preference` | String | `'auto'` (default), `'jikan'`, `'anilist'` | Preferensi upstream data provider |
+| `eliasdex_watch_history` | JSON Array (`WatchProgress[]`) | `[]` (maks. 50 entri) | Riwayat episode anime yang ditonton beserta timestamp |
+| `eliasdex_watchlist` | JSON Array (`WatchlistItem[]`) | `[]` | Daftar anime yang disimpan (`watching`, `plan_to_watch`, `completed`, `dropped`) |
 
 ### B. Environment Variables (`.env.example`)
 

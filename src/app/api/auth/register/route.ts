@@ -10,6 +10,24 @@ const RegisterSchema = z.object({
   password: z.string().min(6),
 });
 
+// Simple in-memory rate limiter: max 5 registrations per IP per hour
+const registrationAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = registrationAttempts.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    registrationAttempts.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 });
+    return true;
+  }
+
+  if (entry.count >= 5) return false;
+
+  entry.count++;
+  return true;
+}
+
 export async function POST(req: Request) {
   if (!DB_ENABLED) {
     return NextResponse.json(
@@ -19,6 +37,15 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Rate limit check
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: "Too many registration attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const parsed = RegisterSchema.safeParse(body);
 

@@ -42,13 +42,18 @@ export const EpisodeList: React.FC<EpisodeListProps> = ({
  * - If Currently Airing AND API has aired episodes: ONLY show aired episodes (apiCount).
  * - If Finished Airing or no API data yet: show totalEpisodes or apiCount.
  */
- const count = useMemo(() => {
- if (isAiring && apiCount > 0) {
-  return Math.max(apiCount, currentEp || 1);
- }
- const val = Math.max(totalEpisodes || 0, apiCount, currentEp || 1);
- return val > 0 ? val : 12;
- }, [totalEpisodes, apiCount, isAiring, currentEp]);
+  const count = useMemo(() => {
+  // Prefer the scheduled total when known so the list doesn't only show
+  // already-aired episodes for an airing title (or jump when a refetch lands).
+  if (totalEpisodes && totalEpisodes > 0) {
+   return Math.max(totalEpisodes, currentEp || 1);
+  }
+  if (isAiring && apiCount > 0) {
+   return Math.max(apiCount, currentEp || 1);
+  }
+  const val = Math.max(totalEpisodes || 0, apiCount, currentEp || 1);
+  return val > 0 ? val : 12;
+  }, [totalEpisodes, apiCount, isAiring, currentEp]);
 
  // Create episode items array for aired episodes only
  const allEpisodes = useMemo(() => {

@@ -92,6 +92,80 @@ export const ScheduleRowSkeleton: React.FC = () => {
   );
 };
 
+export const WatchPageSkeleton: React.FC = () => {
+  return (
+    <PhantomLoader loading className="w-full space-y-4 pb-12">
+      {/* Top bar: back link + title + lang toggles */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="h-3 w-36 rounded-sm bg-ink-700" />
+        <div className="h-4 w-44 rounded bg-ink-500/70" />
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-16 rounded-lg bg-ink-700/60 border border-ink-600" />
+          <div className="h-8 w-16 rounded-lg bg-ink-700/60 border border-ink-600" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5 items-start">
+        {/* LEFT: player + meta */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="aspect-video w-full rounded-xl bg-ink-700/80 border border-ink-700" />
+
+          {/* Episode nav bar */}
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-ink-700 bg-surface-raised px-3.5 py-2.5">
+            <div className="space-y-1.5">
+              <div className="h-3 w-10 rounded bg-ink-500/80" />
+              <div className="h-4 w-32 rounded bg-ink-500/70" />
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-7 w-14 rounded-lg bg-ink-700/70" />
+              <div className="h-7 w-60 rounded-lg bg-orange-500/70" />
+              <div className="h-7 w-24 rounded-lg bg-ink-700/70" />
+              <div className="h-7 w-8 rounded-lg bg-ink-700/70" />
+              <div className="h-7 w-28 rounded-lg bg-ink-700/70" />
+            </div>
+          </div>
+
+          {/* Sources placeholder */}
+          <div className="rounded-lg border border-ink-700 bg-surface-raised p-3.5 space-y-3">
+            <div className="h-3 w-16 rounded bg-ink-500/80" />
+            <div className="flex flex-wrap gap-2">
+              {[40, 56, 48, 64].map((w, i) => (
+                <div key={i} className="h-7 rounded-lg bg-ink-700/70" style={{ width: w }} />
+              ))}
+            </div>
+          </div>
+
+          {/* About placeholder */}
+          <div className="rounded-lg border border-ink-700 bg-surface-raised p-3.5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="h-3 w-24 rounded bg-ink-500/80" />
+              <div className="h-3 w-8 rounded bg-ink-500/70" />
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              {[40, 48, 60, 52, 44, 56].map((w, i) => (
+                <div key={i} className="h-3 rounded bg-ink-700/70" style={{ width: w }} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: sidebar tabs + content */}
+        <div className="space-y-0">
+          <div className="flex rounded-xl overflow-hidden border border-ink-700 bg-surface-raised mb-2">
+            <div className="flex-1 h-9 rounded-none bg-ink-700/40" />
+            <div className="flex-1 h-9 rounded-none bg-surface-raised" />
+          </div>
+          <div className="max-h-[62vh] rounded-lg border border-ink-700 bg-surface-raised p-3 space-y-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-4 w-full rounded bg-ink-700/70" style={{ opacity: 1 - i * 0.08 }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </PhantomLoader>
+  );
+};
+
 export const DetailPageSkeleton: React.FC = () => {
   return (
     <PhantomLoader loading className="w-full space-y-6 pb-20">

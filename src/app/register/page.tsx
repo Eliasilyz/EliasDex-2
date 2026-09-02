@@ -1,13 +1,18 @@
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { GuestButton } from "@/components/auth/GuestButton";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const session = await auth();
+  if (session?.user) redirect("/");
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-surface-primary mb-2">Join AnimeStream</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-surface-primary mb-2">Join EliasDex</h1>
           <p className="text-ink-500">Create an account to save your progress</p>
         </div>
 

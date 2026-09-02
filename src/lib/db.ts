@@ -13,7 +13,9 @@ export async function getDb(): Promise<Db | null> {
 
   try {
     if (!cachedClient) {
-      cachedClient = new MongoClient(ENV.MONGODB_URI);
+      cachedClient = new MongoClient(ENV.MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+      });
       await cachedClient.connect();
     }
     cachedDb = cachedClient.db("eliasdex");

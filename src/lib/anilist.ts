@@ -948,12 +948,19 @@ export async function getAniListEpisodes(
       });
     }
 
-    // Fallback: If AniList streamingEpisodes is empty, build episode list from AniList episode metadata
+    // Fallback: If AniList streamingEpisodes is empty, build episode list from AniList
+    // episode metadata. For airing titles use the FULL scheduled count when known so
+    // the episode list doesn't jump from "aired so far" (e.g. 4) to the total (e.g. 12)
+    // after a later refetch. Aired count is used only when the total is unknown.
     const airedCount = media.nextAiringEpisode?.episode
       ? media.nextAiringEpisode.episode - 1
-      : media.episodes || 12;
+      : 0;
 
-    const count = Math.max(airedCount, 1);
+    let total = media.episodes || Math.max(airedCount, 12);
+    if (!media.episodes && media.nextAiringEpisode?.episode) {
+      total = Math.max(media.nextAiringEpisode.episode - 1, 12);
+    }
+    const count = Math.max(total, airedCount, 1);
     return Array.from({ length: count }, (_, i) => ({
       mal_id: i + 1,
       title: `Episode ${i + 1}`,

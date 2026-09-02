@@ -17,6 +17,33 @@ export async function getWatchHistory(userId: string, limit = 50): Promise<Watch
     .toArray();
 }
 
+// One entry per anime (latest episode watched), sorted by recency.
+// Used by the public "Recently Watched" list so an anime appears only once.
+export async function getRecentlyWatched(userId: string, limit = 18): Promise<WatchHistoryEntry[]> {
+  if (!DB_ENABLED) return [];
+  const db = await getDb();
+  if (!db) return [];
+
+  const pipeline = [
+    { $match: { userId } },
+    { $sort: { lastWatchedAt: -1 } },
+    {
+      $group: {
+        _id: "$animeId",
+        doc: { $first: "$$ROOT" },
+      },
+    },
+    { $replaceRoot: { newRoot: "$doc" } },
+    { $sort: { lastWatchedAt: -1 } },
+    { $limit: limit },
+  ] as any;
+
+  return db
+    .collection<WatchHistoryEntry>("watch_history")
+    .aggregate<WatchHistoryEntry>(pipeline)
+    .toArray();
+}
+
 export async function getContinueWatching(userId: string, limit = 10): Promise<WatchHistoryEntry[]> {
   if (!DB_ENABLED) return [];
   const db = await getDb();

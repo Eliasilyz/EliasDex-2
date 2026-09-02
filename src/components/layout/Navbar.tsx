@@ -2,16 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { Play, Flame, Calendar, Compass, Bookmark, History, Menu, X, Sparkles, User as UserIcon, Settings, ChevronDown } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { Play, Flame, Calendar, Compass, Bookmark, History, Menu, X, Sparkles, User as UserIcon, Settings, ChevronDown, LogOut, Shield } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { TitleLanguageToggle } from '../ui/TitleLanguageToggle';
 import { DataSourceSelector } from '../ui/DataSourceSelector';
 import { LevelBadge } from '../ui/LevelBadge';
+import { VerifiedBadge } from '../ui/VerifiedBadge';
 import { ShadcnButton } from '../ui/shadcn/button';
+import { UserNameDisplay } from '@/components/collectibles/UserNameDisplay';
 import { useWatch } from '../../context/WatchContext';
 import { useAppNavigate } from '@/lib/useNavigate';
+import { onCollectiblesChange } from '@/lib/collectibleEvents';
+import type { ResolvedCollectibles } from '@/types/models';
 
 // Komponen pembantu untuk mencegah hidrasi mismatch
 const ClientOnly = ({ children }: { children: React.ReactNode }) => {
@@ -27,9 +31,12 @@ export const Navbar: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const settingsRef = React.useRef<HTMLDivElement>(null);
+  const userMenuRef = React.useRef<HTMLDivElement>(null);
   const { watchlist, history, userLevel } = useWatch();
   const { data: session } = useSession();
+  const [navCollectibles, setNavCollectibles] = useState<ResolvedCollectibles | null>(null);
   const pathname = usePathname();
   const currentPath = pathname || '/';
   const onNavigate = useAppNavigate();
@@ -39,15 +46,45 @@ export const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
+   if (!session?.user) return;
+   fetch("/api/user/collectibles")
+     .then((r) => (r.ok ? r.json() : null))
+     .then((data) => {
+       if (data?.equipped) setNavCollectibles(data.equipped);
+     })
+     .catch(() => {});
+  }, [session?.user]);
+
+  // Re-fetch collectibles when they change (equip/unequip in inventory panel)
+  useEffect(() => {
+   return onCollectiblesChange(() => {
+     if (!session?.user) return;
+     fetch("/api/user/collectibles")
+       .then((r) => (r.ok ? r.json() : null))
+       .then((data) => {
+         if (data?.equipped) setNavCollectibles(data.equipped);
+       })
+       .catch(() => {});
+   });
+  }, [session?.user]);
+
+  useEffect(() => {
    const handleClickOutside = (e: MouseEvent) => {
-     if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+     const t = e.target as Node;
+     if (settingsRef.current && !settingsRef.current.contains(t)) {
        setSettingsOpen(false);
+     }
+     if (userMenuRef.current && !userMenuRef.current.contains(t)) {
+       setUserMenuOpen(false);
      }
    };
    const handleEsc = (e: KeyboardEvent) => {
-     if (e.key === 'Escape') setSettingsOpen(false);
+     if (e.key === 'Escape') {
+       setSettingsOpen(false);
+       setUserMenuOpen(false);
+     }
    };
-   if (settingsOpen) {
+   if (settingsOpen || userMenuOpen) {
      document.addEventListener('mousedown', handleClickOutside);
      document.addEventListener('keydown', handleEsc);
      return () => {
@@ -55,12 +92,18 @@ export const Navbar: React.FC = () => {
        document.removeEventListener('keydown', handleEsc);
      };
    }
-  }, [settingsOpen]);
+  }, [settingsOpen, userMenuOpen]);
 
   const handleNav = (path: string) => {
    setMobileMenuOpen(false);
    setSettingsOpen(false);
+   setUserMenuOpen(false);
    onNavigate(path);
+  };
+
+  const handleLogout = async () => {
+   setUserMenuOpen(false);
+   await signOut({ callbackUrl: '/?loggedOut=1' });
   };
 
  const navLinks = [
@@ -96,7 +139,7 @@ export const Navbar: React.FC = () => {
       </div>
       <div className="flex flex-col text-left">
        <span className="font-heading font-extrabold text-lg tracking-tight text-surface-primary flex items-center gap-1">
-        Anime<span className="text-orange-400">Stream</span>
+        Elias<span className="text-orange-400">Dex</span>
        </span>
       </div>
      </button>
@@ -186,27 +229,88 @@ export const Navbar: React.FC = () => {
        <div className="shrink-0 hidden sm:flex" suppressHydrationWarning>
         <ClientOnly>
          {session?.user ? (
-          <button
-           type="button"
-           id="nav-profile-btn"
-           onClick={() => handleNav('/profile')}
-           className="flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-full bg-ink-700/60 hover:bg-ink-700 border border-ink-700 text-xs font-semibold text-ink-300 hover:text-white transition-colors cursor-pointer group"
-           aria-label="Go to profile"
-          >
-           {session.user.avatarUrl ? (
-            <img
-             src={session.user.avatarUrl}
-             alt={session.user.username}
-             className="w-7 h-7 rounded-full object-cover"
-            />
-           ) : (
-            <span className="w-7 h-7 rounded-full bg-ink-700 flex items-center justify-center">
-             <UserIcon className="w-3.5 h-3.5 text-ink-500 group-hover:text-white" />
-            </span>
+          <div className="relative" ref={userMenuRef}>
+           <button
+            type="button"
+            id="nav-profile-btn"
+            onClick={() => setUserMenuOpen((o) => !o)}
+            aria-haspopup="menu"
+            aria-expanded={userMenuOpen}
+            aria-label="Account menu"
+            className="flex items-center gap-1.5 pl-1 pr-2 py-1 rounded-full bg-ink-700/60 hover:bg-ink-700 border border-ink-700 text-xs font-semibold text-ink-300 hover:text-white transition-colors cursor-pointer group"
+             >
+              {session.user.avatarUrl ? (
+               <img
+                src={session.user.avatarUrl}
+                alt={session.user.username}
+                className={`w-7 h-7 rounded-full object-cover ${navCollectibles?.border ? `ring-2 ${navCollectibles.border.rarity === "legendary" ? "ring-amber-400" : navCollectibles.border.rarity === "epic" ? "ring-purple-500" : navCollectibles.border.rarity === "rare" ? "ring-blue-500" : "ring-ink-500"}` : ""}`}
+               />
+              ) : (
+               <span className="w-7 h-7 rounded-full bg-ink-700 flex items-center justify-center">
+                <UserIcon className="w-3.5 h-3.5 text-ink-500 group-hover:text-white" />
+               </span>
+              )}
+             <span className="hidden lg:inline max-w-[90px] truncate">
+              <UserNameDisplay
+               username={session.user.username}
+               nameStyle={navCollectibles?.nameStyle}
+               rank={navCollectibles?.rank}
+               className="text-xs font-semibold"
+              />
+             </span>
+            {session.user.isVerified && <VerifiedBadge className="hidden lg:inline" />}
+            <LevelBadge level={userLevel ?? session.user.level ?? 0} size="sm" />
+            <ChevronDown className={`w-3 h-3 text-ink-500 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
+           </button>
+
+           {userMenuOpen && (
+            <div
+             role="menu"
+             className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-ink-700/70 bg-surface-raised/98 backdrop-blur-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+            >
+              <div className="px-4 py-3 border-b border-ink-700/50">
+               <p className="text-xs font-semibold text-surface-primary truncate">
+                <UserNameDisplay
+                 username={session.user.username}
+                 nameStyle={navCollectibles?.nameStyle}
+                 rank={navCollectibles?.rank}
+                />
+               </p>
+              <p className="text-[11px] text-ink-500 truncate">{session.user.email}</p>
+             </div>
+             <div className="py-1">
+              <button
+               type="button"
+               role="menuitem"
+               onClick={() => handleNav('/profile')}
+               className="w-full flex items-center gap-2 px-4 py-2 text-xs text-ink-300 hover:text-white hover:bg-white/[0.05] transition-colors"
+              >
+               <UserIcon className="w-3.5 h-3.5" /> My Profile
+              </button>
+              {(session.user.role === 'admin') && (
+               <button
+                type="button"
+                role="menuitem"
+                onClick={() => handleNav('/admin/announcements')}
+                className="w-full flex items-center gap-2 px-4 py-2 text-xs text-ink-300 hover:text-white hover:bg-white/[0.05] transition-colors"
+               >
+                <Shield className="w-3.5 h-3.5" /> Admin Panel
+               </button>
+              )}
+             </div>
+             <div className="py-1 border-t border-ink-700/50">
+              <button
+               type="button"
+               role="menuitem"
+               onClick={handleLogout}
+               className="w-full flex items-center gap-2 px-4 py-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
+              >
+               <LogOut className="w-3.5 h-3.5" /> Logout
+              </button>
+             </div>
+            </div>
            )}
-           <span className="hidden lg:inline max-w-[90px] truncate">{session.user.username}</span>
-           <LevelBadge level={userLevel ?? session.user.level ?? 0} size="sm" />
-          </button>
+          </div>
          ) : (
           <ShadcnButton
            id="nav-signin-btn"

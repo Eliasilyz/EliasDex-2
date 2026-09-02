@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { RotateCw, Maximize, AlertTriangle, ExternalLink, Loader2 } from 'lucide-react';
+import { RotateCw, Maximize, AlertTriangle, ExternalLink, Loader2, Play } from 'lucide-react';
 import { usePlayerEvents } from './usePlayerEvents';
 
 interface PlayerFrameProps {
@@ -8,6 +8,19 @@ interface PlayerFrameProps {
   onEnded?: () => void;
   onProgress?: (event: any) => void;
   className?: string;
+}
+
+/**
+ * Returns sandbox attribute value for the iframe.
+ * MegaPlay hosts reject sandboxed iframes ("Sandboxed our player is not allowed"),
+ * so we return undefined (no sandbox) for those. Other sources get the restrictive sandbox.
+ */
+function getIframeSandbox(streamUrl: string): string | undefined {
+  try {
+    const hostname = new URL(streamUrl).hostname;
+    if (hostname.includes('megaplay')) return undefined;
+  } catch { /* invalid URL, fall through to default sandbox */ }
+  return 'allow-scripts allow-same-origin allow-forms';
 }
 
 export const PlayerFrame: React.FC<PlayerFrameProps> = ({
@@ -20,14 +33,18 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [key, setKey] = useState(0);
+  const [unlocked, setUnlocked] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Re-trigger loading when src changes
+  const needsGuard = getIframeSandbox(src) === undefined;
+
+  // Re-trigger loading when src changes; re-lock guard for unsandboxed sources
   useEffect(() => {
     setIsLoading(true);
     setHasError(false);
-  }, [src, key]);
+    if (needsGuard) setUnlocked(false);
+  }, [src, key, needsGuard]);
 
   usePlayerEvents({
     onEnded,
@@ -97,22 +114,46 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
         </div>
       )}
 
-      {/* Embed Iframe - sandbox attribute removed to prevent player restriction */}
+      {/* Embed Iframe
+        sandbox: MegaPlay rejects sandboxed iframes, so getIframeSandbox returns undefined for megaplay hosts.
+        For other sources: allow-scripts (player JS), allow-same-origin (player DOM/cookies), allow-forms (internal settings forms).
+        Blocked: allow-popups (ads), allow-top-navigation (redirects), allow-modals.
+        referrerPolicy: no-referrer — prevents player from leaking page URL upstream. */}
       <iframe
         key={key}
         ref={iframeRef}
         src={src}
         title={title}
         className="w-full h-full border-0 absolute inset-0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+        sandbox={getIframeSandbox(src)}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
-        referrerPolicy="origin"
+        referrerPolicy="no-referrer"
         onLoad={() => setIsLoading(false)}
         onError={() => {
           setIsLoading(false);
           setHasError(true);
         }}
       />
+
+      {/* Click-guard overlay for unsandboxed sources (MegaPlay).
+          Since we can't sandbox these hosts, this transparent overlay intercepts
+          the first click so the user explicitly opts in before the iframe receives input.
+          This prevents accidental ad clicks / redirect triggers on load. */}
+      {needsGuard && !unlocked && !isLoading && (
+        <button
+          type="button"
+          onClick={() => setUnlocked(true)}
+          className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm text-white gap-3 cursor-pointer transition-opacity hover:bg-black/60"
+          aria-label="Click to enable player"
+        >
+          <div className="w-16 h-16 rounded-full bg-orange-500/90 flex items-center justify-center shadow-lg shadow-orange-500/30">
+            <Play className="w-7 h-7 ml-1" fill="currentColor" />
+          </div>
+          <p className="text-sm font-semibold">Click to play</p>
+          <p className="text-xs text-ink-400">This prevents unwanted popups</p>
+        </button>
+      )}
 
       {/* Quick Player Action Overlay on Top Right (Hover) */}
       <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 opacity-0 group-hover/player:opacity-100 transition-opacity bg-surface-canvas/85 backdrop-blur-md p-1 rounded-xl border border-ink-500/60 shadow-lg">

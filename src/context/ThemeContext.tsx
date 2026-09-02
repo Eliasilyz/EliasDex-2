@@ -19,7 +19,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Load saved theme on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('animestream_theme') as ThemeMode;
+      const saved = localStorage.getItem('eliasdex_theme') as ThemeMode;
       if (saved && ['light', 'dark', 'system'].includes(saved)) {
         setThemeState(saved);
       }
@@ -52,7 +52,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     applyTheme(theme);
     try {
-      localStorage.setItem('animestream_theme', theme);
+      localStorage.setItem('eliasdex_theme', theme);
     } catch {}
 
     // Listener for system preference changes

@@ -12,7 +12,7 @@ interface DataSourceContextType {
 
 const DataSourceContext = createContext<DataSourceContextType | undefined>(undefined);
 
-const DATA_SOURCE_STORAGE_KEY = 'animestream_datasource_preference';
+const DATA_SOURCE_STORAGE_KEY = 'eliasdex_datasource_preference';
 
 export const DataSourceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dataSource, setDataSourceState] = useState<DataSource>('auto');

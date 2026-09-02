@@ -3,7 +3,7 @@ import { DB_ENABLED } from "@/lib/env";
 import { getDb } from "@/lib/db";
 import type { Comment, CommentTargetType } from "@/types/models";
 
-export type { Comment, CommentTargetType };
+export type { CommentTargetType };
 
 export async function getComments(targetId: number, limit = 100): Promise<Comment[]> {
   if (!DB_ENABLED) return [];

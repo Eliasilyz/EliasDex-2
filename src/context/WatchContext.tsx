@@ -31,8 +31,8 @@ interface WatchContextType {
 
 const WatchContext = createContext<WatchContextType | undefined>(undefined);
 
-const HISTORY_STORAGE_KEY = 'animestream_watch_history';
-const WATCHLIST_STORAGE_KEY = 'animestream_watchlist';
+const HISTORY_STORAGE_KEY = 'eliasdex_watch_history';
+const WATCHLIST_STORAGE_KEY = 'eliasdex_watchlist';
 
 function mapServerHistory(entry: WatchHistoryEntry): WatchProgress {
   const ts =

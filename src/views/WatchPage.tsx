@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAppNavigate } from '@/lib/useNavigate';
 import { Anime, AnimeEpisode, StreamSource } from '../types';
@@ -13,21 +13,23 @@ import { ServerSelector } from '../components/player/ServerSelector';
 import { ServerNotice } from '../components/player/ServerNotice';
 import { EpisodeList } from '../components/anime/EpisodeList';
 import { ChatPanel } from '../components/chat/ChatPanel';
-import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { TitleLanguageToggle } from '../components/ui/TitleLanguageToggle';
+import { WatchPageSkeleton } from '../components/ui/Skeleton';
 import { useWatch } from '../context/WatchContext';
 import { useTitleLanguage } from '../context/TitleLanguageContext';
 import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  FastForward,
+  ChevronDown,
   Info,
+  Play,
   Star,
   Tv,
   List,
-  Sparkles,
-  RotateCcw,
+  RotateCw,
   CheckCircle2,
   MessageCircle,
 } from 'lucide-react';
@@ -37,23 +39,47 @@ interface WatchPageProps {
   epNum: number;
 }
 
+const specRow = (label: string, value: string | number | null | undefined) => {
+  if (value === null || value === undefined || value === '') return null;
+  return (
+    <React.Fragment key={label}>
+      <dt className="text-[10px] uppercase tracking-[0.08em] text-ink-500">{label}</dt>
+      <dd className="text-ink-300 font-medium break-words">{value}</dd>
+    </React.Fragment>
+  );
+};
+
 export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   const searchParams = useSearchParams();
   const initialLang = (searchParams?.get('lang') as 'sub' | 'dub') || 'sub';
   const onNavigate = useAppNavigate();
-  const { recordWatchProgress, watchlist, setWatchlistStatus } = useWatch();
-  const { getTitle, getSecondaryTitle } = useTitleLanguage();
+  const { recordWatchProgress, setWatchlistStatus, getWatchlistStatus } = useWatch();
+  const { getTitle } = useTitleLanguage();
   const { dataSource } = useDataSource();
   const [anime, setAnime] = useState<Anime | null>(null);
   const [episodes, setEpisodes] = useState<AnimeEpisode[]>([]);
   const [lang, setLang] = useState<'sub' | 'dub'>(initialLang);
   const [source, setSource] = useState<StreamSource>('zoko');
-  const [autoNext, setAutoNext] = useState(true);
+  const [autoNext, setAutoNext] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const v = localStorage.getItem('eliasdex_autonext');
+    return v !== null ? v === 'true' : true;
+  });
+  const [autoplay, setAutoplay] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const v = localStorage.getItem('eliasdex_autoplay');
+    return v !== null ? v === 'true' : true;
+  });
   const [loading, setLoading] = useState(true);
-  const [showDetails, setShowDetails] = useState(false);
+  const [markedWatched, setMarkedWatched] = useState(false);
+  const [showSynopsis, setShowSynopsis] = useState(false);
 
   const [activeSideTab, setActiveSideTab] = useState<'episodes' | 'chat'>('episodes');
-  const [markedWatched, setMarkedWatched] = useState(false);
+  const xpAwardedRef = useRef(false);
+
+  // Persist autoNext & autoplay preferences to localStorage
+  useEffect(() => { localStorage.setItem('eliasdex_autonext', String(autoNext)); }, [autoNext]);
+  useEffect(() => { localStorage.setItem('eliasdex_autoplay', String(autoplay)); }, [autoplay]);
 
   // Fetch anime metadata and episodes
   useEffect(() => {
@@ -85,6 +111,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
   useEffect(() => {
     if (anime) {
       setMarkedWatched(false);
+      xpAwardedRef.current = false;
       const img =
         anime.images?.webp?.large_image_url ||
         anime.images?.jpg?.large_image_url ||
@@ -100,12 +127,13 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
         language: lang,
       });
     }
-  }, [anime, epNum, lang]);
+  }, [anime, epNum, lang, recordWatchProgress]);
 
-  // Keyboard shortcut listener for player navigation (N: next, P: prev)
+  // Keyboard: N/P to navigate, Space toggles play in iframe, ? opens help is overkill
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.activeElement?.tagName === 'INPUT') return;
+      if (e.target instanceof HTMLElement && e.target.closest('[role="textbox"]')) return;
 
       if (e.key === 'n' || e.key === 'N') {
         handleNextEp();
@@ -116,18 +144,27 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [malId, epNum, anime]);
+  }, [malId, epNum, anime, autoNext]);
 
   const isAiring = anime?.status === 'Currently Airing';
-  const maxEpisodes = isAiring && episodes.length > 0
-    ? Math.max(episodes.length, epNum)
-    : Math.max(anime?.episodes || 0, episodes.length, epNum);
+  const maxEpisodes = Math.max(anime?.episodes || 0, episodes.length, epNum);
   const hasNextEp = epNum < maxEpisodes;
   const hasPrevEp = epNum > 1;
 
+  const currentEpMeta = episodes.find((e) => e.mal_id === epNum);
+  const episodeTitle = currentEpMeta?.title || `Episode ${epNum}`;
+
+  const title = anime ? getTitle(anime) : 'EliasDex';
+  const seasonYear = anime?.season && anime?.year ? `${anime.season} ${anime.year}` : anime?.year ? String(anime.year) : null;
+  const score = anime?.score;
+  const airedString = anime?.aired?.string || null;
+  const broadcast = anime?.broadcast?.string || null;
+
   // Mark the current episode as completed so the account earns XP/level.
   const markCurrentCompleted = useCallback(() => {
-    if (!anime) return;
+    if (!anime || xpAwardedRef.current) return;
+    xpAwardedRef.current = true;
+    setMarkedWatched(true);
     const img =
       anime.images?.webp?.large_image_url ||
       anime.images?.jpg?.large_image_url ||
@@ -143,6 +180,16 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
       completed: true,
     });
   }, [anime, epNum, lang, recordWatchProgress]);
+
+  // Auto-mark completed when player progress >= 90%
+  const handleProgress = useCallback(
+    (event: { currentTime: number; duration: number; progressPercent: number }) => {
+      if (event.progressPercent >= 90 && !xpAwardedRef.current) {
+        markCurrentCompleted();
+      }
+    },
+    [markCurrentCompleted],
+  );
 
   const handleNextEp = () => {
     markCurrentCompleted();
@@ -160,66 +207,93 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
 
   const handleVideoEnded = () => {
     if (autoNext && hasNextEp) {
-      console.log('Video ended. Triggering auto-next episode...');
       markCurrentCompleted();
       handleNextEp();
     }
   };
 
-  // Build the live embed URL
-  const streamUrl = buildStreamUrl(source, malId, epNum, lang);
-  const currentEpMeta = episodes.find((e) => e.mal_id === epNum);
-  const episodeTitle = currentEpMeta?.title ? `${currentEpMeta.title}` : `Episode ${epNum}`;
+  const streamUrl = buildStreamUrl(source, malId, epNum, lang, autoplay);
+  const watchlistStatus = anime ? getWatchlistStatus(anime.mal_id) : null;
+  const inWatchlist = watchlistStatus !== null;
 
-  return (
-    <div className="space-y-4 pb-16">
-      {/* Top Breadcrumb & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <button
-            type="button"
-            onClick={() => onNavigate(`/anime/${malId}`)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-ink-500 hover:text-white bg-surface-canvas border border-ink-700 px-3 py-1.5 rounded-xl transition-colors cursor-pointer shrink-0"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Anime Details</span>
-          </button>
+  const handleWatchlistToggle = () => {
+    if (!anime) return;
+    if (inWatchlist) {
+      setWatchlistStatus(anime, 'remove');
+    } else {
+      setWatchlistStatus(anime, 'watching');
+    }
+  };
 
-          <h2 className="text-sm sm:text-base font-bold font-heading text-surface-primary truncate">
-            {anime ? getTitle(anime) : 'Anime Stream'}
-          </h2>
-        </div>
+  const onToggleSynopsis = () => setShowSynopsis((s) => !s);
 
-        {/* Language and Audio Toggles */}
-        <div className="flex items-center gap-3 shrink-0">
+  return loading ? (
+    <WatchPageSkeleton />
+  ) : (
+    <div className="space-y-3 sm:space-y-4 pb-12 relative" role="main">
+      {/* Subtle atmospheric radial glow */}
+      <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-orange-500/[0.04] rounded-full blur-3xl" />
+
+      {/* Top Bar: back + title + lang */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        <button
+          type="button"
+          onClick={() => onNavigate(`/anime/${malId}`)}
+          className="flex items-center gap-1 text-xs font-medium text-ink-400 hover:text-white shrink-0"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Back</span>
+        </button>
+
+        <h2
+          className="text-xs sm:text-base font-bold font-heading text-surface-primary truncate min-w-0"
+          title={title}
+        >
+          {title}
+        </h2>
+
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-auto">
           <TitleLanguageToggle />
-          <LanguageToggle value={lang} onChange={(newLang) => setLang(newLang)} />
+          <LanguageToggle value={lang} onChange={(n) => setLang(n)} />
         </div>
       </div>
 
-      {/* Main Layout: 2-column on lg+, stacked on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5 items-start">
+      {/* Main Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5 items-start">
         {/* ── LEFT: Player + Controls ── */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Iframe Player */}
-          <PlayerFrame
-            src={streamUrl}
-            title={`${anime?.title || 'Anime'} - Episode ${epNum}`}
-            onEnded={handleVideoEnded}
-          />
+        <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+          {/* Player — cinematic frame */}
+          <div className="relative rounded-xl sm:rounded-2xl overflow-hidden">
+            <PlayerFrame
+              src={streamUrl}
+              title={`${title} — Episode ${epNum}`}
+              onEnded={handleVideoEnded}
+              onProgress={handleProgress}
+            />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-6 sm:h-8 bg-gradient-to-b from-black/40 to-transparent z-20" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 sm:h-10 bg-gradient-to-t from-black/50 to-transparent z-20" />
+          </div>
 
-          {/* Navigation Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-surface-canvas/60 border border-ink-700/80">
-            <div className="space-y-0.5 min-w-0">
-              <span className="text-xs font-bold text-orange-400 font-mono">
-                EPISODE {epNum}
-              </span>
-              <h3 className="text-sm font-bold font-heading text-surface-primary truncate max-w-[180px] sm:max-w-md">
+          {/* Episode meta bar — stacks on mobile */}
+          <div className="rounded-lg border border-ink-700/80 bg-surface-raised px-3 sm:px-4 py-2.5 sm:py-3 space-y-2.5 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-orange-400 font-mono">
+                  EP {epNum}
+                </span>
+                {hasNextEp && (
+                  <span className="text-[10px] text-ink-600 font-medium">
+                    / {maxEpisodes}
+                  </span>
+                )}
+              </div>
+              <h3 className="text-xs sm:text-sm font-bold font-heading text-surface-primary truncate max-w-sm">
                 {episodeTitle}
               </h3>
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Controls — icon-only on mobile, full labels on sm+ */}
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-wrap sm:flex-nowrap">
               <Button
                 variant="secondary"
                 size="sm"
@@ -229,17 +303,30 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
               >
                 Prev
               </Button>
-
               <Button
                 variant="primary"
                 size="sm"
                 disabled={!hasNextEp}
                 onClick={handleNextEp}
-                className="gap-1.5"
+                icon={<ChevronRight className="w-4 h-4" />}
               >
-                <span>Next</span>
-                <ChevronRight className="w-4 h-4" />
+                Next
               </Button>
+
+              <button
+                type="button"
+                onClick={handleWatchlistToggle}
+                aria-pressed={inWatchlist}
+                className={`group/btn p-1.5 sm:p-1.5 rounded-lg text-xs font-medium border transition-all duration-150 cursor-pointer flex items-center gap-1 hover:scale-[1.04] active:scale-[0.97] ${
+                  inWatchlist
+                    ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-600/30'
+                    : 'bg-surface-canvas text-ink-400 border-ink-700 hover:text-ink-100 hover:bg-ink-700 hover:border-ink-500'
+                }`}
+                title={inWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
+              >
+                <Tv className={`w-3.5 h-3.5 transition-colors ${inWatchlist ? 'text-emerald-400' : 'text-ink-500 group-hover/btn:text-ink-300'}`} />
+                <span className="hidden sm:inline">{inWatchlist ? 'In list' : 'On list'}</span>
+              </button>
 
               <button
                 type="button"
@@ -247,83 +334,163 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
                   markCurrentCompleted();
                   setMarkedWatched(true);
                 }}
-                className={`p-2 rounded-xl text-xs font-medium border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                className={`group/btn p-1.5 sm:p-1.5 rounded-lg text-xs font-medium border transition-all duration-150 cursor-pointer flex items-center gap-1 hover:scale-[1.04] active:scale-[0.97] ${
                   markedWatched
-                    ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/30'
-                    : 'bg-surface-raised text-ink-300 border-ink-700 hover:text-white hover:bg-ink-700'
+                    ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-600/30'
+                    : 'bg-surface-canvas text-ink-400 border-ink-700 hover:text-ink-100 hover:bg-ink-700 hover:border-ink-500'
                 }`}
                 title="Mark this episode as watched (earns XP)"
               >
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>{markedWatched ? 'Watched' : 'Mark Watched'}</span>
+                <CheckCircle2 className={`w-3.5 h-3.5 transition-colors ${markedWatched ? 'text-emerald-400' : 'text-ink-500 group-hover/btn:text-ink-300'}`} />
+                <span className="hidden sm:inline">{markedWatched ? 'Watched' : 'Mark watched'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setAutoNext(!autoNext)}
-                className={`p-2 rounded-xl text-xs font-medium border transition-colors cursor-pointer ${
+                aria-pressed={autoNext}
+                className={`group/btn p-1.5 sm:p-1.5 rounded-lg text-xs font-medium border transition-all duration-150 cursor-pointer flex items-center gap-1 hover:scale-[1.04] active:scale-[0.97] ${
                   autoNext
-                    ? 'bg-orange-600/20 text-orange-300 border-orange-500/30'
-                    : 'bg-surface-raised text-ink-500 border-ink-700'
+                    ? 'bg-orange-600/20 text-orange-300 border-orange-500/40 hover:bg-orange-600/30'
+                    : 'bg-surface-canvas text-ink-400 border-ink-700 hover:text-ink-100 hover:bg-ink-700 hover:border-ink-500'
                 }`}
-                title={`Auto-Next: ${autoNext ? 'ON' : 'OFF'}`}
+                title="Auto-next: go to next episode when current ends"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <FastForward className={`w-3.5 h-3.5 transition-colors ${autoNext ? "text-orange-400" : "text-ink-500 group-hover/btn:text-ink-300"}`} />
+                <span>{autoNext ? "Auto-next" : "Auto-next off"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAutoplay(!autoplay)}
+                aria-pressed={autoplay}
+                className={`group/btn p-1.5 sm:p-1.5 rounded-lg text-xs font-medium border transition-all duration-150 cursor-pointer flex items-center gap-1 hover:scale-[1.04] active:scale-[0.97] ${
+                  autoplay
+                    ? 'bg-orange-600/20 text-orange-300 border-orange-500/40 hover:bg-orange-600/30'
+                    : 'bg-surface-canvas text-ink-400 border-ink-700 hover:text-ink-100 hover:bg-ink-700 hover:border-ink-500'
+                }`}
+                title="Autoplay: start video automatically on load"
+              >
+                <Play className={`w-3.5 h-3.5 transition-colors ${autoplay ? "text-orange-400" : "text-ink-500 group-hover/btn:text-ink-300"}`} />
+                <span>{autoplay ? "Autoplay" : "Autoplay off"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onNavigate(`/watch/${malId}/${epNum}?lang=${lang}&t=${Date.now()}`)}
+                className="group/reload p-1.5 rounded-lg text-ink-400 hover:text-white hover:bg-ink-700 border border-ink-700 hover:border-ink-500 transition-all duration-150 cursor-pointer hover:scale-[1.04] active:scale-[0.97]"
+                title="Reload stream"
+              >
+                <RotateCw className="w-3.5 h-3.5 group-hover/reload:rotate-180 transition-transform duration-500" />
               </button>
             </div>
           </div>
 
-          {/* Server Selector */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-surface-canvas/40 border border-ink-700/80 space-y-3">
+          {/* Stream sources */}
+          <div className="rounded-lg border border-ink-700/80 bg-surface-raised p-3 sm:p-4 space-y-3">
             <ServerSelector selectedSource={source} onSelectSource={(s) => setSource(s)} />
             <ServerNotice />
           </div>
 
-          {/* Anime Info Accordion */}
+          {/* Anime metadata */}
           {anime && (
-            <div className="p-4 sm:p-5 rounded-2xl bg-surface-canvas/40 border border-ink-700/80 space-y-3">
+            <div className="rounded-lg border border-ink-700/80 bg-surface-raised p-3 sm:p-4 space-y-3 sm:space-y-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Info className="w-4 h-4 text-orange-400" />
-                  <h4 className="text-sm font-bold text-surface-primary font-heading">
-                    About this Anime
+                  <h4 className="text-xs sm:text-sm font-bold font-heading text-surface-primary">
+                    About this anime
                   </h4>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowDetails(!showDetails)}
-                  className="text-xs text-orange-400 hover:text-orange-300 font-semibold cursor-pointer"
+                  onClick={onToggleSynopsis}
+                  className="group/syn flex items-center gap-1 text-[10px] sm:text-xs font-medium text-ink-400 hover:text-white transition-colors"
                 >
-                  {showDetails ? 'Hide' : 'Show'}
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${showSynopsis ? 'rotate-180' : ''}`}
+                  />
+                  <span className="hidden xs:inline">{showSynopsis ? 'Hide' : 'Show'} synopsis</span>
+                  <span className="xs:hidden">{showSynopsis ? 'Hide' : 'Show'}</span>
                 </button>
               </div>
 
-              {showDetails && (
-                <div className="pt-2 text-xs text-ink-300 space-y-3 animate-in fade-in duration-150">
-                  <p className="leading-relaxed">{anime.synopsis || 'No synopsis.'}</p>
-                  <div className="flex flex-wrap gap-2 text-xs text-ink-500 pt-2 border-t border-ink-700">
-                    <span>Format: <strong className="text-ink-300">{anime.type}</strong></span>
-                    <span>•</span>
-                    <span>Status: <strong className="text-ink-300">{anime.status}</strong></span>
-                    <span>•</span>
-                    <span>Score: <strong className="text-amber-400">{anime.score}</strong></span>
+              {/* Score + rank */}
+              {score && (
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                  <span className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 rounded-md px-2 py-1">
+                    <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 fill-current" />
+                    <span className="font-heading text-sm sm:text-base font-bold text-surface-primary leading-none">
+                      {score.toFixed(2)}
+                    </span>
+                  </span>
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-ink-500 font-medium">
+                    {anime.rank && (
+                      <span>Rank #{anime.rank}</span>
+                    )}
+                    {anime.popularity != null && (
+                      <>
+                        {anime.rank && <span className="text-ink-700">·</span>}
+                        <span>Top #{anime.popularity}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
+
+              {/* Spec grid — 2 cols on mobile, 4 on sm+ */}
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-2.5 sm:gap-3 text-[10px] sm:text-xs pt-3 border-t border-ink-700/60">
+                {specRow('Format', anime.type)}
+                {specRow('Episodes', anime.episodes ?? null)}
+                {specRow('Status', anime.status)}
+                {specRow('Duration', anime.duration)}
+                {seasonYear && specRow('Season', seasonYear)}
+                {airedString && specRow('Aired', airedString)}
+                {broadcast && specRow('Broadcast', broadcast)}
+                {anime.rating && specRow('Rating', anime.rating)}
+                {anime.studios?.[0] && specRow('Studio', anime.studios[0].name)}
+                {anime.producers?.[0] && specRow('Producer', anime.producers[0].name)}
+              </dl>
+
+              {/* Genres */}
+              {anime.genres && anime.genres.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 pt-3 border-t border-ink-700/60">
+                  <span className="text-[10px] uppercase tracking-[0.08em] text-ink-500 mr-0.5 sm:mr-1">
+                    Genres
+                  </span>
+                  {anime.genres.slice(0, 5).map((g) => (
+                    <span
+                      key={g.mal_id}
+                      className="px-1.5 sm:px-2 py-0.5 text-[10px] font-medium text-ink-300 bg-ink-700/40 border border-ink-700/60 rounded-md"
+                    >
+                      {g.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {showSynopsis && (
+                <p className="text-[11px] sm:text-xs leading-relaxed text-ink-300 pt-3 border-t border-ink-700/60">
+                  {anime.synopsis || 'No synopsis available.'}
+                </p>
+              )}
             </div>
           )}
-        </div>
+          </div>
 
-        {/* ── RIGHT: Episodes + Chat Sidebar ── */}
+        {/* ── RIGHT: Tabbed Episodes / Live Chat sidebar ── */}
         <div className="space-y-0">
-          {/* Tab switcher (visible only on mobile/tablet — desktop shows both stacked) */}
-          <div className="flex lg:hidden rounded-xl overflow-hidden border border-ink-700 bg-surface-canvas/60 mb-3">
+          <div className="relative flex rounded-lg overflow-hidden border border-ink-700/80 bg-surface-raised mb-2">
+            <div
+              className="absolute inset-y-0 w-1/2 bg-ink-700/50 rounded-lg transition-transform duration-200 ease-out"
+              style={{ transform: activeSideTab === 'episodes' ? 'translateX(0)' : 'translateX(100%)' }}
+            />
             <button
               type="button"
               onClick={() => setActiveSideTab('episodes')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
+              className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 text-[11px] sm:text-xs font-semibold transition-colors duration-150 ${
                 activeSideTab === 'episodes'
-                  ? 'bg-ink-700 text-surface-primary'
+                  ? 'text-surface-primary'
                   : 'text-ink-500 hover:text-ink-300'
               }`}
             >
@@ -333,19 +500,19 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
             <button
               type="button"
               onClick={() => setActiveSideTab('chat')}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
+              className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 text-[11px] sm:text-xs font-semibold transition-colors duration-150 ${
                 activeSideTab === 'chat'
-                  ? 'bg-ink-700 text-surface-primary'
+                  ? 'text-surface-primary'
                   : 'text-ink-500 hover:text-ink-300'
               }`}
             >
               <MessageCircle className="w-3.5 h-3.5" />
-              Chat
+              Live Room
             </button>
           </div>
 
-          {/* Mobile: conditionally show active tab */}
-          <div className="lg:hidden">
+          {/* Sidebar panel — shorter on mobile, taller on desktop */}
+          <div className="h-[320px] sm:h-[400px] lg:h-[460px] overflow-y-auto rounded-lg border border-ink-700 bg-surface-raised">
             {activeSideTab === 'episodes' ? (
               <EpisodeList
                 malId={malId}
@@ -353,30 +520,25 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
                 episodesData={episodes}
                 animeStatus={anime?.status}
                 currentEp={epNum}
-                onSelectEpisode={(targetEpNum) => {
-                  onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`);
-                }}
+                onSelectEpisode={(targetEpNum) => onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`)}
               />
             ) : (
-              <ChatPanel roomId={`anime-${malId}`} />
+              <ChatPanel roomId={`anime-${malId}`} className="h-full" />
             )}
           </div>
-
-          {/* Desktop: both panels stacked */}
-          <div className="hidden lg:flex flex-col gap-4">
-            <EpisodeList
-              malId={malId}
-              totalEpisodes={anime?.episodes}
-              episodesData={episodes}
-              animeStatus={anime?.status}
-              currentEp={epNum}
-              onSelectEpisode={(targetEpNum) => {
-                onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`);
-              }}
-            />
-            <ChatPanel roomId={`anime-${malId}`} />
-          </div>
         </div>
+      </div>
+
+      {/* Keyboard hint — hidden on mobile */}
+      <div className="hidden sm:flex items-center gap-3 text-[10px] text-ink-600 font-medium pt-1">
+        <span className="flex items-center gap-1">
+          <kbd className="px-1.5 py-0.5 rounded bg-ink-700/50 border border-ink-700/60 text-ink-400 font-mono text-[9px]">N</kbd>
+          <span>next</span>
+        </span>
+        <span className="flex items-center gap-1">
+          <kbd className="px-1.5 py-0.5 rounded bg-ink-700/50 border border-ink-700/60 text-ink-400 font-mono text-[9px]">P</kbd>
+          <span>prev</span>
+        </span>
       </div>
     </div>
   );

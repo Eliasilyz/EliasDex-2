@@ -19,11 +19,10 @@ async function createIndexes(): Promise<void> {
     await db.collection("users").createIndex({ email: 1 }, { unique: true });
     console.log("  ✓ users.email (unique) — for findUserByEmail() lookups");
 
-    await db.collection("users").createIndex({ username: 1 }, { unique: true });
-    console.log("  ✓ users.username (unique) — for findUserByUsername() lookups");
+    await db.collection("users").createIndex({ username: 1 }, { unique: true, collation: { locale: "en", strength: 2 } });
+    console.log("  ✓ users.username (unique, case-insensitive) — for findUserByUsername() lookups");
 
-    await db.collection("users").createIndex({ guestExpiresAt: 1 }, { expireAfterSeconds: 0 });
-    console.log("  ✓ users.guestExpiresAt (TTL) — auto-delete expired guest sessions");
+    
 
     await db.collection("watch_history").createIndex({ userId: 1, lastWatchedAt: -1 });
     console.log("  ✓ watch_history.{userId, lastWatchedAt} — for getContinueWatching() queries");
@@ -50,6 +49,25 @@ async function createIndexes(): Promise<void> {
 
     await db.collection("comments").createIndex({ parentId: 1 });
     console.log("  ✓ comments.parentId — for getReplies() threaded queries");
+
+    await db.collection("announcements").createIndex({ isActive: 1, createdAt: -1 });
+    console.log("  ✓ announcements.{isActive, createdAt} — for getActiveAnnouncements()");
+
+    // ── Collectibles ──────────────────────────────────────────────
+    await db.collection("collectibles").createIndex({ slug: 1 }, { unique: true });
+    console.log("  ✓ collectibles.slug (unique) — for slug-based lookups");
+
+    await db.collection("collectibles").createIndex({ type: 1, rarity: 1 });
+    console.log("  ✓ collectibles.{type, rarity} — for filtered browsing");
+
+    await db.collection("user_collectibles").createIndex(
+      { userId: 1, collectibleId: 1 },
+      { unique: true }
+    );
+    console.log("  ✓ user_collectibles.{userId, collectibleId} (unique) — prevent duplicate grants");
+
+    await db.collection("user_collectibles").createIndex({ userId: 1 });
+    console.log("  ✓ user_collectibles.userId — for getUserCollectibles() lookups");
 
     console.log("✅ All indexes created successfully");
   } catch (error) {

@@ -4,6 +4,8 @@ import { AppProviders } from '@/components/providers/AppProviders';
 import { AppShell } from '@/components/layout/AppShell';
 import { constructMetadata } from '@/lib/metadata';
 import { DbStatusBanner } from '@/components/DbStatusBanner';
+import { AnnouncementBanner } from '@/components/announcement/AnnouncementBanner';
+import { GlobalChatWidget } from '@/components/chat/GlobalChatWidget';
 import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -32,13 +34,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="darkreader-lock" />
       </head>
       <body
-
-        className="text-surface-primary antialiased selection:bg-orange-600 selection:text-white min-h-screen relative"
+        lang="en"
+        className={`${plusJakartaSans.variable} ${outfit.variable}`}
         suppressHydrationWarning
       >
         <div className="tech-grid-background" aria-hidden="true" />
         <AppProviders>
           <AppShell>{children}</AppShell>
+          <AnnouncementBanner />
+          <GlobalChatWidget />
         </AppProviders>
         <DbStatusBanner />
       </body>

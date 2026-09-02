@@ -33,11 +33,6 @@ export async function getZoroEpisodeSources(
         serverName: "MegaPlay HD",
         embedUrl: buildStreamUrl("ani", anilistId, episodeNumber),
       },
-      {
-        serverId: "embed-fallback",
-        serverName: "VidStream (Backup)",
-        embedUrl: buildStreamUrl("fallback", anilistId, episodeNumber),
-      },
     ];
 
     return {

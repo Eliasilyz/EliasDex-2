@@ -213,7 +213,7 @@ export async function handleJikanProxy(
           signal: controller.signal,
           headers: {
             Accept: 'application/json',
-            'User-Agent': 'AnimeStreamApp/2.0 (web; compatible)',
+            'User-Agent': 'EliasDexApp/2.0 (web; compatible)',
           },
         });
 
@@ -373,7 +373,7 @@ export async function handleAnilistProxy(query: string, variables: unknown) {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          'User-Agent': 'AnimeStreamApp/2.0 (web; compatible)',
+          'User-Agent': 'EliasDexApp/2.0 (web; compatible)',
         },
         body: JSON.stringify({ query, variables }),
         signal: controller.signal,

@@ -249,7 +249,7 @@ export interface Genre {
   count?: number;
 }
 
-export type StreamSource = 'zoko' | 'mal' | 'ani' | 's-2' | 'fallback';
+export type StreamSource = 'zoko' | 'mal' | 'ani' | 's-2';
 
 export interface StreamConfig {
   source: StreamSource;

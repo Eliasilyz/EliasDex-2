@@ -9,12 +9,13 @@ export async function getRecentMessages(roomId: string, limit = 50): Promise<Cha
   if (!DB_ENABLED) return [];
   const db = await getDb();
   if (!db) return [];
-  return db
+  const arr = await db
     .collection<ChatMessage>("chat_messages")
     .find({ roomId, isDeleted: false })
     .sort({ createdAt: -1 })
     .limit(limit)
     .toArray();
+  return arr.reverse();
 }
 
 export async function insertMessage(
@@ -23,7 +24,9 @@ export async function insertMessage(
   message: string,
   roomId: string,
   avatarUrl?: string,
-  level?: number
+  level?: number,
+  isVerified: boolean = false,
+  replyTo?: ChatMessage["replyTo"]
 ): Promise<ChatMessage | null> {
   if (!DB_ENABLED) return null;
   const db = await getDb();
@@ -33,13 +36,32 @@ export async function insertMessage(
     username,
     avatarUrl,
     level,
+    isVerified,
     message,
     roomId,
     createdAt: new Date(),
     isDeleted: false,
+    replyTo,
+    isPinned: false,
   };
   const result = await db.collection<ChatMessage>("chat_messages").insertOne(doc);
   return { _id: result.insertedId, ...doc };
+}
+
+export async function setMessagePinned(
+  messageId: string,
+  isPinned: boolean
+): Promise<ChatMessage | null> {
+  if (!DB_ENABLED) return null;
+  const db = await getDb();
+  if (!db) return null;
+  if (!ObjectId.isValid(messageId)) return null;
+  const result = await db.collection<ChatMessage>("chat_messages").findOneAndUpdate(
+    { _id: new ObjectId(messageId) },
+    { $set: { isPinned } },
+    { returnDocument: "after" }
+  );
+  return result;
 }
 
 export async function deleteMessage(messageId: string): Promise<boolean> {

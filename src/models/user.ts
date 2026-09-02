@@ -50,6 +50,10 @@ export async function createUser(
     lastLoginAt: now,
     isGuest,
     guestExpiresAt,
+    bio: "",
+    isVerified: false,
+    isPublicProfile: true,
+    joinedAt: now,
   };
   const result = await db.collection<User>("users").insertOne(doc);
   return { _id: result.insertedId, ...doc };
@@ -104,4 +108,36 @@ export async function getXpProgress(userId: string): Promise<{ xp: number; level
     xp: user.xp,
     level: levelFromXp(user.xp),
   };
+}
+
+export async function setUserVerified(userId: string, isVerified: boolean): Promise<boolean> {
+  if (!DB_ENABLED) return false;
+  const updated = await updateUser(userId, { isVerified });
+  return updated !== null;
+}
+
+export async function listUsers(
+  search?: string,
+  limit = 100
+): Promise<User[]> {
+  if (!DB_ENABLED) return [];
+  const db = await getDb();
+  if (!db) return [];
+
+  // Escape special regex characters to prevent ReDoS
+  const query = search
+    ? {
+        $or: [
+          { username: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" } },
+          { email: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" } },
+        ],
+      }
+    : {};
+
+  return db
+    .collection<User>("users")
+    .find(query)
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .toArray();
 }

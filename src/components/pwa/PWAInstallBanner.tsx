@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
 import { Button } from '../ui/Button';
 
+const DISMISS_KEY = 'eliasdex-pwa-dismissed';
+const DISMISS_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
@@ -14,6 +17,10 @@ export const PWAInstallBanner: React.FC = () => {
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
+    // Don't show if user dismissed within the last 7 days
+    const dismissed = localStorage.getItem(DISMISS_KEY);
+    if (dismissed && Date.now() - Number(dismissed) < DISMISS_DURATION) return;
+
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -21,11 +28,13 @@ export const PWAInstallBanner: React.FC = () => {
     };
 
     window.addEventListener('beforeinstallprompt', handler);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
-    };
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
+
+  const dismiss = () => {
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    setShowBanner(false);
+  };
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -54,7 +63,7 @@ export const PWAInstallBanner: React.FC = () => {
         </div>
         <button
           type="button"
-          onClick={() => setShowBanner(false)}
+          onClick={dismiss}
           className="text-ink-500 hover:text-ink-300 p-1 cursor-pointer"
         >
           <X className="w-4 h-4" />
@@ -64,7 +73,7 @@ export const PWAInstallBanner: React.FC = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setShowBanner(false)}
+          onClick={dismiss}
           className="text-xs"
         >
           Not Now
