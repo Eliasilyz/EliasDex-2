@@ -3,7 +3,9 @@ import { auth } from "@/lib/auth";
 import { updateWatchProgress, getWatchHistory, clearWatchHistory, deleteWatchHistoryEntry } from "@/models/watchHistory";
 import { addXp, findUserById } from "@/models/user";
 import { XP_PER_EPISODE, levelFromXp } from "@/lib/xp";
+import { syncEpisodeProgress } from "@/lib/sync";
 import { z } from "zod";
+import { checkMutatingRateLimit } from "@/lib/apiRateLimiter";
 
 const WatchProgressSchema = z.object({
   malId: z.coerce.number().int().positive(),
@@ -19,6 +21,15 @@ export async function POST(req: NextRequest) {
 
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // 30 requests/minute — prevents import / sync storms
+    const rl = checkMutatingRateLimit(`watch-progress:${session.user.id}`, 30, 60_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Rate limit reached. Try again shortly.", resetAt: rl.resetAt },
+        { status: 429 }
+      );
     }
 
     const body = await req.json();
@@ -70,6 +81,19 @@ export async function POST(req: NextRequest) {
     const updatedUser = await findUserById(userId);
     const finalLevel = levelFromXp(updatedUser?.xp || 0);
     const totalXp = updatedUser?.xp || newXp;
+
+    // Fire-and-forget: push progress to MAL if connected
+    syncEpisodeProgress(userId, malId, episodeNumber, completed ?? false)
+      .then((syncResult) => {
+        if (syncResult.mal) {
+          console.log(
+            `[Sync] Episode ${episodeNumber} pushed to: MAL=${syncResult.mal}`
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("[Sync] Background sync failed:", err);
+      });
 
     return NextResponse.json({
       watchHistory: entry,

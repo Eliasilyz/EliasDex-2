@@ -34,17 +34,20 @@ export const HomePage: React.FC = () => {
     setLoadingSections(true);
 
     // Fetch Featured Hero (Season Now) with active DataSource
-    getUnifiedSeasonNow({ source: dataSource, limit: 8 })
+    // Only include anime that are currently airing (exclude not-yet-aired and finished)
+    getUnifiedSeasonNow({ source: dataSource, limit: 30 })
       .then((res) => {
         if (isMounted) {
-          const items = res.data && res.data.length > 0 ? res.data : FALLBACK_ANIME_LIST.slice(0, 8);
-          setFeaturedAnime(items);
+          const all = res.data && res.data.length > 0 ? res.data : FALLBACK_ANIME_LIST.slice(0, 20);
+          const airing = all.filter((a) => a.airing === true || a.status === 'Currently Airing');
+          setFeaturedAnime(airing.length > 0 ? airing.slice(0, 8) : FALLBACK_ANIME_LIST.slice(0, 8));
           setLoadingHero(false);
         }
       })
       .catch(() => {
         if (isMounted) {
-          setFeaturedAnime(FALLBACK_ANIME_LIST.slice(0, 8));
+          const fallback = FALLBACK_ANIME_LIST.filter((a) => a.airing === true || a.status === 'Currently Airing');
+          setFeaturedAnime(fallback.length > 0 ? fallback.slice(0, 8) : FALLBACK_ANIME_LIST.slice(0, 8));
           setLoadingHero(false);
         }
       });

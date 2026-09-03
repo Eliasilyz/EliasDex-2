@@ -139,54 +139,67 @@ export const WatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         const headers = { 'Content-Type': 'application/json' };
 
-        await Promise.allSettled(
-          historyRef.current.map((h) =>
-            fetch('/api/watch-progress', {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({
-                malId: h.malId,
-                episodeNumber: h.episodeNumber,
-                animeTitle: h.title,
-                animeCoverImageUrl: h.image,
-                completed: false,
-              }),
-            })
-          )
-        );
-
-        await Promise.allSettled(
-          watchlistRef.current.map((w) =>
-            fetch('/api/favorites', {
-              method: 'POST',
-              headers,
-              body: JSON.stringify({
-                animeId: w.malId,
-                animeTitle: w.title,
-                animeCoverImageUrl: w.image,
-                status: w.status,
-              }),
-            })
-          )
-        );
-
-        const [hRes, fRes] = await Promise.all([
-          fetch('/api/watch-progress'),
-          fetch('/api/favorites'),
+        // Pull the server state as the source of truth first so we can diff
+        // and only push local (guest) items that the server doesn't already
+        // have — avoids spamming POST /api/favorites for every list entry.
+        const [srvH, srvF] = await Promise.all([
+          fetch('/api/watch-progress').then((r) => (r.ok ? r.json() : null)),
+          fetch('/api/favorites').then((r) => (r.ok ? r.json() : null)),
         ]);
 
         if (cancelled) return;
 
-        if (hRes.ok) {
-          const hData = await hRes.json();
-          const mapped = (hData.history || []).map(mapServerHistory);
-          setHistory(mapped);
-        }
-        if (fRes.ok) {
-          const fData = await fRes.json();
-          const mapped = (fData.favorites || []).map(mapServerFavorite);
-          setWatchlist(mapped);
-        }
+        const serverHistory: WatchProgress[] = (srvH?.history || []).map(
+          (e: WatchHistoryEntry) => mapServerHistory(e)
+        );
+        const serverWatchlist: WatchlistItem[] = (srvF?.favorites || []).map(
+          (e: Favorite) => mapServerFavorite(e)
+        );
+
+        // Push only local history entries the server doesn't know about yet.
+        const serverHistoryIds = new Set(serverHistory.map((h) => h.malId));
+        await Promise.allSettled(
+          historyRef.current
+            .filter((h) => !serverHistoryIds.has(h.malId))
+            .map((h) =>
+              fetch('/api/watch-progress', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                  malId: h.malId,
+                  episodeNumber: h.episodeNumber,
+                  animeTitle: h.title,
+                  animeCoverImageUrl: h.image,
+                  completed: false,
+                }),
+              })
+            )
+        );
+
+        // Push only local watchlist entries (by animeId) the server lacks.
+        const serverWatchlistIds = new Set(serverWatchlist.map((w) => w.malId));
+        await Promise.allSettled(
+          watchlistRef.current
+            .filter((w) => !serverWatchlistIds.has(w.malId))
+            .map((w) =>
+              fetch('/api/favorites', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                  animeId: w.malId,
+                  animeTitle: w.title,
+                  animeCoverImageUrl: w.image,
+                  status: w.status,
+                }),
+              })
+            )
+        );
+
+        if (cancelled) return;
+
+        // Adopt the full server data as the source of truth.
+        setHistory(serverHistory);
+        setWatchlist(serverWatchlist);
       } catch (e) {
         console.warn('Failed to sync with account', e);
       } finally {
@@ -209,6 +222,13 @@ export const WatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       language?: 'sub' | 'dub';
       completed?: boolean;
     }) => {
+      // An episode completes the series only when it's the final episode.
+      const completedSeries =
+        !!data.completed &&
+        !!data.totalEpisodes &&
+        data.episodeNumber >= data.totalEpisodes;
+      const watchlistStatus: WatchlistStatus = completedSeries ? 'completed' : 'watching';
+
       setHistory((prev) => {
         const filtered = prev.filter((item) => item.malId !== data.malId);
         const newEntry: WatchProgress = {
@@ -223,14 +243,32 @@ export const WatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return [newEntry, ...filtered].slice(0, 50); // keep up to 50 items
       });
 
-      // Also update lastWatchedEpisode in watchlist if present
-      setWatchlist((prev) =>
-        prev.map((item) =>
-          item.malId === data.malId
-            ? { ...item, lastWatchedEpisode: data.episodeNumber, updatedAt: Date.now() }
-            : item
-        )
-      );
+      // Also update lastWatchedEpisode in watchlist, and auto-add the anime
+      // to the watchlist if it isn't there yet (watching it implies interest).
+      setWatchlist((prev) => {
+        const existing = prev.find((item) => item.malId === data.malId);
+        const base = {
+          lastWatchedEpisode: data.episodeNumber,
+          updatedAt: Date.now(),
+        };
+
+        if (existing) {
+          return prev.map((item) =>
+            item.malId === data.malId
+              ? { ...item, ...base }
+              : item
+          );
+        }
+
+        const newItem: WatchlistItem = {
+          malId: data.malId,
+          title: data.title,
+          image: data.image,
+          status: watchlistStatus,
+          ...base,
+        };
+        return [newItem, ...prev];
+      });
 
       if (sessionUserId) {
         fetch('/api/watch-progress', {
@@ -260,6 +298,19 @@ export const WatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
           })
           .catch(() => {});
+
+        // Persist the watchlist entry to the server (favorites collection)
+        // so it shows up on the profile + watchlist page.
+        fetch('/api/favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            animeId: data.malId,
+            animeTitle: data.title,
+            animeCoverImageUrl: data.image,
+            status: watchlistStatus,
+          }),
+        }).catch(() => {});
       }
     },
     [sessionUserId]

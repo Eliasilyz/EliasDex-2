@@ -9,6 +9,7 @@ import {
 } from "@/models/favorites";
 import { z } from "zod";
 import { handleApiError } from "@/lib/errors";
+import { checkMutatingRateLimit } from "@/lib/apiRateLimiter";
 
 const FavoriteSchema = z.object({
   animeId: z.coerce.number().int().positive(),
@@ -38,6 +39,15 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // 30 requests/minute — prevents the sequential POST storms we saw
+    const rl = checkMutatingRateLimit(`favorites:${session.user.id}`, 30, 60_000);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Rate limit reached. Try again shortly.", resetAt: rl.resetAt },
+        { status: 429 }
+      );
     }
 
     const body = await req.json();

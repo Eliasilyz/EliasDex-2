@@ -512,7 +512,7 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
           </div>
 
           {/* Sidebar panel — shorter on mobile, taller on desktop */}
-          <div className="h-[320px] sm:h-[400px] lg:h-[460px] overflow-y-auto rounded-lg border border-ink-700 bg-surface-raised">
+          <div className="h-[280px] sm:h-[400px] lg:h-[460px] overflow-y-auto rounded-lg border border-ink-700 bg-surface-raised">
             {activeSideTab === 'episodes' ? (
               <EpisodeList
                 malId={malId}

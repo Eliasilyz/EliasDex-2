@@ -83,12 +83,28 @@ export interface User {
   joinedAt: Date;
   socials?: UserSocials;
   equippedCollectibles?: UserCollectibleSlots;
+  // ── MAL sync (all optional, backward-compatible) ──
+  malAuth?: {
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: number;       // unix ms
+    malUserId: number;
+    malUsername: string;
+  };
+  syncPreferences?: {
+    autoSyncMal: boolean;
+  };
+  lastImportedAt?: {
+    mal?: number;            // unix ms
+  };
+  totalEpisodesWatched?: number; // accurate count from last MAL import
+  totalAnimeWatched?: number;   // accurate distinct-anime count from last MAL import
 }
 
 export interface WatchHistoryEntry {
   _id?: ObjectId;
   userId: string;
-  animeId: number; // AniList ID
+  animeId: number; // MAL ID
   animeTitle: string; // Denormalized for zero-API continue watching UI
   animeCoverImageUrl: string; // Denormalized
   episodeNumber: number;
@@ -102,7 +118,7 @@ export type WatchlistStatus = "watching" | "plan_to_watch" | "completed" | "on_h
 export interface Favorite {
   _id?: ObjectId;
   userId: string;
-  animeId: number; // AniList ID
+  animeId: number; // MAL ID
   animeTitle: string; // Denormalized
   animeCoverImageUrl: string; // Denormalized
   status: WatchlistStatus;
@@ -139,7 +155,7 @@ export interface Comment {
   username: string;
   avatarUrl?: string;
   targetType: CommentTargetType;
-  targetId: number; // AniList ID
+  targetId: number; // MAL ID
   episodeNumber?: number; // Present if targetType === 'episode'
   message: string;
   parentId?: ObjectId; // For threaded replies

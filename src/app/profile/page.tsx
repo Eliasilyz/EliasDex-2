@@ -14,6 +14,7 @@ import { UserNameDisplay } from "@/components/collectibles/UserNameDisplay";
 import { xpToNextLevel, XP_PER_EPISODE } from "@/lib/xp";
 import { CollectibleInventoryPanel } from "@/components/collectibles/CollectibleInventoryPanel";
 import { onCollectiblesChange } from "@/lib/collectibleEvents";
+import { ConnectedAccounts } from "@/components/profile/ConnectedAccounts";
 import type { WatchHistoryEntry, Favorite, UserSocials, SocialPlatform, ResolvedCollectibles } from "@/types/models";
 
 const SOCIAL_PLATFORMS: { key: SocialPlatform; label: string; placeholder: string; color: string }[] = [
@@ -40,9 +41,11 @@ interface ProfileData {
   isVerified?: boolean;
   joinedAt?: string;
   createdAt?: string;
-  socials?: UserSocials;
-  collectibles?: ResolvedCollectibles;
- };
+   socials?: UserSocials;
+   collectibles?: ResolvedCollectibles;
+   totalEpisodesWatched?: number;
+   totalAnimeWatched?: number;
+  };
  watchHistory: WatchHistoryEntry[];
  favorites: Favorite[];
 }
@@ -233,9 +236,16 @@ export default function ProfilePage() {
 
  const xp = user?.xp || 0;
  const { currentLevel, nextLevel, xpIntoLevel, xpNeeded, progress } = xpToNextLevel(xp);
- const completedEpisodes = watchHistory.filter((h) => h.completed).length;
- const totalHours = Math.round((completedEpisodes * 24) / 60);
- const uniqueAnime = new Set(watchHistory.map((h) => h.animeId)).size;
+// Use accurate count from MAL import, fall back to watch_history entries
+  const totalEpisodes = user?.totalEpisodesWatched || watchHistory.length;
+  const totalHours = Math.round((totalEpisodes * 24) / 60);
+  // Anime count must come from the same MAL-anchored source as episodes so the
+  // two stats can never disagree (avoid counting locally-watched anime that
+  // aren't on the user's MAL list).
+  const uniqueAnime =
+    (user?.totalAnimeWatched && user.totalAnimeWatched > 0)
+      ? user.totalAnimeWatched
+      : new Set(watchHistory.map((h) => h.animeId)).size;
 
  return (
   <div className="space-y-6 pb-16 max-w-4xl mx-auto px-4 sm:px-6">
@@ -621,7 +631,7 @@ export default function ProfilePage() {
    {/* Stats — dense row, no per-tile chrome. */}
    <dl className="grid grid-cols-2 sm:grid-cols-4 gap-px overflow-hidden rounded-lg border border-ink-700/60 bg-ink-700/40">
     {[
-     { label: "Episodes", value: completedEpisodes },
+     { label: "Episodes", value: totalEpisodes },
      { label: "Hours", value: totalHours },
      { label: "Watchlist", value: favorites.length },
      { label: "Anime", value: uniqueAnime },
@@ -631,9 +641,12 @@ export default function ProfilePage() {
       <div className="mt-1.5 text-[10px] uppercase tracking-[0.14em] text-ink-500">{s.label}</div>
      </div>
     ))}
-   </dl>
+    </dl>
 
-   {/* Watchlist Grid */}
+    {/* Connected Accounts */}
+    {!(session.user as any).isGuest && <ConnectedAccounts />}
+
+    {/* Watchlist Grid */}
    {favorites.length > 0 && (
     <Card>
      <CardHeader>

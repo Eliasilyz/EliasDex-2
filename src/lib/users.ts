@@ -26,12 +26,13 @@ export async function getUserByUsername(username: string): Promise<User | null> 
   const db = await getDb();
   if (!db) return null;
 
-  // Case-insensitive lookup using collation
+  // Case-insensitive lookup matching the users.username collation index so the
+  // query uses the index instead of a collection scan.
   return db
     .collection<User>("users")
     .findOne(
-      { username: { $regex: new RegExp(`^${username}$`, "i") } },
-      { sort: { createdAt: -1 } }
+      { username },
+      { collation: { locale: "en", strength: 2 } }
     );
 }
 
@@ -70,33 +71,49 @@ export interface PublicUserStats {
   secondsWatched: number;
 }
 
-// Aggregate watch stats for a public profile (distinct anime, total episodes,
-// total seconds watched) from the user's watch history.
+const SECONDS_PER_EPISODE = 24 * 60; // 24 minutes/episode, matches own-profile stat
+
+// Public profile watch stats, kept consistent with the own-profile (/profile)
+// calculation:
+//   - Episodes use the user's accurate `totalEpisodesWatched` when set, else the
+//     watch_history row count.
+//   - Anime is the number of distinct anime in watch_history.
+//   - "Watched" time is derived from episode count (24 min/episode).
 export async function getPublicUserStats(userId: string): Promise<PublicUserStats> {
   if (!DB_ENABLED) return { animeCount: 0, episodeCount: 0, secondsWatched: 0 };
   const db = await getDb();
   if (!db) return { animeCount: 0, episodeCount: 0, secondsWatched: 0 };
 
-  const pipeline = [
-    { $match: { userId } },
-    {
-      $group: {
-        _id: null,
-        episodeCount: { $sum: 1 },
-        secondsWatched: { $sum: "$progressSeconds" },
-        animeList: { $addToSet: "$animeId" },
-      },
-    },
-    { $project: { _id: 0, episodeCount: 1, secondsWatched: 1, animeCount: { $size: "$animeList" } } },
-  ] as any;
+  const user = await db
+    .collection<User>("users")
+    .findOne({ _id: new ObjectId(userId) });
 
-  const result = await db
+  const historyCount = await db
     .collection<WatchHistoryEntry>("watch_history")
-    .aggregate<PublicUserStats>(pipeline)
-    .toArray();
+    .countDocuments({ userId });
 
-  if (!result[0]) return { animeCount: 0, episodeCount: 0, secondsWatched: 0 };
-  return result[0];
+  const distinctAnime = await db
+    .collection<WatchHistoryEntry>("watch_history")
+    .distinct("animeId", { userId });
+
+  const episodeCount = (user?.totalEpisodesWatched && user.totalEpisodesWatched > 0)
+    ? user.totalEpisodesWatched
+    : historyCount;
+
+  // Anime count uses the same MAL-anchored source as episodes (accurate
+  // distinct-anime count from the last import) when available, falling back
+  // to distinct anime in watch_history — so "episodes" and "anime" can never
+  // disagree about which set they're counting.
+  const animeCount =
+    user?.totalAnimeWatched && user.totalAnimeWatched > 0
+      ? user.totalAnimeWatched
+      : distinctAnime.length;
+
+  return {
+    animeCount,
+    episodeCount,
+    secondsWatched: episodeCount * SECONDS_PER_EPISODE,
+  };
 }
 
 // Migration: backfill joinedAt from ObjectId timestamp for existing users

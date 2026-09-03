@@ -33,6 +33,11 @@ const MESSAGE_LIST_STYLE = {
   maxHeight: "320px",
 } as const;
 
+const MESSAGE_LIST_STYLE_MOBILE = {
+  minHeight: "200px",
+  flex: "1 1 0%",
+} as const;
+
 export const GlobalChatWidget: React.FC = () => {
   const { data: session } = useSession();
   const router = useRouter();
@@ -146,9 +151,9 @@ export const GlobalChatWidget: React.FC = () => {
   const pinnedMessages = messages.filter((m) => m.isPinned && !m.isDeleted);
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end">
+    <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end max-sm:bottom-0 max-sm:right-0 max-sm:w-full max-sm:items-stretch">
       {open && (
-        <div className="mb-3 w-[340px] sm:w-[380px] rounded-xl overflow-hidden border border-ink-700 bg-surface-raised shadow-2xl flex flex-col">
+        <div className="mb-3 max-sm:mb-0 w-[340px] max-sm:w-full max-sm:h-[70vh] sm:w-[380px] rounded-xl max-sm:rounded-t-xl overflow-hidden border border-ink-700 max-sm:border-b-0 bg-surface-raised shadow-2xl flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-ink-700/60">
             <div className="flex items-center gap-2.5">
@@ -177,7 +182,7 @@ export const GlobalChatWidget: React.FC = () => {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto p-3 space-y-2.5"
+            className="flex-1 overflow-y-auto p-3 space-y-2.5 max-sm:min-h-0"
             style={MESSAGE_LIST_STYLE}
           >
             {isLoading ? (
@@ -429,19 +434,20 @@ export const GlobalChatWidget: React.FC = () => {
         </div>
       )}
 
-      {/* Floating bubble */}
+      {/* Floating bubble — hidden on mobile when chat is open (panel has its own close button) */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label="Toggle global chat"
         aria-expanded={open}
-        className="
+        className={`
           relative p-3 rounded-full shadow-xl
           bg-gradient-to-br from-orange-600 to-amber-500
           hover:brightness-110 text-white
           flex items-center justify-center
           transition-[filter]
-        "
+          ${open ? "max-sm:hidden" : ""}
+        `}
         style={{ width: "52px", height: "52px" }}
       >
         {open ? <X className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}

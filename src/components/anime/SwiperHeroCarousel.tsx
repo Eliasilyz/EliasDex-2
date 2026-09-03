@@ -126,14 +126,16 @@ export const SwiperHeroCarousel: React.FC<SwiperHeroCarouselProps> = ({
 
         {/* Actions */}
         <div className="flex items-center gap-3 pt-2">
-         <ShadcnButton
-          onClick={() => onWatchAnime(anime.mal_id, 1)}
-          size="lg"
-          className="gap-2 bg-orange-700 hover:bg-orange-600 jq-ripple"
-         >
-          <Play className="w-5 h-5 fill-white" />
-          <span>Watch Episode 1</span>
-         </ShadcnButton>
+         {anime.episodes != null && anime.episodes > 0 && (
+          <ShadcnButton
+           onClick={() => onWatchAnime(anime.mal_id, 1)}
+           size="lg"
+           className="gap-2 bg-orange-700 hover:bg-orange-600 jq-ripple"
+          >
+           <Play className="w-5 h-5 fill-white" />
+           <span>Watch Episode 1</span>
+          </ShadcnButton>
+         )}
 
          <ShadcnButton
           onClick={() => onSelectAnime(anime.mal_id)}

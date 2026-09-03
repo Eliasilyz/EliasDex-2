@@ -337,42 +337,87 @@ export const Navbar: React.FC = () => {
     </div>
    </div>
 
-    {/* Mobile Menu Dropdown */}
-    {mobileMenuOpen && (
-     <div className="lg:hidden border-b border-ink-700 bg-surface-canvas/95 backdrop-blur-2xl px-4 py-4 space-y-3 animate-in fade-in slide-in-from-top-3 duration-200">
-      <div className="space-y-1">
-      {navLinks.map((link) => {
-       const Icon = link.icon;
-       const active = isActive(link.path);
-       return (
-        <button
-         key={link.path}
-         type="button"
-         onClick={() => handleNav(link.path)}
-         className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-          active
-           ? 'bg-orange-600/15 text-orange-400 border border-orange-500/20'
-           : 'text-ink-300 hover:bg-ink-700/60'
-         }`}
-        >
-         <div className="flex items-center gap-3">
-          <Icon className="w-4 h-4 text-orange-400" />
-          <span>{link.label}</span>
-         </div>
-         {link.count !== undefined && link.count > 0 && (
-          <span
-           className="px-2 py-0.5 rounded-full text-xs font-mono bg-ink-700 text-ink-300"
-           suppressHydrationWarning
+     {/* Mobile Menu Dropdown */}
+     {mobileMenuOpen && (
+      <div className="lg:hidden border-b border-ink-700 bg-surface-canvas/95 backdrop-blur-2xl px-4 py-4 space-y-3 animate-in fade-in slide-in-from-top-3 duration-200">
+       <div className="space-y-1">
+       {navLinks.map((link) => {
+        const Icon = link.icon;
+        const active = isActive(link.path);
+        return (
+         <button
+          key={link.path}
+          type="button"
+          onClick={() => handleNav(link.path)}
+          className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+           active
+            ? 'bg-orange-600/15 text-orange-400 border border-orange-500/20'
+            : 'text-ink-300 hover:bg-ink-700/60'
+          }`}
+         >
+          <div className="flex items-center gap-3">
+           <Icon className="w-4 h-4 text-orange-400" />
+           <span>{link.label}</span>
+          </div>
+          {link.count !== undefined && link.count > 0 && (
+           <span
+            className="px-2 py-0.5 rounded-full text-xs font-mono bg-ink-700 text-ink-300"
+            suppressHydrationWarning
+           >
+            {link.count}
+           </span>
+          )}
+         </button>
+        );
+       })}
+      </div>
+
+      {/* Mobile account section */}
+      <ClientOnly>
+       <div className="border-t border-ink-700/50 pt-3 mt-1 space-y-1">
+        {session?.user ? (
+         <>
+          <button
+           type="button"
+           onClick={() => handleNav('/profile')}
+           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-ink-300 hover:bg-ink-700/60 transition-colors"
           >
-           {link.count}
-          </span>
-         )}
-        </button>
-       );
-      })}
+           <UserIcon className="w-4 h-4 text-orange-400" />
+           Profile
+          </button>
+          {session.user.role === 'admin' && (
+           <button
+            type="button"
+            onClick={() => handleNav('/admin')}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-ink-300 hover:bg-ink-700/60 transition-colors"
+           >
+            <Shield className="w-4 h-4 text-orange-400" />
+            Admin
+           </button>
+          )}
+          <button
+           type="button"
+           onClick={handleLogout}
+           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-colors"
+          >
+           <LogOut className="w-4 h-4" />
+           Logout
+          </button>
+         </>
+        ) : (
+         <ShadcnButton
+          variant="default"
+          size="sm"
+          onClick={() => handleNav('/login')}
+          className="w-full"
+         >
+          Sign In
+         </ShadcnButton>
+        )}
+       </div>
+      </ClientOnly>
      </div>
-    </div>
-   )}
+    )}
   </header>
  );
 };

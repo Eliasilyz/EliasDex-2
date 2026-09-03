@@ -46,7 +46,7 @@ function formatHours(seconds: number): string {
   const hours = seconds / 3600;
   if (hours < 1) return `${Math.max(1, Math.round(seconds / 60))}m`;
   if (hours < 100) return `${hours.toFixed(1)}h`;
-  return `${Math.round(hours).toLocaleString()}h`;
+  return `${Math.round(hours).toLocaleString("en-US")}h`;
 }
 
 export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, stats }) => {
@@ -205,8 +205,8 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({ user, stats })
         {isPublic && stats ? (
           <dl className="mt-6 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-ink-700/50 bg-ink-700/40">
             {[
-              { label: "Anime", value: stats.animeCount.toLocaleString() },
-              { label: "Episodes", value: stats.episodeCount.toLocaleString() },
+              { label: "Anime", value: stats.animeCount.toLocaleString("en-US") },
+              { label: "Episodes", value: stats.episodeCount.toLocaleString("en-US") },
               { label: "Watched", value: formatHours(stats.secondsWatched) },
             ].map((s) => (
               <div key={s.label} className="bg-surface-raised px-3 py-3 text-center">

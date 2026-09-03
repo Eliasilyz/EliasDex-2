@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
 
     const [user, history, favorites, collectibles] = await Promise.all([
       findUserById(userId),
-      getWatchHistory(userId, 100),
+      getWatchHistory(userId, 1000),
       getFavorites(userId),
       resolveEquippedCollectibles(userId),
     ]);
@@ -59,6 +59,8 @@ export async function GET(req: NextRequest) {
         createdAt: user?.createdAt,
         socials: user?.socials || {},
         collectibles,
+        totalEpisodesWatched: user?.totalEpisodesWatched || 0,
+        totalAnimeWatched: user?.totalAnimeWatched || 0,
       },
       watchHistory: history,
       favorites,

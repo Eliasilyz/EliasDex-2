@@ -30,6 +30,9 @@ async function createIndexes(): Promise<void> {
     await db.collection("watch_history").createIndex({ userId: 1, animeId: 1, episodeNumber: 1 });
     console.log("  ✓ watch_history.{userId, animeId, episodeNumber} — for updateWatchProgress() upserts");
 
+    await db.collection("watch_history").createIndex({ userId: 1, animeId: 1 });
+    console.log("  ✓ watch_history.{userId, animeId} — covering index for distinct('animeId', {userId})");
+
     await db
       .collection("favorites")
       .createIndex({ userId: 1, animeId: 1 }, { unique: true });
