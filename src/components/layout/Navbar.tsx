@@ -126,22 +126,22 @@ export const Navbar: React.FC = () => {
    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning>
 
     <div className="flex items-center justify-between h-16 gap-4">
-     {/* Logo */}
-     <button
-      type="button"
-      id="nav-logo"
-      onClick={() => handleNav('/')}
-      className="flex items-center gap-2.5 group cursor-pointer shrink-0"
-     >
-      <div className="w-9 h-9 rounded-xl bg-orange-700 flex items-center justify-center shadow-lg  transition-transform">
-       <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-      </div>
-      <div className="flex flex-col text-left">
-       <span className="font-heading font-extrabold text-lg tracking-tight text-surface-primary flex items-center gap-1">
-        Elias<span className="text-orange-400">Dex</span>
-       </span>
-      </div>
-     </button>
+{/* Logo */}
+ <button
+  type="button"
+  id="nav-logo"
+  onClick={() => handleNav('/')}
+  className="flex items-center gap-2.5 group cursor-pointer shrink-0"
+ >
+<img
+   src="/icon.svg"
+   alt="Eliasdex"
+   className="w-9 h-9 rounded-xl object-contain mr-2"
+ />
+<span className="hidden lg:block font-heading font-extrabold text-lg tracking-tight text-surface-primary">
+  Eliasdex
+</span>
+</button>
 
       {/* Desktop Navigation — primary links only, tidy */}
       <nav className="hidden lg:flex items-center gap-1" suppressHydrationWarning>
