@@ -190,6 +190,11 @@ export async function importMalListToLocal(
 
   if (historyOps.length > 0) {
     const res = await historyCol.bulkWrite(historyOps, { ordered: false });
+    if (res.hasWriteErrors?.()) {
+      res.getWriteErrors().forEach(e =>
+        console.error("[Sync] bulkWrite item failed:", { index: e.index, err: e.err })
+      );
+    }
     imported = res.upsertedCount;
   }
 
@@ -220,7 +225,12 @@ export async function importMalListToLocal(
     });
   }
   if (favOps.length > 0) {
-    await favCol.bulkWrite(favOps, { ordered: false });
+    const res = await favCol.bulkWrite(favOps, { ordered: false });
+    if (res.hasWriteErrors?.()) {
+      res.getWriteErrors().forEach(e =>
+        console.error("[Sync] bulkWrite item failed:", { index: e.index, err: e.err })
+      );
+    }
   }
 
   // Set XP based on TOTAL episodes from MAL (source of truth), not just new entries
