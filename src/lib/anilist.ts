@@ -20,6 +20,18 @@ import { getCached, setCached } from './cache';
 
 const ANILIST_GRAPHQL_ENDPOINT = 'https://graphql.anilist.co';
 
+// MAL genre ID → AniList genre name mapping
+const ANILIST_GENRE_MAP: Record<number, string> = {
+ 1: 'Action', 2: 'Adventure', 4: 'Comedy', 5: 'Avant Garde',
+ 7: 'Mystery', 8: 'Drama', 10: 'Fantasy', 14: 'Horror',
+ 15: 'Kids', 18: 'Martial Arts', 20: 'Parody', 21: 'Samurai',
+ 22: 'Romance', 23: 'School', 24: 'Sci-Fi', 25: 'Space',
+ 26: 'Suspense', 28: 'Ecchi', 29: 'Vampire', 30: 'Sports',
+ 33: 'Military', 34: 'Dementia', 35: 'Police', 36: 'Slice of Life',
+ 37: 'Supernatural', 38: 'Game', 41: 'Thriller', 43: 'Boys Love',
+ 46: 'Award Winning', 47: 'Gourmet', 62: 'Isekai',
+};
+
 /**
  * Execute AniList GraphQL Query via proxy (/api/anilist) in browser or upstream on server
  */
@@ -687,7 +699,18 @@ export async function searchAniListAnime(
   };
 
   if (params?.genres) {
-    const genreNames = params.genres.split(',').map(g => g.trim()).filter(Boolean);
+    // genres may be IDs ("1,2,10") or names ("Action,Fantasy")
+    const genreParts = params.genres.split(',').map(g => g.trim()).filter(Boolean);
+    const isNumeric = genreParts.every(g => /^\d+$/.test(g));
+
+    let genreNames: string[];
+    if (isNumeric) {
+      // Resolve IDs to names using MAL genre map
+      genreNames = genreParts.map(id => ANILIST_GENRE_MAP[Number(id)]).filter(Boolean);
+    } else {
+      genreNames = genreParts;
+    }
+
     if (genreNames.length === 1) {
       variables.genre = genreNames[0];
     } else if (genreNames.length > 1) {

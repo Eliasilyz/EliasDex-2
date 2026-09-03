@@ -7,8 +7,10 @@ import { BrowsePage } from '@/views/BrowsePage';
 function BrowsePageContent() {
   const searchParams = useSearchParams();
   const genreParam = searchParams?.get('genre');
-  const initialGenreId = genreParam ? parseInt(genreParam, 10) : null;
-  return <BrowsePage initialGenreId={Number.isNaN(initialGenreId) ? null : initialGenreId} />;
+  const initialGenreIds = genreParam
+    ? genreParam.split(',').map((s) => parseInt(s, 10)).filter((n) => !Number.isNaN(n))
+    : [];
+  return <BrowsePage initialGenreIds={initialGenreIds} />;
 }
 
 export default function Page() {

@@ -2201,10 +2201,16 @@ export function searchFallbackAnime(
   }
 
   if (params?.genres) {
-    const genreId = Number(params.genres);
-    if (!isNaN(genreId) && genreId > 0) {
-      list = list.filter((a) => a.genres?.some((g) => g.mal_id === genreId));
-    }
+    const genreParts = String(params.genres).split(',').map((g: string) => g.trim()).filter(Boolean);
+    list = list.filter((a) =>
+     genreParts.some((part: string) => {
+      const id = Number(part);
+      if (!isNaN(id) && id > 0) {
+       return a.genres?.some((g: any) => g.mal_id === id);
+      }
+      return a.genres?.some((g: any) => g.name.toLowerCase() === part.toLowerCase());
+     })
+    );
   }
 
   if (params?.type) {
