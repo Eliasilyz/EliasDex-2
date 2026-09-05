@@ -64,9 +64,17 @@ export function constructMetadata({
     },
     manifest: '/manifest.json',
     icons: {
-      icon: '/favicon.ico',
+      icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      ],
       shortcut: '/favicon.ico',
-      apple: '/icons/icon-192x192.png',
+      apple: [
+        { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      ],
     },
     appleWebApp: {
       capable: true,
