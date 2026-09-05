@@ -168,8 +168,10 @@ export class WeebCentral {
 
       if (!chapterUrl) return;
 
+      const rawName = name || element.text().trim();
+      const normalizedName = rawName.replace(/^Episode\s*/i, 'Chapter ');
       chapters.push({
-        name: name || element.text().trim(),
+        name: normalizedName || rawName,
         url: this.absoluteUrl(chapterUrl),
       });
     });

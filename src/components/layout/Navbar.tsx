@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Play, Flame, Calendar, Compass, Bookmark, History, Menu, X, Sparkles, User as UserIcon, Settings, ChevronDown, LogOut, Shield } from 'lucide-react';
+import { Play, Flame, Calendar, Compass, Bookmark, History, Menu, X, Sparkles, User as UserIcon, Settings, ChevronDown, LogOut, Shield, BookOpen } from 'lucide-react';
 import { SearchBar } from './SearchBar';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { TitleLanguageToggle } from '../ui/TitleLanguageToggle';
@@ -108,6 +108,7 @@ export const Navbar: React.FC = () => {
  const navLinks = [
   { label: 'Home', path: '/', icon: Sparkles },
   { label: 'Top Anime', path: '/top', icon: Flame },
+  { label: 'Manga', path: '/manga', icon: BookOpen },
   { label: 'Schedule', path: '/schedule', icon: Calendar },
   { label: 'Browse', path: '/browse', icon: Compass },
   { label: 'Watchlist', path: '/watchlist', icon: Bookmark, count: mounted ? watchlist.length : 0 },
