@@ -70,7 +70,7 @@ export const HistoryPage: React.FC = () => {
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover  transition-transform"
+                    className="w-full h-full object-cover"
                   />
                 )}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">

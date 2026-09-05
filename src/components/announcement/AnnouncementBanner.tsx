@@ -111,7 +111,7 @@ export const AnnouncementBanner: React.FC = () => {
       {visible.slice(0, 2).map((ann) => (
         <div
           key={getAnnId(ann)}
-          className="pointer-events-auto rounded-2xl border border-orange-500/30 bg-surface-raised/95 backdrop-blur-xl shadow-2xl p-3 animate-in slide-in-from-bottom-3 fade-in duration-300"
+          className="pointer-events-auto rounded-2xl border border-orange-500/30 bg-surface-raised shadow-2xl p-3 animate-in slide-in-from-bottom-3 fade-in duration-300"
         >
           <div className="flex items-start gap-2.5">
             <div className="shrink-0 mt-0.5 w-7 h-7 rounded-lg bg-orange-500/15 text-orange-400 flex items-center justify-center">

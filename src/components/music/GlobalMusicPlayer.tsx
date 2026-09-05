@@ -76,7 +76,7 @@ export const GlobalMusicPlayer: React.FC = () => {
      isMinimized ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
     }`}
    >
-    <div className="bg-surface-canvas/95 backdrop-blur-xl border border-border-subtle shadow-2xl rounded-2xl p-2.5 sm:p-3.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 text-surface-primary ring-1 ring-white/10">
+    <div className="bg-surface-canvas border border-border-subtle shadow-2xl rounded-2xl p-2.5 sm:p-3.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 text-surface-primary ring-1 ring-white/10">
      {/* Left Track Info */}
      <div className="flex items-center gap-3 w-full sm:w-auto min-w-0 flex-1">
       {/* Spinning Vinyl / Poster */}
@@ -239,7 +239,7 @@ export const GlobalMusicPlayer: React.FC = () => {
 
     {/* Playlist Quick Drawer */}
     {showPlaylistDrawer && playlist.length > 1 && (
-     <div data-lenis-prevent className="mt-2 bg-surface-canvas/95 backdrop-blur-xl border border-ink-700 rounded-2xl p-3 shadow-2xl space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
+     <div data-lenis-prevent className="mt-2 bg-surface-canvas border border-ink-700 rounded-2xl p-3 shadow-2xl space-y-1.5 max-h-56 overflow-y-auto custom-scrollbar">
       <div className="flex items-center justify-between pb-1.5 border-b border-ink-700 text-xs text-ink-500">
        <span className="font-semibold text-ink-300">Theme Songs Queue</span>
        <span>{playlist.length} Tracks</span>
@@ -288,7 +288,7 @@ export const GlobalMusicPlayer: React.FC = () => {
 
    {/* 4. Expanded Video / Animation Modal */}
    {showVideoModal && (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
      <div className="relative w-full max-w-3xl bg-surface-canvas border border-ink-700 rounded-3xl overflow-hidden shadow-2xl space-y-0">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-ink-700/80 bg-surface-canvas/60">

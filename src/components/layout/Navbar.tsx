@@ -122,7 +122,7 @@ export const Navbar: React.FC = () => {
  };
 
  return (
-  <header className="sticky top-0 z-40 w-full border-b border-ink-700/80 bg-surface-canvas/80 backdrop-blur-xl transition-all" suppressHydrationWarning>
+  <header className="sticky top-0 z-40 w-full border-b border-ink-700/80 bg-surface-canvas transition-all" suppressHydrationWarning>
    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning>
 
     <div className="flex items-center justify-between h-16 gap-4">
@@ -201,7 +201,7 @@ export const Navbar: React.FC = () => {
         {settingsOpen && (
          <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-surface-canvas/95 backdrop-blur-xl border border-ink-700 shadow-2xl p-3 space-y-3 z-50"
+          className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-surface-canvas border border-ink-700 shadow-2xl p-3 space-y-3 z-50"
          >
           <div className="space-y-1.5">
            <div className="flex items-center justify-between">
@@ -264,7 +264,7 @@ export const Navbar: React.FC = () => {
            {userMenuOpen && (
             <div
              role="menu"
-             className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-ink-700/70 bg-surface-raised/98 backdrop-blur-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+              className="absolute right-0 top-full mt-2 w-52 rounded-2xl border border-ink-700/70 bg-surface-raised shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
             >
               <div className="px-4 py-3 border-b border-ink-700/50">
                <p className="text-xs font-semibold text-surface-primary truncate">
@@ -339,7 +339,7 @@ export const Navbar: React.FC = () => {
 
      {/* Mobile Menu Dropdown */}
      {mobileMenuOpen && (
-      <div className="lg:hidden border-b border-ink-700 bg-surface-canvas/95 backdrop-blur-2xl px-4 py-4 space-y-3 animate-in fade-in slide-in-from-top-3 duration-200">
+      <div className="lg:hidden border-b border-ink-700 bg-surface-canvas px-4 py-4 space-y-3 animate-in fade-in slide-in-from-top-3 duration-200">
        <div className="space-y-1">
        {navLinks.map((link) => {
         const Icon = link.icon;

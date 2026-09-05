@@ -208,7 +208,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
        setCurrentPage(1);
       }}
       placeholder="Search anime title..."
-      className="w-full bg-surface-canvas/90 border border-ink-700 text-surface-primary text-xs pl-9 pr-8 py-2 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus: placeholder-ink-500 font-medium transition-all"
+       className="w-full bg-surface-canvas border border-ink-700 text-surface-primary text-xs pl-9 pr-8 py-2 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus: placeholder-ink-500 font-medium transition-all"
      />
      {searchQuery && (
       <button
@@ -230,7 +230,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
        setSortBy(e.target.value as any);
        setCurrentPage(1);
       }}
-      className="bg-surface-canvas/90 border border-ink-700 text-ink-300 text-xs px-3 py-2 rounded-xl focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
+       className="bg-surface-canvas border border-ink-700 text-ink-300 text-xs px-3 py-2 rounded-xl focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
      >
       <option value="popularity">Most Popular</option>
       <option value="score">Highest Rated</option>
@@ -243,10 +243,10 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
      <button
       type="button"
       onClick={() => setShowFiltersDrawer(!showFiltersDrawer)}
-      className={`relative inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-       showFiltersDrawer || activeExtraFiltersCount > 0
-        ? 'bg-orange-950/60 border-orange-500/50 text-orange-400'
-        : 'bg-surface-canvas/90 border-ink-700 text-ink-300 hover:bg-ink-700'
+       className={`relative inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+        showFiltersDrawer || activeExtraFiltersCount > 0
+         ? 'bg-orange-950/60 border-orange-500/50 text-orange-400'
+         : 'bg-surface-canvas border-ink-700 text-ink-300 hover:bg-ink-700'
       }`}
      >
       <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -263,7 +263,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
       <button
        type="button"
        onClick={resetAllFilters}
-       className="p-2 rounded-xl bg-surface-canvas/90 hover:bg-ink-700 border border-ink-700 text-ink-500 hover:text-white transition-colors cursor-pointer"
+        className="p-2 rounded-xl bg-surface-canvas hover:bg-ink-700 border border-ink-700 text-ink-500 hover:text-white transition-colors cursor-pointer"
        title="Reset Filters"
       >
        <RotateCcw className="w-3.5 h-3.5" />
@@ -274,7 +274,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
 
    {/* Optional Collapsible Filter Drawer */}
    {showFiltersDrawer && (
-    <div className="p-3.5 bg-surface-canvas/80 border border-ink-700 rounded-2xl animate-in fade-in slide-in-from-top-1 duration-200 space-y-3">
+      <div className="p-3.5 bg-surface-canvas border border-ink-700 rounded-2xl animate-in fade-in slide-in-from-top-1 duration-200 space-y-3">
      {/* Selected Genre Chips */}
      {selectedGenreIds.length > 0 && (
       <div className="flex flex-wrap gap-1.5">
@@ -317,7 +317,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
           className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
            checked
             ? 'bg-orange-600/20 text-orange-300 border border-orange-500/40'
-            : 'bg-surface-canvas/60 text-ink-300 border border-transparent hover:bg-ink-700/50'
+            : 'bg-surface-canvas text-ink-300 border border-transparent hover:bg-ink-700/50'
           }`}
          >
           <input
@@ -354,7 +354,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
          setFormatType(e.target.value);
          setCurrentPage(1);
         }}
-        className="w-full bg-surface-canvas/80 border border-ink-700 text-ink-300 text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
+         className="w-full bg-surface-canvas border border-ink-700 text-ink-300 text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
        >
         <option value="">All Formats</option>
         <option value="tv">TV Series</option>
@@ -375,7 +375,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
          setAiringStatus(e.target.value);
          setCurrentPage(1);
         }}
-        className="w-full bg-surface-canvas/80 border border-ink-700 text-ink-300 text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
+         className="w-full bg-surface-canvas border border-ink-700 text-ink-300 text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
        >
         <option value="">All Statuses</option>
         <option value="airing">Currently Airing</option>
@@ -394,7 +394,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
          setMinScore(Number(e.target.value));
          setCurrentPage(1);
         }}
-        className="w-full bg-surface-canvas/80 border border-ink-700 text-ink-300 text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
+         className="w-full bg-surface-canvas border border-ink-700 text-ink-300 text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-orange-500 font-medium cursor-pointer"
        >
         <option value={0}>Any Score</option>
         <option value={8}>★ 8.0+ Exceptional</option>
@@ -430,7 +430,7 @@ export const BrowsePage: React.FC<BrowsePageProps> = ({ initialGenreIds = [] }) 
       {loading && items.length === 0 ? (
        <div className="grid grid-cols-1 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
-         <div key={i} className="h-36 bg-surface-canvas/60 rounded-2xl animate-pulse border border-ink-700" />
+          <div key={i} className="h-36 bg-surface-canvas rounded-2xl animate-pulse border border-ink-700" />
         ))}
        </div>
       ) : error && items.length === 0 ? (

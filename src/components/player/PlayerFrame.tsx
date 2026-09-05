@@ -79,7 +79,7 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
     >
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface-canvas/90 backdrop-blur-sm text-ink-300 gap-3 pointer-events-none">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-surface-canvas text-ink-300 gap-3 pointer-events-none">
           <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
           <p className="text-xs font-medium text-ink-500">Loading player stream...</p>
         </div>
@@ -144,7 +144,7 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
         <button
           type="button"
           onClick={() => setUnlocked(true)}
-          className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm text-white gap-3 cursor-pointer transition-opacity hover:bg-black/60"
+          className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/70 text-white gap-3 cursor-pointer transition-opacity hover:bg-black/60"
           aria-label="Click to enable player"
         >
           <div className="w-16 h-16 rounded-full bg-orange-500/90 flex items-center justify-center shadow-lg shadow-orange-500/30">
@@ -156,7 +156,7 @@ export const PlayerFrame: React.FC<PlayerFrameProps> = ({
       )}
 
       {/* Quick Player Action Overlay on Top Right (Hover) */}
-      <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 opacity-0 group-hover/player:opacity-100 transition-opacity bg-surface-canvas/85 backdrop-blur-md p-1 rounded-xl border border-ink-500/60 shadow-lg">
+      <div className="absolute top-3 right-3 z-30 flex items-center gap-1.5 opacity-0 group-hover/player:opacity-100 transition-opacity bg-surface-canvas/85 p-1 rounded-xl border border-ink-500/60 shadow-lg">
         <a
           href={src}
           target="_blank"

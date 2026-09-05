@@ -193,14 +193,14 @@ export const MoreSeasons: React.FC<MoreSeasonsProps> = ({
          ) : (
           <div className="w-full h-full bg-ink-700" />
          )}
-         <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-md text-xs font-bold bg-surface-canvas/90 backdrop-blur-sm text-white border border-white/10">
-          {relationLabel}
-         </span>
-         {anime.score && (
-          <span className="absolute bottom-2 right-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-xs font-bold bg-surface-canvas/90 backdrop-blur-sm text-amber-400 border border-white/10">
-           ★ {anime.score.toFixed(1)}
+          <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded-md text-xs font-bold bg-surface-canvas/90 text-white border border-white/10">
+           {relationLabel}
           </span>
-         )}
+          {anime.score && (
+           <span className="absolute bottom-2 right-2 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-xs font-bold bg-surface-canvas/90 text-amber-400 border border-white/10">
+            ★ {anime.score.toFixed(1)}
+           </span>
+          )}
         </div>
         <div className="p-2.5 space-y-1 flex-1 flex flex-col">
          <p className="text-xs font-bold text-surface-primary group-hover:text-orange-400 line-clamp-2 leading-snug transition-colors">

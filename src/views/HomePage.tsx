@@ -119,7 +119,7 @@ export const HomePage: React.FC = () => {
               <div
                 key={`${item.malId}-${item.episodeNumber}-${item.language}-${idx}`}
                 onClick={() => onNavigate(`/watch/${item.malId}/${item.episodeNumber}`)}
-                className="w-48 sm:w-56 shrink-0 p-2.5 rounded-xl bg-ink-700/90 hover:bg-ink-700 border border-ink-500/60 cursor-pointer transition-all flex items-center gap-3 group jq-ripple"
+                className="w-48 sm:w-56 shrink-0 p-2.5 rounded-xl bg-surface-raised hover:bg-surface-canvas border border-ink-700/80 cursor-pointer transition-all flex items-center gap-3 group jq-ripple"
               >
                 <div className="w-12 h-16 rounded-lg overflow-hidden bg-surface-canvas shrink-0 relative">
                   {item.image ? (

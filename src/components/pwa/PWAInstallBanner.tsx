@@ -50,7 +50,7 @@ export const PWAInstallBanner: React.FC = () => {
   if (!showBanner) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-sm z-50 p-4 rounded-2xl bg-surface-canvas/95 border border-orange-500/30 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed bottom-4 right-4 left-4 sm:left-auto sm:max-w-sm z-50 p-4 rounded-2xl bg-surface-canvas border border-orange-500/30 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">

@@ -21,7 +21,7 @@ export const Badge: React.FC<BadgeProps> = ({
     success: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-medium',
     warning: 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium',
     info: 'bg-sky-500/20 text-sky-300 border border-sky-500/30 font-medium',
-    outline: 'border border-ink-500/80 text-ink-300 bg-surface-canvas/60 backdrop-blur-sm',
+    outline: 'border border-ink-500/80 text-ink-300 bg-surface-canvas/60',
     sub: 'bg-orange-500/20 text-orange-300 border border-orange-500/30 font-semibold uppercase tracking-wider',
     dub: 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold uppercase tracking-wider',
   }[variant];

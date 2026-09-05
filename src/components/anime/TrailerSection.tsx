@@ -90,7 +90,7 @@ export const TrailerSection: React.FC<TrailerSectionProps> = ({
 
    {/* Badges */}
    <div className="absolute top-4 left-4 flex items-center gap-2">
-    <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600/90 text-white flex items-center gap-1.5 backdrop-blur-md shadow-md">
+    <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600/90 text-white flex items-center gap-1.5 shadow-md">
     <Youtube className="w-3.5 h-3.5 fill-white" />
     <span>Trailer</span>
     </span>

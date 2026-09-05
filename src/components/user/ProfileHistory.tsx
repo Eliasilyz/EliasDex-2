@@ -49,7 +49,7 @@ export const ProfileHistory: React.FC<{ history: HistoryDisplayItem[] }> = ({ hi
                   Done
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded-md bg-black/70 backdrop-blur px-1.5 py-0.5 text-[9px] font-bold text-ink-300 border border-white/10">
+                <span className="inline-flex items-center gap-1 rounded-md bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-ink-300 border border-white/10">
                   <Play className="w-2.5 h-2.5" />
                   Ep. {item.episodeNumber}
                 </span>

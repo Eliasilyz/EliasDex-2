@@ -97,7 +97,7 @@ export const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
     </button>
 
     {isOpen && (
-     <div className="absolute right-0 mt-2 w-72 p-2 bg-surface-canvas/95 backdrop-blur-2xl border border-ink-700 rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+      <div className="absolute right-0 mt-2 w-72 p-2 bg-surface-canvas border border-ink-700 rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150">
       <div className="px-3 py-1.5 mb-1 border-b border-ink-700 flex items-center justify-between">
        <span className="text-xs font-bold uppercase tracking-wider text-ink-500">
         Anime Data Source

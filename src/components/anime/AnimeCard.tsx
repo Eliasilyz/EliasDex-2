@@ -80,14 +80,14 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
     <LazyImage
      src={imageUrl}
      alt={title}
-     className="w-full h-full object-cover transition-transform duration-500"
+     className="w-full h-full object-cover"
     />
 
     {/* Bottom subtle gradient on poster */}
     <div className="absolute inset-0 bg-gradient-to-t from-surface-canvas/80 via-transparent to-transparent opacity-80 pointer-events-none" />
 
     {/* Hover play button overlay */}
-    <div className="absolute inset-0 bg-surface-canvas/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
      <button
       type="button"
       id={`card-play-btn-${anime.mal_id}`}
@@ -101,12 +101,12 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
 
     {/* Top Badges */}
     <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-10">
-     <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-mono uppercase font-bold tracking-wider backdrop-blur-md bg-surface-canvas/80 border border-white/10 text-ink-300">
+     <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-mono uppercase font-bold tracking-wider bg-surface-canvas/90 border border-white/10 text-ink-300">
       {type}
      </span>
 
      {score && (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-surface-canvas/95 backdrop-blur-md text-amber-400 border border-white/15 shadow-sm">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-surface-canvas/95 text-amber-500 border border-amber-500/30 shadow-sm">
        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
        {score}
       </span>
@@ -116,11 +116,11 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
     {/* Bottom badges on poster */}
     <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none text-xs z-10">
      {episodes ? (
-      <span className="px-2 py-0.5 rounded-md bg-surface-canvas/85 backdrop-blur-md text-ink-300 font-mono text-xs font-semibold border border-white/10">
+      <span className="px-2 py-0.5 rounded-md bg-surface-canvas/90 text-ink-300 font-mono text-xs font-semibold border border-white/10">
        {episodes} eps
       </span>
      ) : anime.status === 'Currently Airing' ? (
-      <span className="px-2 py-0.5 rounded-md bg-emerald-950/90 border border-emerald-500/40 backdrop-blur-md text-emerald-400 font-mono text-xs font-semibold">
+      <span className="px-2 py-0.5 rounded-md bg-emerald-950/90 border border-emerald-500/40 text-emerald-400 font-mono text-xs font-semibold">
        Airing
       </span>
      ) : (
@@ -128,7 +128,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
      )}
 
      {progress && (
-      <span className="px-2 py-0.5 rounded-md bg-orange-950/90 border border-orange-500/50 backdrop-blur-md text-orange-400 font-bold font-mono text-xs">
+      <span className="px-2 py-0.5 rounded-md bg-orange-950/90 border border-orange-500/50 text-orange-400 font-bold font-mono text-xs">
        EP {progress.episodeNumber}
       </span>
      )}

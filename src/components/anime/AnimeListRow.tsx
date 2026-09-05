@@ -104,7 +104,7 @@ export const AnimeListRow: React.FC<AnimeListRowProps> = ({
 
     {/* Type Badge */}
     <div className="absolute top-2 left-2">
-     <Badge variant="outline" className="font-mono text-xs uppercase font-bold tracking-wider backdrop-blur-md bg-surface-canvas/80">
+      <Badge variant="outline" className="font-mono text-xs uppercase font-bold tracking-wider bg-surface-canvas/80">
       {type}
      </Badge>
     </div>

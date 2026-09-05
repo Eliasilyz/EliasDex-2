@@ -67,11 +67,11 @@ export const SwiperHeroCarousel: React.FC<SwiperHeroCarouselProps> = ({
        {/* Background Image with Gradient Overlays */}
        <div className="absolute inset-0">
         {bgImage ? (
-         <LazyImage
-          src={bgImage}
-          alt={displayTitle}
-          className="w-full h-full object-cover object-center scale-105 filter brightness-90 transition-transform duration-1000"
-         />
+          <LazyImage
+           src={bgImage}
+           alt={displayTitle}
+           className="w-full h-full object-cover object-center scale-105 brightness-90"
+          />
         ) : (
          <div className="w-full h-full bg-gradient-to-br from-surface-canvas via-surface-canvas to-orange-950/40" />
         )}
@@ -116,7 +116,7 @@ export const SwiperHeroCarousel: React.FC<SwiperHeroCarouselProps> = ({
           {genres.map((g) => (
            <span
             key={g.mal_id}
-            className="text-xs px-2.5 py-0.5 rounded-full bg-ink-700/80 text-ink-300 border border-ink-500/50 backdrop-blur-sm"
+            className="text-xs px-2.5 py-0.5 rounded-full bg-ink-700/80 text-ink-300 border border-ink-500/50"
            >
             {g.name}
            </span>
@@ -156,14 +156,14 @@ export const SwiperHeroCarousel: React.FC<SwiperHeroCarouselProps> = ({
    {/* Navigation Custom Buttons */}
    <button
     type="button"
-    className="swiper-hero-prev absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-orange-500 border border-white/10 text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
+     className="swiper-hero-prev absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-orange-500 border border-white/10 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
     aria-label="Previous Slide"
    >
     ‹
    </button>
    <button
     type="button"
-    className="swiper-hero-next absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-orange-500 border border-white/10 text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
+     className="swiper-hero-next absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-orange-500 border border-white/10 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
     aria-label="Next Slide"
    >
     ›

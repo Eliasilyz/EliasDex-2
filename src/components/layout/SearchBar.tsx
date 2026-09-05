@@ -154,7 +154,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
    {/* Autocomplete Dropdown */}
    {isOpen && query.trim().length >= 2 && (
-    <div className="absolute left-0 right-0 top-full mt-2 bg-surface-canvas/95 backdrop-blur-xl border border-ink-700 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="absolute left-0 right-0 top-full mt-2 bg-surface-canvas border border-ink-700 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
      {isLoading && results.length === 0 ? (
       <div className="p-4 text-center text-sm text-ink-500 flex items-center justify-center gap-2">
        <Loader2 className="w-4 h-4 animate-spin text-orange-400" /> Searching anime...
