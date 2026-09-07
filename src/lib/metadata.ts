@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Anime } from '@/types';
+import { Anime, AnimeEpisode } from '@/types';
 
 export const SITE_CONFIG = {
   name: 'EliasDex',
@@ -98,7 +98,6 @@ export function constructMetadata({
   };
 }
 
-
 export function generateAnimeJsonLd(anime: Anime) {
   const imageUrl =
     anime.images?.webp?.large_image_url ||
@@ -123,5 +122,83 @@ export function generateAnimeJsonLd(anime: Anime) {
           worstRating: 0,
         }
       : undefined,
+  };
+}
+
+export function generateEpisodeJsonLd(animeTitle: string, episodeNumber: number, synopsis?: string, imageUrl?: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Episode',
+    name: `Episode ${episodeNumber} — ${animeTitle}`,
+    partOf: {
+      '@type': 'TVSeries',
+      name: animeTitle,
+    },
+    description: synopsis || `${animeTitle} Episode ${episodeNumber}`,
+    image: imageUrl,
+    episodeNumber,
+  };
+}
+
+export function generateMangaJsonLd(manga: {
+  title: string;
+  titleEnglish?: string;
+  titleJapanese?: string;
+  description?: string;
+  imageUrl?: string;
+  genres?: string[];
+  chapters?: number;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ComicSeries',
+    name: manga.title,
+    alternateName: manga.titleEnglish || manga.titleJapanese || undefined,
+    description: manga.description || `${manga.title} manga series`,
+    image: manga.imageUrl || '',
+    genre: manga.genres || [],
+    numberOfChapters: manga.chapters,
+  };
+}
+
+export function generateChapterJsonLd(mangaTitle: string, chapterNumber: number, volume?: number) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Chapter',
+    name: `Chapter ${chapterNumber} — ${mangaTitle}`,
+    partOf: {
+      '@type': 'ComicSeries',
+      name: mangaTitle,
+    },
+    chapterNumber,
+    volumeNumber: volume,
+  };
+}
+
+export function generateBreadcrumbJsonLd(items: { name: string; url: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      url: item.url,
+    })),
+  };
+}
+
+export function generateWebsiteJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
+    description: SITE_CONFIG.description,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_CONFIG.url}/search?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
   };
 }

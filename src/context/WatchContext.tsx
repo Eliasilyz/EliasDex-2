@@ -31,8 +31,15 @@ interface WatchContextType {
 
 const WatchContext = createContext<WatchContextType | undefined>(undefined);
 
-const HISTORY_STORAGE_KEY = 'eliasdex_watch_history';
-const WATCHLIST_STORAGE_KEY = 'eliasdex_watchlist';
+const HISTORY_STORAGE_KEY_PREFIX = "eliasdex_watch_history_";
+const WATCHLIST_STORAGE_KEY_PREFIX = "eliasdex_watchlist_";
+
+function historyKey(userId: string) {
+  return `${HISTORY_STORAGE_KEY_PREFIX}${userId}`;
+}
+function watchlistKey(userId: string) {
+  return `${WATCHLIST_STORAGE_KEY_PREFIX}${userId}`;
+}
 
 function mapServerHistory(entry: WatchHistoryEntry): WatchProgress {
   const ts =
@@ -84,47 +91,61 @@ export const WatchProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Load initial data from localStorage on mount (prevents SSR hydration mismatch)
   useEffect(() => {
+    if (!sessionUserId) {
+      setHistory([]);
+      setWatchlist([]);
+      setIsLoaded(true);
+      return;
+    }
     try {
-      const savedHistory = localStorage.getItem(HISTORY_STORAGE_KEY);
+      const savedHistory = localStorage.getItem(historyKey(sessionUserId));
       if (savedHistory) {
         setHistory(JSON.parse(savedHistory));
+      } else {
+        setHistory([]);
       }
-      const savedWatchlist = localStorage.getItem(WATCHLIST_STORAGE_KEY);
+      const savedWatchlist = localStorage.getItem(watchlistKey(sessionUserId));
       if (savedWatchlist) {
         setWatchlist(JSON.parse(savedWatchlist));
+      } else {
+        setWatchlist([]);
       }
     } catch (e) {
       console.warn('Failed to load from localStorage', e);
     } finally {
       setIsLoaded(true);
     }
-  }, []);
+  }, [sessionUserId]);
 
   // Persist history
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !sessionUserId) return;
     try {
-      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+      localStorage.setItem(historyKey(sessionUserId), JSON.stringify(history));
     } catch (e) {
       console.warn('Failed to save watch history to localStorage', e);
     }
-  }, [history, isLoaded]);
+  }, [history, isLoaded, sessionUserId]);
 
   // Persist watchlist
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !sessionUserId) return;
     try {
-      localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(watchlist));
+      localStorage.setItem(watchlistKey(sessionUserId), JSON.stringify(watchlist));
     } catch (e) {
       console.warn('Failed to save watchlist to localStorage', e);
     }
-  }, [watchlist, isLoaded]);
+  }, [watchlist, isLoaded, sessionUserId]);
 
   // When a user logs in, push local data to the server (so nothing is lost)
   // then adopt the server data as the source of truth.
   useEffect(() => {
     if (!sessionUserId) {
       syncedUserIdRef.current = null;
+      setHistory([]);
+      setWatchlist([]);
+      setUserXp(0);
+      setUserLevel(0);
       return;
     }
     if (syncedUserIdRef.current === sessionUserId) return;

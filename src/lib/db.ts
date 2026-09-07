@@ -1,5 +1,28 @@
 import { Db, MongoClient } from "mongodb";
+import { setServers } from "dns";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { DB_ENABLED, ENV } from "./env";
+
+if (!process.env.MONGODB_URI) {
+  try {
+    const envContent = readFileSync(join(process.cwd(), ".env"), "utf8");
+    for (const line of envContent.split("\n")) {
+      const m = line.match(/^(\w+)=(.*)$/);
+      if (m) {
+        const key = m[1];
+        let val = m[2].trim();
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        process.env[key] = val;
+      }
+    }
+  } catch {}
+}
+
+// Atlas SRV/A records fail on ISP DNS. Force Google DNS for MongoDB resolution.
+setServers(["8.8.8.8", "1.1.1.1"]);
 
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;
@@ -9,7 +32,7 @@ let connecting: Promise<Db | null> | null = null;
 /** How long to fast-fail (return null) after a failed connect attempt. */
 const DOWN_COOLDOWN_MS = 10_000;
 /** Give up on an individual connect attempt this fast so a downed DB doesn't stall requests. */
-const CONNECT_TIMEOUT_MS = 5_000;
+const CONNECT_TIMEOUT_MS = 20_000;
 
 function isTopologyOpen(client: MongoClient | null): boolean {
   if (!client) return false;
@@ -24,10 +47,20 @@ async function doConnect(): Promise<Db | null> {
   // resetting the global can't leave us calling .db() on null after connect().
   let client = cachedClient;
   try {
+    try {
+      setServers(["8.8.8.8", "1.1.1.1"]);
+    } catch {}
+
     if (!client) {
-      client = new MongoClient(ENV.MONGODB_URI!, {
+      const uri = process.env.MONGODB_URI || ENV.MONGODB_URI;
+      if (!uri) throw new Error("MONGODB_URI is not set in environment");
+
+      client = new MongoClient(uri, {
         serverSelectionTimeoutMS: CONNECT_TIMEOUT_MS,
         connectTimeoutMS: CONNECT_TIMEOUT_MS,
+        tls: true,
+        tlsAllowInvalidCertificates: false,
+        minDHSize: 1024,
       });
       cachedClient = client;
       await client.connect();
@@ -57,8 +90,8 @@ async function doConnect(): Promise<Db | null> {
 }
 
 export async function getDb(): Promise<Db | null> {
-  if (!DB_ENABLED) return null;
-  if (!ENV.MONGODB_URI) return null;
+  const uri = process.env.MONGODB_URI || ENV.MONGODB_URI;
+  if (!uri) return null;
 
   // Fast-fail while Mongo is known-down to avoid 5s waits + log spam per request.
   if (Date.now() < downUntil) return null;

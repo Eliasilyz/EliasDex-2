@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eliasdex-pwa-v1';
+const CACHE_NAME = 'eliasdex-pwa-v3';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -34,14 +34,17 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  
-  // Skip non-GET requests and cross-origin video streaming requests to prevent CORS/buffering issues
-  if (request.method !== 'GET' || request.url.includes('m3u8') || request.url.includes('.ts')) {
+  const url = new URL(request.url);
+
+  if (url.origin !== self.location.origin) {
     return;
   }
 
-  // Network-first strategy for API and HTML requests with cache fallback
-  if (request.headers.get('accept')?.includes('text/html') || request.url.includes('/api/')) {
+  if (request.method !== 'GET') {
+    return;
+  }
+
+  if (request.headers.get('accept')?.includes('text/html') || url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -63,7 +66,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first strategy for images and static assets
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;

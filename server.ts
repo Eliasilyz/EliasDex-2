@@ -4,7 +4,15 @@ import { Server as SocketIOServer } from "socket.io";
 import { checkChatRateLimit } from "./src/lib/chatRateLimiter";
 import { saveChatMessage } from "./src/lib/chat";
 
-const dev = process.env.NODE_ENV !== "production";
+const isDev = process.argv.includes("--dev") || process.env.NODE_ENV === "development";
+const dev = isDev;
+if (!isDev) {
+  // @ts-ignore
+  process.env.NODE_ENV = "production";
+} else {
+  // @ts-ignore
+  process.env.NODE_ENV = "development";
+}
 const port = Number(process.env.PORT) || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();

@@ -1,43 +1,98 @@
-'use client';
-
-import React, { Suspense } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { constructMetadata, generateChapterJsonLd, generateBreadcrumbJsonLd } from '@/lib/metadata';
+import weebcentral from '@/lib/external/weebcentral';
 import { MangaReaderPage } from '@/views/MangaReaderPage';
 
 const WEEBCENTRAL_BASE = 'https://weebcentral.com';
 
-function MangaReaderContent() {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const path = (params.path as string[]) || [];
-  const seriesSlug = searchParams.get('series') || '';
+type Props = {
+  params: Promise<{ path: string[] }>;
+  searchParams: Promise<{ series?: string }>;
+};
 
-  if (path.length === 0) {
-    return (
-      <div className="min-h-screen bg-ink-950 flex items-center justify-center p-6 text-center text-white">
-        <div className="max-w-md">
-          <h2 className="text-xl font-bold mb-2">No Chapter Selected</h2>
-          <p className="text-sm text-ink-400">Please select a chapter to start reading.</p>
-        </div>
-      </div>
-    );
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const { path } = await params;
+  const { series } = await searchParams;
+
+  if (!path || path.length === 0) {
+    return constructMetadata({ title: 'Chapter Not Found', noIndex: true });
   }
 
-  // Reconstruct chapter URL: /chapters/{chapterId}/{chapterSlug}
   const chapterUrl = `${WEEBCENTRAL_BASE}/chapters/${path.join('/')}`;
 
-  // Reconstruct manga URL from series query param
-  const mangaUrl = seriesSlug
-    ? `${WEEBCENTRAL_BASE}/series/${path[0]}/${seriesSlug}`
-    : undefined;
+  let title = `Chapter ${path[path.length - 1]?.replace(/[^a-zA-Z0-9]/g, '') || ''}`;
+  let imageUrl = undefined;
+  let description = `Read ${title} of this manga chapter online.`;
 
-  return <MangaReaderPage chapterUrl={chapterUrl} mangaUrl={mangaUrl} />;
+  if (series) {
+    try {
+      const seriesUrl = `${WEEBCENTRAL_BASE}/series/${series}`;
+      const manga = await weebcentral.detail(seriesUrl);
+      if (manga && manga.title) {
+        title = `${manga.title} — ${title}`;
+        imageUrl = manga.cover;
+        description = `Read ${title} online. Chapter info and manga details.`;
+      }
+    } catch {}
+  }
+
+  return constructMetadata({
+    title,
+    description,
+    image: imageUrl,
+    type: 'article',
+    canonicalUrl: `/manga/read/${path.join('/')}`,
+  });
 }
 
-export default function Page() {
+export default async function MangaReaderRoute(props: Props) {
+  const { path } = await props.params;
+  const searchParams = await props.searchParams;
+
+  if (!path || path.length === 0) {
+    notFound();
+  }
+
+  const chapterUrl = `${WEEBCENTRAL_BASE}/chapters/${path.join('/')}`;
+  const seriesSlug = searchParams?.series || '';
+  let mangaUrl = '';
+
+  if (seriesSlug) {
+    try {
+      const manga = await weebcentral.detail(`${WEEBCENTRAL_BASE}/series/${seriesSlug}`);
+      if (manga) {
+        mangaUrl = `${WEEBCENTRAL_BASE}/series/${seriesSlug}`;
+      }
+    } catch {}
+  }
+
+  let jsonLd = null;
+  try {
+    const manga = await weebcentral.detail(`${WEEBCENTRAL_BASE}/series/${seriesSlug}`);
+    if (manga && manga.title) {
+      const chapterNumber = parseInt(path[path.length - 1]?.replace(/[^0-9]/g, '') || '1', 10);
+      jsonLd = {
+        ...generateChapterJsonLd(manga.title, chapterNumber || 1),
+        ...generateBreadcrumbJsonLd([
+          { name: 'Home', url: '/' },
+          { name: 'Manga', url: '/manga' },
+          { name: manga.title, url: `/manga/${seriesSlug}` },
+          { name: `Chapter ${chapterNumber || 1}`, url: `/manga/read/${path.join('/')}` },
+        ]),
+      };
+    }
+  } catch {}
+
   return (
-    <Suspense fallback={<div className="min-h-screen bg-ink-950" />}>
-      <MangaReaderContent />
-    </Suspense>
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <MangaReaderPage chapterUrl={chapterUrl} mangaUrl={mangaUrl} />
+    </>
   );
 }

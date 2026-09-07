@@ -37,11 +37,11 @@ export async function GET(req: NextRequest) {
         malUsername: malUser.name,
       },
       syncPreferences: {
-        autoSyncMal: true,
+        autoSyncMal: false,
       },
     });
 
-    importMalListInBackground(userId);
+    // Import is manual — user must trigger via "Re-import" button
 
     const response = NextResponse.redirect(successRedirect);
     response.cookies.delete("mal_code_verifier");
