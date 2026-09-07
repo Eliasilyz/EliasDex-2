@@ -31,6 +31,7 @@ import { ThemeSongsList } from '../components/anime/ThemeSongsList';
 import { AnimeRelationsList } from '../components/anime/AnimeRelationsList';
 import { TrailerSection } from '../components/anime/TrailerSection';
 import { MoreSeasons } from '../components/anime/MoreSeasons';
+import { Banner300x250 } from '../components/ads/Banner300x250';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Skeleton, DetailPageSkeleton } from '../components/ui/Skeleton';
@@ -751,29 +752,31 @@ export const AnimeDetailPage: React.FC<AnimeDetailPageProps> = ({ malId }) => {
        )}
       </div>
 
-      {/* External Links */}
-      {externalLinks.length > 0 && (
-       <div className="pt-3 border-t border-ink-700">
-        <span className="text-xs text-ink-500 block mb-1.5">Official Resources:</span>
-        <div className="flex flex-wrap gap-1.5">
-         {externalLinks.slice(0, 4).map((link, idx) => (
-          <a
-           key={idx}
-           href={link.url}
-           target="_blank"
-           rel="noreferrer"
-           className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-ink-700 hover:bg-ink-500 text-ink-300 hover:text-white text-xs border border-ink-500/60 transition-colors"
-          >
-           <span>{link.name}</span>
-           <ExternalLink className="w-2.5 h-2.5 text-ink-500" />
-          </a>
-         ))}
+       {/* External Links */}
+       {externalLinks.length > 0 && (
+        <div className="pt-3 border-t border-ink-700">
+         <span className="text-xs text-ink-500 block mb-1.5">Official Resources:</span>
+         <div className="flex flex-wrap gap-1.5">
+          {externalLinks.slice(0, 4).map((link, idx) => (
+           <a
+            key={idx}
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-ink-700 hover:bg-ink-500 text-ink-300 hover:text-white text-xs border border-ink-500/60 transition-colors"
+           >
+            <span>{link.name}</span>
+            <ExternalLink className="w-2.5 h-2.5 text-ink-500" />
+           </a>
+          ))}
+         </div>
         </div>
-       </div>
-      )}
-     </div>
+       )}
+      </div>
 
-     {/* 3. Top Airing Anime Widget (Standard in anime streaming sidebars) */}
+      <Banner300x250 />
+
+      {/* 3. Top Airing Anime Widget (Standard in anime streaming sidebars) */}
      {topAiring.length > 0 && (
       <div className="bg-surface-canvas/60 border border-ink-700/80 rounded-2xl p-4 space-y-3 text-xs shadow-sm">
        <h2 className="text-xs font-bold text-surface-primary uppercase tracking-wider flex items-center justify-between">

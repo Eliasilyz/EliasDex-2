@@ -23,6 +23,7 @@ import {
 } from '@/lib/mangaApi';
 import { useAppNavigate } from '@/lib/useNavigate';
 import { Button } from '@/components/ui/Button';
+import { NativeBanner } from '@/components/ads/NativeBanner';
 
 export const MangaPage: React.FC = () => {
   const onNavigate = useAppNavigate();
@@ -300,10 +301,11 @@ export const MangaPage: React.FC = () => {
                   >
                     Next
                   </Button>
-                </div>
-              </>
+                  </div>
+                </>
             )}
           </section>
+          <NativeBanner />
         </div>
       )}
     </div>

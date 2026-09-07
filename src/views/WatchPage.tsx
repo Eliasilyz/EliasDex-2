@@ -13,6 +13,7 @@ import { ServerSelector } from '../components/player/ServerSelector';
 import { ServerNotice } from '../components/player/ServerNotice';
 import { EpisodeList } from '../components/anime/EpisodeList';
 import { ChatPanel } from '../components/chat/ChatPanel';
+import { NativeBanner } from '../components/ads/NativeBanner';
 import { Button } from '../components/ui/Button';
 import { TitleLanguageToggle } from '../components/ui/TitleLanguageToggle';
 import { WatchPageSkeleton } from '../components/ui/Skeleton';
@@ -513,21 +514,22 @@ export const WatchPage: React.FC<WatchPageProps> = ({ malId, epNum }) => {
 
           {/* Sidebar panel — shorter on mobile, taller on desktop */}
           <div className="h-[280px] sm:h-[400px] lg:h-[460px] overflow-y-auto rounded-lg border border-ink-700 bg-surface-raised">
-            {activeSideTab === 'episodes' ? (
-              <EpisodeList
-                malId={malId}
-                totalEpisodes={anime?.episodes}
-                episodesData={episodes}
-                animeStatus={anime?.status}
-                currentEp={epNum}
-                onSelectEpisode={(targetEpNum) => onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`)}
-              />
-            ) : (
-              <ChatPanel roomId={`anime-${malId}`} className="h-full" />
-            )}
-          </div>
-        </div>
-      </div>
+           {activeSideTab === 'episodes' ? (
+               <EpisodeList
+                 malId={malId}
+                 totalEpisodes={anime?.episodes}
+                 episodesData={episodes}
+                 animeStatus={anime?.status}
+                 currentEp={epNum}
+                 onSelectEpisode={(targetEpNum) => onNavigate(`/watch/${malId}/${targetEpNum}?lang=${lang}`)}
+               />
+             ) : (
+               <ChatPanel roomId={`anime-${malId}`} className="h-full" />
+             )}
+           </div>
+           <NativeBanner />
+         </div>
+       </div>
 
       {/* Keyboard hint — hidden on mobile */}
       <div className="hidden sm:flex items-center gap-3 text-[10px] text-ink-600 font-medium pt-1">

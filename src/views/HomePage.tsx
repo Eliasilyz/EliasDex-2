@@ -5,6 +5,7 @@ import { useAppNavigate } from '@/lib/useNavigate';
 import { Anime } from '../types';
 import { getUnifiedSeasonNow, getUnifiedTopAnime } from '../lib/animeApi';
 import { FALLBACK_ANIME_LIST, getFallbackTopAnime } from '../lib/fallbackData';
+import { NativeBanner } from '../components/ads/NativeBanner';
 import { SwiperHeroCarousel } from '../components/anime/SwiperHeroCarousel';
 import { SwiperAnimeSlider } from '../components/anime/SwiperAnimeSlider';
 import { ScheduleRow } from '../components/anime/ScheduleRow';
@@ -236,6 +237,8 @@ export const HomePage: React.FC = () => {
           />
         )}
       </section>
+
+      <NativeBanner />
 
       {/* 5. Top Anticipated & Upcoming Swiper Slider */}
       <section className="space-y-4">
