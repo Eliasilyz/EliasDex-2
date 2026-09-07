@@ -21,6 +21,7 @@ import * as anilistApi from './anilist';
 import {
   FALLBACK_ANIME_LIST,
   FALLBACK_GENRES,
+  getFallbackTopAnime,
   getFallbackSchedule,
   getFallbackAnimeById,
   generateFallbackEpisodes,
@@ -170,12 +171,9 @@ export async function getUnifiedTopAnime(
     // Fallback
   }
 
-  let list = [...FALLBACK_ANIME_LIST];
-  if (options?.filter === 'airing') {
-    list = list.filter(a => a.status === 'Currently Airing');
-  }
+  const fallbackList = getFallbackTopAnime(options?.filter, options?.limit || 24);
   return {
-    data: list.slice(0, options?.limit || 24),
+    data: fallbackList,
     pagination: { current_page: 1, has_next_page: false, last_visible_page: 1 },
     source: 'fallback',
   };

@@ -2177,6 +2177,217 @@ export function getFallbackAnimeById(malId: number): Anime | null {
 /**
  * Universal tokenized and filtered search on fallback dataset
  */
+export const FALLBACK_UPCOMING_LIST: Anime[] = [
+  {
+    mal_id: 55701,
+    title: 'Kimetsu no Yaiba: Mugen Jou-hen',
+    title_english: 'Demon Slayer: Kimetsu no Yaiba Infinity Castle',
+    title_japanese: '鬼滅の刃 無限城編',
+    images: {
+      jpg: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1769/144186.jpg',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1769/144186l.jpg',
+      },
+      webp: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1769/144186.webp',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1769/144186l.webp',
+      },
+    },
+    synopsis: 'The Demon Slayer Corps plunges into the Infinity Castle to defeat Muzan Kibutsuji in an epic final conflict.',
+    type: 'Movie',
+    episodes: 1,
+    status: 'Not yet aired',
+    score: 8.95,
+    scored_by: 120000,
+    rank: 15,
+    popularity: 45,
+    rating: 'R - 17+ (violence & profanity)',
+    year: 2025,
+    season: 'fall',
+    duration: '120 min',
+    genres: [
+      { mal_id: 1, name: 'Action' },
+      { mal_id: 10, name: 'Fantasy' },
+      { mal_id: 37, name: 'Supernatural' },
+    ],
+  },
+  {
+    mal_id: 57334,
+    title: 'Chainsaw Man Movie: Reze-hen',
+    title_english: 'Chainsaw Man - The Movie: Reze Arc',
+    title_japanese: 'チェンソーマン 劇場版 レゼ篇',
+    images: {
+      jpg: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1258/140220.jpg',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1258/140220l.jpg',
+      },
+      webp: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1258/140220.webp',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1258/140220l.webp',
+      },
+    },
+    synopsis: 'Denji meets Reze, a mysterious girl working at a local cafe, sparking a dangerous romance in the devil-hunting underworld.',
+    type: 'Movie',
+    episodes: 1,
+    status: 'Not yet aired',
+    score: 8.85,
+    scored_by: 95000,
+    rank: 22,
+    popularity: 38,
+    rating: 'R - 17+ (violence & profanity)',
+    year: 2025,
+    season: 'winter',
+    duration: '90 min',
+    genres: [
+      { mal_id: 1, name: 'Action' },
+      { mal_id: 37, name: 'Supernatural' },
+    ],
+  },
+  {
+    mal_id: 52701,
+    title: 'One Punch Man 3',
+    title_english: 'One Punch Man Season 3',
+    title_japanese: 'ワンパンマン 3',
+    images: {
+      jpg: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1792/141758.jpg',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1792/141758l.jpg',
+      },
+      webp: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1792/141758.webp',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1792/141758l.webp',
+      },
+    },
+    synopsis: 'The battle between the Hero Association and the Monster Association escalates as Garou continues his rampage.',
+    type: 'TV',
+    episodes: 12,
+    status: 'Not yet aired',
+    score: 8.7,
+    scored_by: 180000,
+    rank: 35,
+    popularity: 20,
+    rating: 'R - 17+ (violence & profanity)',
+    year: 2025,
+    season: 'spring',
+    duration: '24 min per ep',
+    genres: [
+      { mal_id: 1, name: 'Action' },
+      { mal_id: 4, name: 'Comedy' },
+      { mal_id: 24, name: 'Sci-Fi' },
+    ],
+  },
+  {
+    mal_id: 51994,
+    title: 'Enen no Shouboutai: San no Shou',
+    title_english: 'Fire Force Season 3',
+    title_japanese: '炎炎ノ消防隊 参ノ章',
+    images: {
+      jpg: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1206/143527.jpg',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1206/143527l.jpg',
+      },
+      webp: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1206/143527.webp',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1206/143527l.webp',
+      },
+    },
+    synopsis: 'Shinra Kusakabe and Company 8 uncover the ultimate truth behind the Great Cataclysm and fight the Evangelist.',
+    type: 'TV',
+    episodes: 24,
+    status: 'Not yet aired',
+    score: 8.4,
+    scored_by: 80000,
+    rank: 80,
+    popularity: 65,
+    rating: 'PG-13 - Teens 13 or older',
+    year: 2025,
+    season: 'spring',
+    duration: '24 min per ep',
+    genres: [
+      { mal_id: 1, name: 'Action' },
+      { mal_id: 37, name: 'Supernatural' },
+    ],
+  },
+  {
+    mal_id: 54900,
+    title: 'Boku no Hero Academia: Final Season',
+    title_english: 'My Hero Academia Final Season',
+    title_japanese: '僕のヒーローアカデミア FINAL SEASON',
+    images: {
+      jpg: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1911/144214.jpg',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1911/144214l.jpg',
+      },
+      webp: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1911/144214.webp',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1911/144214l.webp',
+      },
+    },
+    synopsis: 'The climactic final showdown between Deku and Shigaraki Tomura to decide the fate of all superhuman society.',
+    type: 'TV',
+    episodes: 13,
+    status: 'Not yet aired',
+    score: 8.65,
+    scored_by: 110000,
+    rank: 40,
+    popularity: 18,
+    rating: 'PG-13 - Teens 13 or older',
+    year: 2025,
+    season: 'fall',
+    duration: '24 min per ep',
+    genres: [
+      { mal_id: 1, name: 'Action' },
+      { mal_id: 24, name: 'Sci-Fi' },
+    ],
+  },
+  {
+    mal_id: 57900,
+    title: 'Dr. STONE SCIENCE FUTURE',
+    title_english: 'Dr. STONE Season 4',
+    title_japanese: 'ドクターストーン サイエンス フューチャー',
+    images: {
+      jpg: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1706/143528.jpg',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1706/143528l.jpg',
+      },
+      webp: {
+        image_url: 'https://cdn.myanimelist.net/images/anime/1706/143528.webp',
+        large_image_url: 'https://cdn.myanimelist.net/images/anime/1706/143528l.webp',
+      },
+    },
+    synopsis: 'Senku and the Kingdom of Science aim for the Moon in their ultimate scientific endeavor to uncover Why-Man.',
+    type: 'TV',
+    episodes: 24,
+    status: 'Not yet aired',
+    score: 8.55,
+    scored_by: 75000,
+    rank: 55,
+    popularity: 50,
+    rating: 'PG-13 - Teens 13 or older',
+    year: 2025,
+    season: 'winter',
+    duration: '24 min per ep',
+    genres: [
+      { mal_id: 2, name: 'Adventure' },
+      { mal_id: 4, name: 'Comedy' },
+      { mal_id: 24, name: 'Sci-Fi' },
+    ],
+  },
+];
+
+export function getFallbackTopAnime(filter?: string, limit: number = 12): Anime[] {
+  if (filter === 'upcoming') {
+    return FALLBACK_UPCOMING_LIST.slice(0, limit);
+  }
+  if (filter === 'airing') {
+    const airing = FALLBACK_ANIME_LIST.filter(
+      (a) => a.status === 'Currently Airing' || a.airing === true
+    );
+    return airing.length > 0 ? airing.slice(0, limit) : FALLBACK_ANIME_LIST.slice(6, 6 + limit);
+  }
+  return FALLBACK_ANIME_LIST.slice(0, limit);
+}
+
 export function searchFallbackAnime(
   query?: string,
   params?: {

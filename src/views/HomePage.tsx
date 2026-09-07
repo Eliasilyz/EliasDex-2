@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppNavigate } from '@/lib/useNavigate';
 import { Anime } from '../types';
 import { getUnifiedSeasonNow, getUnifiedTopAnime } from '../lib/animeApi';
-import { FALLBACK_ANIME_LIST } from '../lib/fallbackData';
+import { FALLBACK_ANIME_LIST, getFallbackTopAnime } from '../lib/fallbackData';
 import { SwiperHeroCarousel } from '../components/anime/SwiperHeroCarousel';
 import { SwiperAnimeSlider } from '../components/anime/SwiperAnimeSlider';
 import { ScheduleRow } from '../components/anime/ScheduleRow';
@@ -60,17 +60,17 @@ export const HomePage: React.FC = () => {
     ])
       .then(([popRes, airRes, upRes]) => {
         if (isMounted) {
-          setPopularAnime(popRes.data && popRes.data.length > 0 ? popRes.data : FALLBACK_ANIME_LIST.slice(0, 12));
-          setAiringAnime(airRes.data && airRes.data.length > 0 ? airRes.data : FALLBACK_ANIME_LIST.slice(0, 12));
-          setUpcomingAnime(upRes.data && upRes.data.length > 0 ? upRes.data : FALLBACK_ANIME_LIST.slice(2, 14));
+          setPopularAnime(popRes.data && popRes.data.length > 0 ? popRes.data : getFallbackTopAnime('bypopularity', 12));
+          setAiringAnime(airRes.data && airRes.data.length > 0 ? airRes.data : getFallbackTopAnime('airing', 12));
+          setUpcomingAnime(upRes.data && upRes.data.length > 0 ? upRes.data : getFallbackTopAnime('upcoming', 12));
           setLoadingSections(false);
         }
       })
       .catch(() => {
         if (isMounted) {
-          setPopularAnime(FALLBACK_ANIME_LIST.slice(0, 12));
-          setAiringAnime(FALLBACK_ANIME_LIST.slice(0, 12));
-          setUpcomingAnime(FALLBACK_ANIME_LIST.slice(2, 14));
+          setPopularAnime(getFallbackTopAnime('bypopularity', 12));
+          setAiringAnime(getFallbackTopAnime('airing', 12));
+          setUpcomingAnime(getFallbackTopAnime('upcoming', 12));
           setLoadingSections(false);
         }
       });

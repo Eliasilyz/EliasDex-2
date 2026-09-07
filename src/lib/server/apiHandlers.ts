@@ -1,6 +1,7 @@
 import {
   FALLBACK_ANIME_LIST,
   FALLBACK_GENRES,
+  getFallbackTopAnime,
   getFallbackSchedule,
   getFallbackAnimeById,
   generateFallbackEpisodes,
@@ -29,11 +30,8 @@ export function getJikanFallbackResponse(
   }
 
   if (rawPath.startsWith('top/anime')) {
-    const filter = queryParams.filter;
-    let list = [...FALLBACK_ANIME_LIST];
-    if (filter === 'airing') {
-      list = list.filter((a) => a.status === 'Currently Airing');
-    }
+    const filter = typeof queryParams.filter === 'string' ? queryParams.filter : undefined;
+    const list = getFallbackTopAnime(filter, 24);
     return {
       data: list,
       pagination: {
