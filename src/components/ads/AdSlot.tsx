@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 interface AdSlotProps {
@@ -11,14 +11,13 @@ interface AdSlotProps {
 }
 
 export const AdSlot: React.FC<AdSlotProps> = ({
-  adLabel = 'Iklan',
+  adLabel = 'ads',
   className = '',
   minHeight = 120,
   children,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [isAdBlocked, setIsAdBlocked] = useState(false);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ export const AdSlot: React.FC<AdSlotProps> = ({
           observer.disconnect();
         }
       },
-      { rootMargin: '200px', threshold: 0 }
+      { rootMargin: '500px', threshold: 0 }
     );
 
     observer.observe(el);
@@ -51,10 +50,6 @@ export const AdSlot: React.FC<AdSlotProps> = ({
     return () => clearTimeout(timer);
   }, [isVisible]);
 
-  const handleContentReady = useCallback(() => {
-    setIsLoaded(true);
-  }, []);
-
   return (
     <div
       ref={containerRef}
@@ -68,12 +63,12 @@ export const AdSlot: React.FC<AdSlotProps> = ({
       </div>
 
       <div className="px-4 pb-4">
-        {!isLoaded && !isAdBlocked && (
+        {!isVisible && !isAdBlocked && (
           <Skeleton className="w-full" />
         )}
         {isAdBlocked && (
           <div className="flex items-center justify-center py-4 text-ink-500 text-xs font-mono opacity-50">
-            Ad blocked
+            ads blocked
           </div>
         )}
         {isVisible && !isAdBlocked && children}

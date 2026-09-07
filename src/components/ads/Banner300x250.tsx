@@ -48,7 +48,7 @@ export const Banner300x250: React.FC<Banner300x250Props> = ({ className = '' }) 
   }, [key, scriptSrc, width, height]);
 
   return (
-    <AdSlot minHeight={height + 40} className={`flex flex-col items-center justify-center ${className}`}>
+    <AdSlot minHeight={height + 40} adLabel="ads" className={`flex flex-col items-center justify-center ${className}`}>
       <div className="flex justify-center w-full overflow-hidden">
         <iframe
           title="Advertisement"
